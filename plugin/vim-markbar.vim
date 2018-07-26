@@ -29,7 +29,7 @@ let g:buffersToDatabases = { GLOBAL_MARKS() : [] }
 
 " RETURNS:  (v:t_string)    All buffer-local marks active within the current
 "                           file as a 'raw' string.
-function! g:GetLocalMarks()
+function! g:GetLocalMarks() abort
     redir => l:to_return
     silent marks abcdefghijklmnopqrstuvwxyz<>'"^.(){}
     redir end
@@ -37,7 +37,7 @@ function! g:GetLocalMarks()
 endfunction
 
 " RETURNS:  (v:t_string)    All global marks as a 'raw' string.
-function! g:GetGlobalMarks()
+function! g:GetGlobalMarks() abort
     redir => l:to_return
     silent marks ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
     redir end
@@ -79,7 +79,7 @@ endfunction
 "               3.  the mark's 'file/text'
 " PARAM:    trimmed_marks   (v:t_string)    A `marks` string, without its
 "                                           column header.
-function! g:MarksStringToNestedList(trimmed_marks)
+function! g:MarksStringToNestedList(trimmed_marks) abort
     let l:marks = split(a:trimmed_marks, '\n\|\r') " split on linebreaks
     let l:i = 0
     while l:i <# len(l:marks)
@@ -157,7 +157,7 @@ endfunction
 
 " EFFECTS:  Totally reconstruct the local marks database for the current
 "           buffer.
-function! g:PopulateBufferDatabase()
+function! g:PopulateBufferDatabase() abort
     let l:cur_buffer = bufnr('%')
     let l:raw_local_marks = TrimMarksHeader(GetLocalMarks())
     let g:buffersToDatabases[l:cur_buffer] =
@@ -165,7 +165,7 @@ function! g:PopulateBufferDatabase()
 endfunction
 
 " EFFECTS:  Totally reconstruct the global marks database.
-function! g:PopulateGlobalDatabase()
+function! g:PopulateGlobalDatabase() abort
     let l:raw_global_marks = TrimMarksHeader(GetGlobalMarks())
     let g:buffersToDatabases[0] =
         \ MarksStringToNestedList(l:raw_global_marks)
