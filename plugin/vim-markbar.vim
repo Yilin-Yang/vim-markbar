@@ -82,7 +82,6 @@ endfunction
 function! g:MarksStringToNestedList(trimmed_marks)
     let l:marks = split(a:trimmed_marks, '\n\|\r') " split on linebreaks
     let l:i = 0
-
     while l:i <# len(l:marks)
         let l:marks[l:i] = matchlist(
             \ l:marks[l:i],
@@ -91,6 +90,30 @@ function! g:MarksStringToNestedList(trimmed_marks)
         let l:i += 1
     endwhile
     return l:marks
+endfunction
+
+" RETURNS:  (v:t_bool)      `v:true` if the given line number, in the *current
+"                           buffer*, has a mark. `v:false` otherwise.
+function! g:LineHasMark(line_no)
+    let l:cur_buffer = bufnr('%')
+    let l:marks_ptr = g:buffersToDatabases[l:cur_buffer] " alias
+    let l:i = 0
+    while l:i <# len(l:marks_ptr)
+        if l:marks_ptr[l:i][1] ==# a:line_no
+            return v:true
+        endif
+    endwhile
+
+    let l:marks_ptr = g:buffersToDatabases[0] " alias
+    let l:cur_file_abs = expand('%:p')
+    let l:i = 0
+    while l:i <# len(l:marks_ptr)
+        let l:mark_ptr = l:marks_ptr[l:i]
+        if l:cur_file_abs ==# l:mark_ptr[3] && l:mark_ptr[1] ==# a:line_no
+            return v:true
+        endif
+    endwhile
+
 endfunction
 
 " EFFECTS:  Totally reconstruct the local marks database for the current
