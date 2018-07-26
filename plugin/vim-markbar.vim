@@ -94,7 +94,7 @@ endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if the given line number, in the *current
 "                           buffer*, has a mark. `v:false` otherwise.
-function! g:LineHasMark(line_no)
+function! g:LineHasMark(line_no) abort
     let l:cur_buffer = bufnr('%')
     let l:marks_ptr = g:buffersToDatabases[l:cur_buffer] " alias
     let l:i = 0
@@ -102,18 +102,57 @@ function! g:LineHasMark(line_no)
         if l:marks_ptr[l:i][1] ==# a:line_no
             return v:true
         endif
+        let l:i += 1
     endwhile
 
     let l:marks_ptr = g:buffersToDatabases[0] " alias
-    let l:cur_file_abs = expand('%:p')
     let l:i = 0
     while l:i <# len(l:marks_ptr)
         let l:mark_ptr = l:marks_ptr[l:i]
-        if l:cur_file_abs ==# l:mark_ptr[3] && l:mark_ptr[1] ==# a:line_no
+        if getpos("'" . l:mark_ptr[0])[0] ==# l:cur_buffer
+            \ && l:mark_ptr[1] ==# a:line_no
+
             return v:true
         endif
+        let l:i += 1
     endwhile
 
+    return v:false
+endfunction
+
+" RETURNS:  (v:t_bool)      `v:true` if a line number in the given range, in
+"                           the *current buffer*, has a mark. `v:false`
+"                           otherwise.
+function! g:RangeHasMark(start, end) abort
+    if a:start ># a:end || a:start <# 0 || a:end <# 0
+        throw 'Invalid range in call to RangeHasMark: '.a:start.','.a:end
+    endif
+
+    let l:cur_buffer = bufnr('%')
+    let l:marks_ptr = g:buffersToDatabases[l:cur_buffer] " alias
+    let l:i = 0
+    while l:i <# len(l:marks_ptr)
+        let l:line_no = l:marks_ptr[l:i][1]
+        if l:line_no >=# a:start && l:line_no <= a:end
+            return v:true
+        endif
+        let l:i += 1
+    endwhile
+
+    let l:marks_ptr = g:buffersToDatabases[0] " alias
+    let l:i = 0
+    while l:i <# len(l:marks_ptr)
+        let l:mark_ptr = l:marks_ptr[l:i]
+        let l:line_no = l:mark_ptr[1]
+        if getpos("'" . l:mark_ptr[0])[0] ==# l:cur_buffer
+            \ && (l:line_no >=# a:start && l:line_no <=# a:end)
+
+            return v:true
+        endif
+        let l:i += 1
+    endwhile
+
+    return v:false
 endfunction
 
 " EFFECTS:  Totally reconstruct the local marks database for the current
