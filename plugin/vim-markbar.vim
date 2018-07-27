@@ -22,6 +22,9 @@ endf
 " DETAILS:  The buffer with number '0' holds 'global' marks, such as file marks.
 let g:buffersToDatabases = { GLOBAL_MARKS() : [] }
 
+" BRIEF:    Association between buffer numbers and mark-to-context dictionaries.
+" DETAILS:  The buffer with number '0' holds 'global' marks, such as file marks.
+let g:buffersToContexts = { GLOBAL_MARKS() : {} }
 
 "==============================================================================
 " FUNCTIONS: =================================================================
@@ -92,6 +95,27 @@ function! g:MarksStringToNestedList(trimmed_marks) abort
     return l:marks
 endfunction
 
+" RETURNS:  (v:t_bool)              `v:true` if the given mark *is global* and
+"                                   is located within the current buffer.
+" PARAM:    mark    (v:t_string)    The single character identifying the mark.
+function! g:InCurrentBuffer(mark) abort
+    if (len(a:mark) !=# 1)
+        throw 'Invalid mark: ' . a:mark
+    endif
+    return getpos("'" . a:mark)[0] ==# bufnr('%') ? v:true : v:false
+endfunction
+
+" RETURNS:  (v:t_string)    The name of the file in which the requested mark
+"                           can be found. May be an empty string, if the given
+"                           mark exists in a scratch buffer.
+function! g:ParentFilename(mark) abort
+    let l:buf_no = getpos("'" . a:mark)[0]
+    if !l:buf_no
+        throw 'Mark not found: ' . a:mark
+    endif
+    return bufname(l:buf_no)
+endfunction
+
 " RETURNS:  (v:t_bool)      `v:true` if the given line number, in the *current
 "                           buffer*, has a mark. `v:false` otherwise.
 function! g:LineHasMark(line_no) abort
@@ -109,9 +133,7 @@ function! g:LineHasMark(line_no) abort
     let l:i = 0
     while l:i <# len(l:marks_ptr)
         let l:mark_ptr = l:marks_ptr[l:i]
-        if getpos("'" . l:mark_ptr[0])[0] ==# l:cur_buffer
-            \ && l:mark_ptr[1] ==# a:line_no
-
+        if InCurrentBuffer(l:mark_ptr[0]) && l:mark_ptr[1] ==# a:line_no
             return v:true
         endif
         let l:i += 1
@@ -144,9 +166,8 @@ function! g:RangeHasMark(start, end) abort
     while l:i <# len(l:marks_ptr)
         let l:mark_ptr = l:marks_ptr[l:i]
         let l:line_no = l:mark_ptr[1]
-        if getpos("'" . l:mark_ptr[0])[0] ==# l:cur_buffer
-            \ && (l:line_no >=# a:start && l:line_no <=# a:end)
-
+        if InCurrentBuffer(l:mark_ptr[0])
+        \ && (l:line_no >=# a:start && l:line_no <=# a:end)
             return v:true
         endif
         let l:i += 1
@@ -169,6 +190,14 @@ function! g:PopulateGlobalDatabase() abort
     let l:raw_global_marks = TrimMarksHeader(GetGlobalMarks())
     let g:buffersToDatabases[0] =
         \ MarksStringToNestedList(l:raw_global_marks)
+endfunction
+
+" EFFECTS:  Retrieve the given line range (inclusive) from the requested
+"           buffer.
+" RETURNS:  (v:t_string)    The entire requested line range from the requested
+"                           buffer, including all newline characters.
+function! g:FetchBufferLineRange(buffer_no, start, end) abort
+    return system('sed -n ' .a:start.','.a:end.'p '. bufname(a:buffer_no))
 endfunction
 
 "==============================================================================
