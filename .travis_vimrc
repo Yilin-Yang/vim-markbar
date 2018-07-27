@@ -8,8 +8,11 @@
 "   https://github.com/embear/vim-localvimrc
 "-------------------------------------------
 filetype off
-set rtp+=~/.vim/bundle/vader.vim
-set rtp+=~/.vim/bundle/vim-markdown
-set rtp+=~/.vim/bundle/vim-markdown/after
+set runtimepath+=vader.vim
+set runtimepath+=.
+set runtimepath+=..
+set runtimepath+=~/.vim/bundle/vader.vim
+set runtimepath+=~/.vim/bundle/vim-markdown
+set runtimepath+=~/.vim/bundle/vim-markdown/after
 filetype plugin indent on
 syntax enable
