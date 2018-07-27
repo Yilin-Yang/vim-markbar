@@ -1,0 +1,13 @@
+language: vim
+
+before_script: |
+  git clone https://github.com/junegunn/vader.vim.git
+  sudo add-apt-repository ppa:neovim-ppa/stable
+  sudo apt-get update  -q
+  sudo apt-get install -y neovim
+  vim  --version
+  nvim --version
+
+script: |
+  vim  -Nu .travis_vimrc -c 'Vader! test/*' > /dev/null
+  nvim -Nu .travis_vimrc -c 'Vader! test/*' > /dev/null
