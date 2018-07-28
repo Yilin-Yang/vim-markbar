@@ -34,29 +34,23 @@ Execute (Delete All Marks, Open Buffers):
     let s:i += 1
   endwhile
 
-  " execute '11mark ['
-  " execute '19mark ]'
-  " execute '21mark .'
-  " execute '31mark "'
-  " execute '41mark >'
-
 Execute (Load Buffers, Set Local Marks, 50lines.txt):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
-  normal!  5mark a<cr>
-  normal! 15mark b<cr>
-  normal! 25mark c<cr>
-  normal! 35mark d<cr>
-  normal! 45mark e<cr>
+  execute  '5mark a'
+  execute '15mark b'
+  execute '25mark c'
+  execute '35mark d'
+  execute '45mark e'
 
   call markbar#state#PopulateBufferDatabase()
 Then:
   let g:bufno_50lines = bufnr('%')
   let buffer_marks = g:buffersToMarks[g:bufno_50lines]
-  AssertEqual [['a'],  ['5'], ['0'], ['fifth line']],           buffer_marks['a']
-  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
-  AssertEqual [['c'], ['25'], ['0'], ['twenty-fifth line']],    buffer_marks['c']
-  AssertEqual [['d'], ['35'], ['0'], ['thirty-fifth line']],    buffer_marks['d']
-  AssertEqual [['e'], ['45'], ['0'], ['forty-fifth line']],     buffer_marks['e']
+  AssertEqual ['a', '5', '0',  'fifth line'],           buffer_marks['a']
+  AssertEqual ['b', '15', '0', 'fifteenth line'],       buffer_marks['b']
+  AssertEqual ['c', '25', '0', 'twenty-fifth line'],    buffer_marks['c']
+  AssertEqual ['d', '35', '0', 'thirty-fifth line'],    buffer_marks['d']
+  AssertEqual ['e', '45', '0', 'forty-fifth line'],     buffer_marks['e']
 
 Execute (Set Global Marks, 50lines.txt):
   " should still be on 50lines.txt, but just in case,
@@ -68,17 +62,17 @@ Execute (Set Global Marks, 50lines.txt):
 Then:
   " verify that local marks database was not affected
   let buffer_marks = g:buffersToMarks[g:bufno_50lines]
-  AssertEqual [['a'],  ['5'], ['0'], ['fifth line']],           buffer_marks['a']
-  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
-  AssertEqual [['c'], ['25'], ['0'], ['twenty-fifth line']],    buffer_marks['c']
-  AssertEqual [['d'], ['35'], ['0'], ['thirty-fifth line']],    buffer_marks['d']
-  AssertEqual [['e'], ['45'], ['0'], ['forty-fifth line']],     buffer_marks['e']
+  AssertEqual ['a', '5', '0',  'fifth line'],           buffer_marks['a']
+  AssertEqual ['b', '15', '0', 'fifteenth line'],       buffer_marks['b']
+  AssertEqual ['c', '25', '0', 'twenty-fifth line'],    buffer_marks['c']
+  AssertEqual ['d', '35', '0', 'thirty-fifth line'],    buffer_marks['d']
+  AssertEqual ['e', '45', '0', 'forty-fifth line'],     buffer_marks['e']
 
   " check globals
   let buffer_marks = g:buffersToMarks[0]
-  AssertEqual [['C'], ['30'], ['0'], ['thirtieth line']],       buffer_marks['C']
-  AssertEqual [['D'], ['40'], ['0'], ['fortieth line']],        buffer_marks['D']
-  AssertEqual [['E'], ['50'], ['0'], ['fiftieth line']],        buffer_marks['E']
+  AssertEqual ['C', '30', '0', 'thirtieth line'],       buffer_marks['C']
+  AssertEqual ['D', '40', '0', 'fortieth line'],        buffer_marks['D']
+  AssertEqual ['E', '50', '0', 'fiftieth line'],        buffer_marks['E']
 
 Execute (Set Global Marks, 30lines.txt):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
@@ -96,23 +90,25 @@ Execute (Set Global Marks, 30lines.txt):
   call markbar#state#PopulateGlobalDatabase()
 Then:
   let buffer_marks = g:buffersToMarks[g:bufno_30lines]
-  AssertEqual [['e'],  ['1'], ['0'], ['first line']],           buffer_marks['e']
-  AssertEqual [['d'],  ['5'], ['0'], ['fifth line']],           buffer_marks['d']
-  AssertEqual [['c'], ['10'], ['0'], ['tenth line']],           buffer_marks['c']
-  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
-  AssertEqual [['a'], ['20'], ['0'], ['twentieth line']],       buffer_marks['a']
+  AssertEqual ['e', '1', '0',  'first line'],           buffer_marks['e']
+  AssertEqual ['d', '5', '0',  'fifth line'],           buffer_marks['d']
+  AssertEqual ['c', '10', '0', 'tenth line'],           buffer_marks['c']
+  AssertEqual ['b', '15', '0', 'fifteenth line'],       buffer_marks['b']
+  AssertEqual ['a', '20', '0', 'twentieth line'],       buffer_marks['a']
 
   " make sure that we didn't somehow overwrite these older ones
   let buffer_marks = g:buffersToMarks[g:bufno_50lines]
-  AssertEqual [['a'],  ['5'], ['0'], ['fifth line']],           buffer_marks['a']
-  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
-  AssertEqual [['c'], ['25'], ['0'], ['twenty-fifth line']],    buffer_marks['c']
-  AssertEqual [['d'], ['35'], ['0'], ['thirty-fifth line']],    buffer_marks['d']
-  AssertEqual [['e'], ['45'], ['0'], ['forty-fifth line']],     buffer_marks['e']
+  AssertEqual ['a', '5', '0',  'fifth line'],           buffer_marks['a']
+  AssertEqual ['b', '15', '0', 'fifteenth line'],       buffer_marks['b']
+  AssertEqual ['c', '25', '0', 'twenty-fifth line'],    buffer_marks['c']
+  AssertEqual ['d', '35', '0', 'thirty-fifth line'],    buffer_marks['d']
+  AssertEqual ['e', '45', '0', 'forty-fifth line'],     buffer_marks['e']
 
+  " NOTE: contents of 'file/text' aren't particularly meaningful here,
+  "       maybe remove that field in the future? (TODO)
   let buffer_marks = g:buffersToMarks[0]
-  AssertEqual [['A'], ['10'], ['0'], ['tenth line']],           buffer_marks['A']
-  AssertEqual [['B'], ['20'], ['0'], ['twentieth line']],       buffer_marks['B']
-  AssertEqual [['C'], ['30'], ['0'], ['thirtieth line']],       buffer_marks['C']
-  AssertEqual [['D'], ['40'], ['0'], ['fortieth line']],        buffer_marks['D']
-  AssertEqual [['E'], ['50'], ['0'], ['fiftieth line']],        buffer_marks['E']
+  AssertEqual ['A', '10', '0', 'tenth line'],           buffer_marks['A']
+  AssertEqual ['B', '20', '0', 'twentieth line'],       buffer_marks['B']
+  AssertEqual ['C', '30', '0', '50lines.txt'],          buffer_marks['C']
+  AssertEqual ['D', '40', '0', '50lines.txt'],          buffer_marks['D']
+  AssertEqual ['E', '50', '0', '50lines.txt'],          buffer_marks['E']
