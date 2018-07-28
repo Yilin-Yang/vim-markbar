@@ -69,7 +69,7 @@ function! markbar#state#PopulateBufferDatabase() abort
     let l:raw_local_marks =
         \ markbar#textmanip#TrimMarksHeader(markbar#helpers#GetLocalMarks())
     let g:buffersToMarks[l:cur_buffer] =
-        \ markbar#textmanip#MarksStringToNestedList(l:raw_local_marks)
+        \ markbar#textmanip#MarksStringToDictionary(l:raw_local_marks)
 endfunction
 
 " EFFECTS:  Totally reconstruct the global marks database.
@@ -77,7 +77,7 @@ function! markbar#state#PopulateGlobalDatabase() abort
     let l:raw_global_marks =
         \ markbar#textmanip#TrimMarksHeader(markbar#helpers#GetGlobalMarks())
     let g:buffersToMarks[0] =
-        \ markbar#textmanip#MarksStringToNestedList(l:raw_global_marks)
+        \ markbar#textmanip#MarksStringToDictionary(l:raw_global_marks)
 endfunction
 
 " REQUIRES: - Updated `g:buffersToMarks`.
@@ -86,14 +86,65 @@ endfunction
 "           yet exists.
 "           - Clears cached mark contexts for marks believed to no longer exist.
 "           - Tries to fetch updated contexts for all marks in the given buffer.
-function! markbar#state#UpdatedContextsForBuffer(buffer_no) abort
-    let l:marks_ptr = g:buffersToMarks[a:buffer_no]
-    " TODO
+" PARAM:    buffer_no   (v:t_number)    The number of the buffer to check.
+" PARAM:    num_lines   (v:t_number)    The total number of lines of context
+"                                       to retrieve.
+function! markbar#state#UpdateContextsForBuffer(buffer_no, num_lines) abort
+    if type(a:buffer_no) != v:t_number
+        throw '`a:buffer_no` must be of type v:t_number. Gave value: ' . a:buffer_no
+    endif
+
+    " E716 check (for nonextant dictionary key) + convenience alias
+    let l:marks_database = g:buffersToMarks[a:buffer_no]
+
+    if !has_key(g:buffersToMarksToContexts, a:buffer_no)
+        g:buffersToMarksToContexts[a:buffer_no] = {}
+    endif
+    let l:marks_to_contexts = g:buffersToMarksToContexts[a:buffer_no]
+
+    " remove orphaned contexts
+    let l:marks_w_context = keys(l:marks_to_contexts)
+    let l:i = 0
+    while l:i < len(l:marks_w_context)
+        let l:mark   = l:marks_w_context[l:i]
+        if !has_key(l:marks_database, l:mark)
+            " mark not found in updated marks database
+            call remove(l:marks_to_contexts, l:mark)
+        endif
+        let l:i += 1
+    endwhile
+
+    " fetch updated mark contexts
+    let l:i = 0
+    let l:using_global_marks = !a:buffer_no
+    let l:buffer_no = a:buffer_no
+
+    for l:mark in keys(l:marks_database)
+        let l:line_no = l:marks_database[l:mark][1]
+
+        " if these are global marks, perform file lookup for each mark
+        if l:using_global_marks
+            let l:buffer_no = markbar#helpers#BufferNo(l:mark)
+        endif
+
+        let l:context = markbar#helpers#FetchContext(
+            \ l:buffer_no,
+            \ l:line_no,
+            \ a:num_lines
+        \ )
+        if empty(l:context) | continue | endif
+        let l:marks_to_contexts[l:mark] = l:context
+    endfor
 endfunction
 
 " REQUIRES: - Updated `g:buffersToMarks`.
 " EFFECTS:  - Clears cached mark contexts for marks known to no longer exist.
-"           - Fetches updated contexts for all accessible marks.
-function! markbar#state#UpdateContexts() abort
-    " TODO
+"           - Fetches updated contexts for all accessible/cached marks.
+function! markbar#state#UpdateAllContexts() abort
+    let l:i = 0
+    let l:buffers = keys(g:buffersToMarks)
+    while l:i < len(l:buffers)
+        let l:buffer_no = l:buffers[l:i]
+        call markbar#state#UpdateContextsForBuffer(l:buffer_no)
+    endwhile
 endfunction

@@ -1,0 +1,118 @@
+Execute (Delete All Marks, Open Buffers):
+  " let s:marks = '
+  "   \ ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  "   \ abcdefghijklmnopqrstuvwxyz
+  "   \ 0123456789
+  "   \ <>"^.
+  " \ '
+
+  " Delete all preexisting marks.
+  delmarks a-zA-Z0-9<>\"^.
+
+  " Open test files.
+  let s:test_files = [
+    \ '10lines.txt',
+    \ '30lines.txt',
+    \ '50lines.txt',
+  \ ]
+
+  " Check if we're running from tests folder.
+
+  " This check won't work correctly if we're in some other directory that has
+  " a file named '1lines.txt' for some reason, but that won't happen on Travis.
+
+  let s:test_file_to_check = s:test_files[0]
+  if !filereadable(s:test_file_to_check)
+    throw 'ERROR: required test file "'
+      \ . s:test_file_to_check
+      \ . '" not available in PWD!'
+  endif
+
+  let s:i = 0
+  while s:i <# len(s:test_files)
+    execute 'normal :edit! ' . s:test_files[s:i] . "\<cr>"
+    let s:i += 1
+  endwhile
+
+  " execute '11mark ['
+  " execute '19mark ]'
+  " execute '21mark .'
+  " execute '31mark "'
+  " execute '41mark >'
+
+Execute (Load Buffers, Set Local Marks, 50lines.txt):
+  execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
+  normal!  5mark a<cr>
+  normal! 15mark b<cr>
+  normal! 25mark c<cr>
+  normal! 35mark d<cr>
+  normal! 45mark e<cr>
+
+  call markbar#state#PopulateBufferDatabase()
+Then:
+  let g:bufno_50lines = bufnr('%')
+  let buffer_marks = g:buffersToMarks[g:bufno_50lines]
+  AssertEqual [['a'],  ['5'], ['0'], ['fifth line']],           buffer_marks['a']
+  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
+  AssertEqual [['c'], ['25'], ['0'], ['twenty-fifth line']],    buffer_marks['c']
+  AssertEqual [['d'], ['35'], ['0'], ['thirty-fifth line']],    buffer_marks['d']
+  AssertEqual [['e'], ['45'], ['0'], ['forty-fifth line']],     buffer_marks['e']
+
+Execute (Set Global Marks, 50lines.txt):
+  " should still be on 50lines.txt, but just in case,
+  execute 'normal! :e! #' . g:bufno_50lines . "\<cr>"
+  execute '30mark C'
+  execute '40mark D'
+  execute '50mark E'
+  call markbar#state#PopulateGlobalDatabase()
+Then:
+  " verify that local marks database was not affected
+  let buffer_marks = g:buffersToMarks[g:bufno_50lines]
+  AssertEqual [['a'],  ['5'], ['0'], ['fifth line']],           buffer_marks['a']
+  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
+  AssertEqual [['c'], ['25'], ['0'], ['twenty-fifth line']],    buffer_marks['c']
+  AssertEqual [['d'], ['35'], ['0'], ['thirty-fifth line']],    buffer_marks['d']
+  AssertEqual [['e'], ['45'], ['0'], ['forty-fifth line']],     buffer_marks['e']
+
+  " check globals
+  let buffer_marks = g:buffersToMarks[0]
+  AssertEqual [['C'], ['30'], ['0'], ['thirtieth line']],       buffer_marks['C']
+  AssertEqual [['D'], ['40'], ['0'], ['fortieth line']],        buffer_marks['D']
+  AssertEqual [['E'], ['50'], ['0'], ['fiftieth line']],        buffer_marks['E']
+
+Execute (Set Global Marks, 30lines.txt):
+  execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
+  let g:bufno_30lines = bufnr('%')
+  execute '10mark A'
+  execute '20mark B'
+
+  execute  '1mark e'
+  execute  '5mark d'
+  execute '10mark c'
+  execute '15mark b'
+  execute '20mark a'
+
+  call markbar#state#PopulateBufferDatabase()
+  call markbar#state#PopulateGlobalDatabase()
+Then:
+  let buffer_marks = g:buffersToMarks[g:bufno_30lines]
+  AssertEqual [['e'],  ['1'], ['0'], ['first line']],           buffer_marks['e']
+  AssertEqual [['d'],  ['5'], ['0'], ['fifth line']],           buffer_marks['d']
+  AssertEqual [['c'], ['10'], ['0'], ['tenth line']],           buffer_marks['c']
+  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
+  AssertEqual [['a'], ['20'], ['0'], ['twentieth line']],       buffer_marks['a']
+
+  " make sure that we didn't somehow overwrite these older ones
+  let buffer_marks = g:buffersToMarks[g:bufno_50lines]
+  AssertEqual [['a'],  ['5'], ['0'], ['fifth line']],           buffer_marks['a']
+  AssertEqual [['b'], ['15'], ['0'], ['fifteenth line']],       buffer_marks['b']
+  AssertEqual [['c'], ['25'], ['0'], ['twenty-fifth line']],    buffer_marks['c']
+  AssertEqual [['d'], ['35'], ['0'], ['thirty-fifth line']],    buffer_marks['d']
+  AssertEqual [['e'], ['45'], ['0'], ['forty-fifth line']],     buffer_marks['e']
+
+  let buffer_marks = g:buffersToMarks[0]
+  AssertEqual [['A'], ['10'], ['0'], ['tenth line']],           buffer_marks['A']
+  AssertEqual [['B'], ['20'], ['0'], ['twentieth line']],       buffer_marks['B']
+  AssertEqual [['C'], ['30'], ['0'], ['thirtieth line']],       buffer_marks['C']
+  AssertEqual [['D'], ['40'], ['0'], ['fortieth line']],        buffer_marks['D']
+  AssertEqual [['E'], ['50'], ['0'], ['fiftieth line']],        buffer_marks['E']
