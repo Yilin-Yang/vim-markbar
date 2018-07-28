@@ -43,7 +43,7 @@ function! markbar#textmanip#MarksStringToNestedList(trimmed_marks) abort
         \ )[1:4]
         let l:i += 1
     endwhile
-    if len(l:marks) ># 0 && !len(l:marks[-1])
+    if len(l:marks) && empty(l:marks[-1])
         call remove(l:marks, -1)
     endif
     return l:marks
