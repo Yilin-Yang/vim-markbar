@@ -103,16 +103,12 @@ function! markbar#state#UpdateContextsForBuffer(buffer_no, num_lines) abort
     let l:marks_to_contexts = g:buffersToMarksToContexts[a:buffer_no]
 
     " remove orphaned contexts
-    let l:marks_w_context = keys(l:marks_to_contexts)
-    let l:i = 0
-    while l:i < len(l:marks_w_context)
-        let l:mark   = l:marks_w_context[l:i]
+    for l:mark in keys(l:marks_to_contexts)
         if !has_key(l:marks_database, l:mark)
             " mark not found in updated marks database
             call remove(l:marks_to_contexts, l:mark)
         endif
-        let l:i += 1
-    endwhile
+    endfor
 
     " fetch updated mark contexts
     let l:i = 0
