@@ -34,6 +34,10 @@ Execute (Delete All Marks, Open Buffers):
     let s:i += 1
   endwhile
 
+################################################################################
+# PopulateBufferDatabase, PopulateGlobalDatabase
+################################################################################
+
 Execute (Load Buffers, Set Local Marks, 50lines.txt):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
   execute  '5mark a'
@@ -112,3 +116,117 @@ Then:
   AssertEqual ['C', '30', '0', '50lines.txt'],          buffer_marks['C']
   AssertEqual ['D', '40', '0', '50lines.txt'],          buffer_marks['D']
   AssertEqual ['E', '50', '0', '50lines.txt'],          buffer_marks['E']
+
+################################################################################
+# UpdateContextsForBuffer tests
+################################################################################
+
+Execute (Update Local Contexts, 30lines.txt):
+  execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
+  call markbar#state#UpdateContextsForBuffer(g:bufno_30lines, 3)
+Then:
+  " Only check 'indicator' values, for brevity. If these are fine, and if the
+  " `test-fetchlines.vader` tests pass, assume that context fetching itself is
+  " fine.
+  let buffer_contexts = g:buffersToMarksToContexts[g:bufno_30lines]
+
+  let expected = [
+      \ 'nineteenth line',
+      \ 'twentieth line',
+      \ 'twenty-first line',
+    \ ]
+  AssertEqual expected, buffer_contexts['a']
+
+  let expected = [
+      \ 'first line',
+      \ 'second line',
+    \ ]
+  AssertEqual expected, buffer_contexts['e']
+
+Execute (Delete Mark, Update Local Contexts, 30lines.txt):
+  execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
+  execute 'delmarks a'
+  call markbar#state#PopulateBufferDatabase()
+  call markbar#state#UpdateContextsForBuffer(g:bufno_30lines, 3)
+Then:
+  Assert !has_key(g:buffersToMarksToContexts[g:bufno_30lines], 'a')
+
+Execute (Update Global Contexts, 30lines.txt):
+  execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
+  call markbar#state#PopulateGlobalDatabase()
+  call markbar#state#UpdateContextsForBuffer(0, 3)
+Then:
+  let buffer_contexts = g:buffersToMarksToContexts[0]
+  let expected = [
+      \ 'ninth line',
+      \ 'tenth line',
+      \ 'eleventh line',
+    \ ]
+  AssertEqual expected, buffer_contexts['A']
+
+  let expected = [
+      \ 'twenty-ninth line',
+      \ 'thirtieth line',
+      \ 'thirty-first line',
+    \ ]
+  AssertEqual expected, buffer_contexts['C']
+
+  let expected = [
+      \ 'forty-ninth line',
+      \ 'fiftieth line',
+    \ ]
+  AssertEqual expected, buffer_contexts['E']
+
+Execute (Update Global Contexts, Unloaded Buffer, 50lines.txt):
+  execute 'bunload ' . g:bufno_50lines
+  call remove(g:buffersToMarksToContexts, 0) " clear the existing global cache
+  call markbar#state#UpdateContextsForBuffer(0, 3)
+Then:
+  let buffer_contexts = g:buffersToMarksToContexts[0]
+  " even after unloading the buffer, the plugin should still be able to fetch
+  " contexts from the files on disk
+  let expected = [
+      \ 'ninth line',
+      \ 'tenth line',
+      \ 'eleventh line',
+    \ ]
+  AssertEqual expected, buffer_contexts['A']
+
+  let expected = [
+      \ 'twenty-ninth line',
+      \ 'thirtieth line',
+      \ 'thirty-first line',
+    \ ]
+  AssertEqual expected, buffer_contexts['C']
+
+  let expected = [
+      \ 'forty-ninth line',
+      \ 'fiftieth line',
+    \ ]
+  AssertEqual expected, buffer_contexts['E']
+
+" Having issues with this one: UpdateContextsForBuffer doesn't pull the
+" truncated context after 10lines.txt has been copied over 30lines.txt.
+" Could be an issue with how I'm using Vader?
+" Execute (FIXME: Externally Modify the File, Update Contexts, 30lines.txt):
+"   if !&autoread
+"     throw 'TEST PRECONDITION FAILURE: `set autoread` in the test .vimrc!'
+"   endif
+"   silent execute '!cp 30lines.txt 30lines.txt.temp'
+"   silent execute '!cp 10lines.txt 30lines.txt'
+"   checktime " trigger autoread
+
+"   call markbar#state#PopulateGlobalDatabase()
+"   call markbar#state#UpdateContextsForBuffer(0, 3)
+
+" Then:
+"   " make sure to clean up, even if the Execute block failed partway through
+"   " silent! execute '!mv 30lines.txt.temp 30lines.txt'
+"   let buffer_contexts = g:buffersToMarksToContexts[0]
+
+"   let expected = [
+"       \ 'ninth line',
+"       \ 'tenth line',
+"     \ ]
+"   AssertEqual expected, buffer_contexts['A']
+"   Assert !has_key(g:buffersToMarks, 'B')

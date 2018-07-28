@@ -94,9 +94,7 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
         throw 'Required that `a:num_lines >= 1`. Gave value: ' . a:num_lines
     endif
 
-    if type(a:around_line) !=# v:t_number
-        throw '`a:around_line` must be an integer. Gave value: ' . a:around_line
-    elseif a:around_line <# 1
+    if a:around_line <# 1
         throw 'Required that target line no. be positive. Gave value: '
             \ . a:around_line
     endif

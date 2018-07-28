@@ -98,7 +98,7 @@ function! markbar#state#UpdateContextsForBuffer(buffer_no, num_lines) abort
     let l:marks_database = g:buffersToMarks[a:buffer_no]
 
     if !has_key(g:buffersToMarksToContexts, a:buffer_no)
-        g:buffersToMarksToContexts[a:buffer_no] = {}
+        let g:buffersToMarksToContexts[a:buffer_no] = {}
     endif
     let l:marks_to_contexts = g:buffersToMarksToContexts[a:buffer_no]
 
@@ -132,7 +132,6 @@ function! markbar#state#UpdateContextsForBuffer(buffer_no, num_lines) abort
             \ l:line_no,
             \ a:num_lines
         \ )
-        if empty(l:context) | continue | endif
         let l:marks_to_contexts[l:mark] = l:context
     endfor
 endfunction
@@ -140,11 +139,13 @@ endfunction
 " REQUIRES: - Updated `g:buffersToMarks`.
 " EFFECTS:  - Clears cached mark contexts for marks known to no longer exist.
 "           - Fetches updated contexts for all accessible/cached marks.
-function! markbar#state#UpdateAllContexts() abort
+" PARAM:    num_lines   (v:t_number)    The total number of lines of context
+"                                       to retrieve.
+function! markbar#state#UpdateAllContexts(num_lines) abort
     let l:i = 0
     let l:buffers = keys(g:buffersToMarks)
     while l:i < len(l:buffers)
         let l:buffer_no = l:buffers[l:i]
-        call markbar#state#UpdateContextsForBuffer(l:buffer_no)
+        call markbar#state#UpdateContextsForBuffer(l:buffer_no, a:num_lines)
     endwhile
 endfunction

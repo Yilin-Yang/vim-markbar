@@ -3,3 +3,4 @@ temp.vim
 Session.vim
 *.swo
 *.swp
+*temp

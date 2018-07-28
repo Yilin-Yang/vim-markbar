@@ -16,4 +16,5 @@ set runtimepath+=~/.vim/bundle/vim-markdown
 set runtimepath+=~/.vim/bundle/vim-markdown/after
 filetype plugin indent on
 syntax enable
+set autoread
 set hidden
