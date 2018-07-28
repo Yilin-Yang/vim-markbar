@@ -34,14 +34,17 @@ endfunction
 " PARAM:    trimmed_marks   (v:t_string)    A `marks` string, without its
 "                                           column header.
 function! markbar#textmanip#MarksStringToNestedList(trimmed_marks) abort
-    let l:marks = split(a:trimmed_marks, '\n\|\r') " split on linebreaks
+    let l:marks = split(a:trimmed_marks, '\r\{0,1}\n') " split on linebreaks
     let l:i = 0
     while l:i <# len(l:marks)
         let l:marks[l:i] = matchlist(
             \ l:marks[l:i],
-            \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s\+\(.*\)'
+            \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)'
         \ )[1:4]
         let l:i += 1
     endwhile
+    if len(l:marks) ># 0 && !len(l:marks[-1])
+        call remove(l:marks, -1)
+    endif
     return l:marks
 endfunction
