@@ -19,17 +19,28 @@ endfunction
 "                                   is located within the current buffer.
 " PARAM:    mark    (v:t_string)    The single character identifying the mark.
 function! markbar#helpers#InCurrentBuffer(mark) abort
-    if (len(a:mark) !=# 1)
+    if len(a:mark) !=# 1
         throw 'Invalid mark: ' . a:mark
     endif
     return getpos("'" . a:mark)[0] ==# bufnr('%') ? v:true : v:false
+endfunction
+
+" RETURNS:  (v:t_number)    The buffer number of the buffer that contains the
+"                           requested mark.
+" PARAM:    mark    (v:t_string)    The single character identifying the mark,
+"                                   not including the leading single quote.
+function! markbar#helpers#BufferNo(mark) abort
+    if len(a:mark) !=# 1
+        throw 'Invalid mark: ' . a:mark
+    endif
+    return getpos("'" . a:mark)[0]
 endfunction
 
 " RETURNS:  (v:t_string)    The name of the file in which the requested mark
 "                           can be found. May be an empty string, if the given
 "                           mark exists in a scratch buffer.
 function! markbar#helpers#ParentFilename(mark) abort
-    let l:buf_no = getpos("'" . a:mark)[0]
+    let l:buf_no = markbar#helpers#BufferNo(a:mark)
     if !l:buf_no
         throw 'Mark not found: ' . a:mark
     endif
@@ -41,13 +52,14 @@ endfunction
 " RETURNS:  (v:t_list)      The requested line range from the requested
 "                           buffer as a list, one line per list element,
 "                           without trailing linebreaks.
-function! markbar#helpers#FetchBufferLineRange(buffer_no, start, end) abort
+" PARAM:    buffer_expr (expr)          See `:h bufname()`.
+function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
     " if buffer is loaded,
-    let l:lines = getbufline(a:buffer_no, a:start, a:end)
+    let l:lines = getbufline(a:buffer_expr, a:start, a:end)
     if len(l:lines) | return l:lines | endif
 
     " buffer isn't loaded, and/or file doesn't exist.
-    let l:filename = bufname(a:buffer_no)
+    let l:filename = bufname(a:buffer_expr)
     if empty(l:filename) | return [] | endif
 
     if !has('win32')
@@ -69,12 +81,13 @@ endfunction
 " RETURNS:  (v:t_list)      The requested context from the requested
 "                           buffer as a list, one line per list element,
 "                           without trailing linebreaks.
+" PARAM:    buffer_expr (expr)          See `:help bufname()`.
 " PARAM:    around_line (v:t_number)    Fetch context from around this
 "                                       'target' line number.
 " PARAM:    num_lines   (v:t_number)    The total number of lines of context
 "                                       to grab, *including* the target line.
 "                                       Must be greater than or equal to 1.
-function! markbar#helpers#FetchContext(buffer_no, around_line, num_lines) abort
+function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abort
     if type(a:num_lines) !=# v:t_number
         throw '`a:num_lines` must be an integer. Gave value: ' . a:num_lines
     elseif a:num_lines <# 1
@@ -102,5 +115,5 @@ function! markbar#helpers#FetchContext(buffer_no, around_line, num_lines) abort
         let l:start = 1
     endif
 
-    return markbar#helpers#FetchBufferLineRange(a:buffer_no, l:start, l:end)
+    return markbar#helpers#FetchBufferLineRange(a:buffer_expr, l:start, l:end)
 endfunction
