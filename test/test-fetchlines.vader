@@ -76,12 +76,61 @@ Then:
 ################################################################################
 # FetchContext tests
 ################################################################################
-" Execute (Error Check: Non-Integer around_line):
-" Execute (Error Check: Non-Integer num_lines):
-" Execute (Error Check: Zero-valued around_line):
-" Execute (Error Check: Zero-valued num_lines):
-" Execute (Get One-Line Context):
-" Execute (Get Even-Sized Context):
-" Execute (Get Odd-Sized Context):
-" Execute (Get Context, Cut Off by Top of File):
-" Execute (Get Context, Cut Off by Bottom of File):
+Execute (Error Check: Non-Integer around_line):
+  AssertThrow call markbar#helpers#FetchContext('*/2lines.txt', 1.5, 2)
+
+Execute (Error Check: Non-Integer num_lines):
+  AssertThrow call markbar#helpers#FetchContext('*/2lines.txt', 1, 2.5)
+
+Execute (Error Check: Zero-valued around_line):
+  AssertThrow call markbar#helpers#FetchContext('*/2lines.txt', 0, 2)
+
+Execute (Error Check: Zero-valued num_lines):
+  AssertThrow call markbar#helpers#FetchContext('*/2lines.txt', 1, 0)
+
+Execute (Get One-Line Context):
+  let result = markbar#helpers#FetchContext('*/2lines.txt', 2, 1)
+Then:
+  let expected = ['second line']
+  AssertEqual expected, result
+
+Execute (Get Even-Sized Context):
+  let result = markbar#helpers#FetchContext('*/10lines.txt', 2, 4)
+Then:
+  let expected = [
+    \ 'first line',
+    \ 'second line',
+    \ 'third line',
+    \ 'fourth line',
+  \ ]
+  AssertEqual expected, result
+
+Execute (Get Odd-Sized Context):
+  let result = markbar#helpers#FetchContext('*/10lines.txt', 5, 5)
+Then:
+  let expected = [
+    \ 'third line',
+    \ 'fourth line',
+    \ 'fifth line',
+    \ 'sixth line',
+    \ 'seventh line',
+  \ ]
+  AssertEqual expected, result
+
+Execute (Get Context, Cut Off by Top of File):
+  let result = markbar#helpers#FetchContext('*/2lines.txt', 1, 3)
+Then:
+  let expected = [
+    \ 'first line',
+    \ 'second line',
+  \ ]
+  AssertEqual expected, result
+
+Execute (Get Context, Cut Off by Bottom of File):
+  let result = markbar#helpers#FetchContext('*/2lines.txt', 2, 3)
+Then:
+  let expected = [
+    \ 'first line',
+    \ 'second line',
+  \ ]
+  AssertEqual expected, result
