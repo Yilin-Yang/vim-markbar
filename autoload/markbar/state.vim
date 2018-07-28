@@ -1,10 +1,10 @@
-" REQUIRES: - Updated `g:buffersToDatabases`, or else results will be
+" REQUIRES: - Updated `g:buffersToMarks`, or else results will be
 "           'outdated'.
 " RETURNS:  (v:t_bool)      `v:true` if the given line number, in the *current
 "                           buffer*, has a mark. `v:false` otherwise.
 function! markbar#state#LineHasMark(line_no) abort
     let l:cur_buffer = bufnr('%')
-    let l:marks_ptr = g:buffersToDatabases[l:cur_buffer] " alias
+    let l:marks_ptr = g:buffersToMarks[l:cur_buffer] " alias
     let l:i = 0
     while l:i <# len(l:marks_ptr)
         if l:marks_ptr[l:i][1] ==# a:line_no
@@ -13,7 +13,7 @@ function! markbar#state#LineHasMark(line_no) abort
         let l:i += 1
     endwhile
 
-    let l:marks_ptr = g:buffersToDatabases[0] " alias
+    let l:marks_ptr = g:buffersToMarks[0] " alias
     let l:i = 0
     while l:i <# len(l:marks_ptr)
         let l:mark_ptr = l:marks_ptr[l:i]
@@ -26,7 +26,7 @@ function! markbar#state#LineHasMark(line_no) abort
     return v:false
 endfunction
 
-" REQUIRES: - Updated `g:buffersToDatabases`, or else results will be
+" REQUIRES: - Updated `g:buffersToMarks`, or else results will be
 "           'outdated'.
 " RETURNS:  (v:t_bool)      `v:true` if a line number in the given range, in
 "                           the *current buffer*, has a mark. `v:false`
@@ -37,7 +37,7 @@ function! markbar#state#RangeHasMark(start, end) abort
     endif
 
     let l:cur_buffer = bufnr('%')
-    let l:marks_ptr = g:buffersToDatabases[l:cur_buffer] " alias
+    let l:marks_ptr = g:buffersToMarks[l:cur_buffer] " alias
     let l:i = 0
     while l:i <# len(l:marks_ptr)
         let l:line_no = l:marks_ptr[l:i][1]
@@ -47,7 +47,7 @@ function! markbar#state#RangeHasMark(start, end) abort
         let l:i += 1
     endwhile
 
-    let l:marks_ptr = g:buffersToDatabases[0] " alias
+    let l:marks_ptr = g:buffersToMarks[0] " alias
     let l:i = 0
     while l:i <# len(l:marks_ptr)
         let l:mark_ptr = l:marks_ptr[l:i]
@@ -68,7 +68,7 @@ function! markbar#state#PopulateBufferDatabase() abort
     let l:cur_buffer = bufnr('%')
     let l:raw_local_marks =
         \ markbar#textmanip#TrimMarksHeader(markbar#helpers#GetLocalMarks())
-    let g:buffersToDatabases[l:cur_buffer] =
+    let g:buffersToMarks[l:cur_buffer] =
         \ markbar#textmanip#MarksStringToNestedList(l:raw_local_marks)
 endfunction
 
@@ -76,22 +76,22 @@ endfunction
 function! markbar#state#PopulateGlobalDatabase() abort
     let l:raw_global_marks =
         \ markbar#textmanip#TrimMarksHeader(markbar#helpers#GetGlobalMarks())
-    let g:buffersToDatabases[0] =
+    let g:buffersToMarks[0] =
         \ markbar#textmanip#MarksStringToNestedList(l:raw_global_marks)
 endfunction
 
-" REQUIRES: - Updated `g:buffersToDatabases`.
-"           - `g:buffersToDatabases` entry exists for the requested buffer.
+" REQUIRES: - Updated `g:buffersToMarks`.
+"           - `g:buffersToMarks` entry exists for the requested buffer.
 " EFFECTS:  - Creates a context cache entry for the requested buffer, if none
 "           yet exists.
 "           - Clears cached mark contexts for marks believed to no longer exist.
 "           - Tries to fetch updated contexts for all marks in the given buffer.
 function! markbar#state#UpdatedContextsForBuffer(buffer_no) abort
-    let l:marks_ptr = g:buffersToDatabases[a:buffer_no]
+    let l:marks_ptr = g:buffersToMarks[a:buffer_no]
     " TODO
 endfunction
 
-" REQUIRES: - Updated `g:buffersToDatabases`.
+" REQUIRES: - Updated `g:buffersToMarks`.
 " EFFECTS:  - Clears cached mark contexts for marks known to no longer exist.
 "           - Fetches updated contexts for all accessible marks.
 function! markbar#state#UpdateContexts() abort

@@ -9,11 +9,11 @@ let g:vim_markbar_autoloaded = 1
 
 " BRIEF:    Association between buffer numbers and their local mark databases.
 " DETAILS:  The buffer with number '0' holds 'global' marks, such as file marks.
-let g:buffersToDatabases = { markbar#constants#GLOBAL_MARKS() : [] }
+let g:buffersToMarks = { markbar#constants#GLOBAL_MARKS() : [] }
 
 " BRIEF:    Association between buffer numbers and mark-to-context dictionaries.
 " DETAILS:  The buffer with number '0' holds 'global' marks, such as file marks.
-let g:buffersToContexts = { markbar#constants#GLOBAL_MARKS() : {} }
+let g:buffersToMarksToContexts = { markbar#constants#GLOBAL_MARKS() : {} }
 
 "==============================================================================
 " FUNCTIONS: =================================================================
