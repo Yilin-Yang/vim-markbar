@@ -1,0 +1,87 @@
+Before (Reload Test Files):
+  let s:test_files = [
+    \ '1lines.txt',
+    \ '2lines.txt',
+    \ '10lines.txt',
+  \ ]
+
+  " Check if we're running from tests folder.
+
+  " This won't work correctly if we're in some other directory that has a file
+  " named '1lines.txt' for some reason, but that won't happen on Travis.
+
+  let s:test_file_to_check = s:test_files[0]
+  if !filereadable(s:test_file_to_check)
+    throw 'ERROR: required test file "'
+      \ . s:test_file_to_check
+      \ . '" not available in PWD!'
+  endif
+
+  let s:i = 0
+  while s:i <# len(s:test_files)
+    execute 'normal :edit! ' . s:test_files[s:i] . "\<cr>"
+    let s:i += 1
+  endwhile
+
+################################################################################
+# FetchBufferLineRange tests
+################################################################################
+Execute (Get Beyond End of File):
+  let result = markbar#helpers#FetchBufferLineRange('*/1lines.txt', 1, 10)
+Then:
+  let expected = [
+    \ 'first line',
+  \ ]
+  AssertEqual expected, result
+
+Execute (Get Entirely Beyond End of File):
+  let result = markbar#helpers#FetchBufferLineRange('*/1lines.txt', 3, 10)
+Then:
+  let expected = [
+    \ ]
+  AssertEqual expected, result
+
+Execute (Get Exactly One Line):
+  let result = markbar#helpers#FetchBufferLineRange('*/10lines.txt', 5, 5)
+Then:
+  let expected = [
+    \ 'fifth line',
+  \ ]
+  AssertEqual expected, result
+
+Execute (Get Exactly Two Lines):
+  let result = markbar#helpers#FetchBufferLineRange('*/10lines.txt', 5, 6)
+Then:
+  let expected = [
+    \ 'fifth line',
+    \ 'sixth line',
+  \ ]
+  AssertEqual expected, result
+
+
+Do (Modify File, Don't Write, Get From Unwritten Buffer):
+  :edit! 10lines.txt\<cr>ggd4j\<esc>
+Then:
+  let result = markbar#helpers#FetchBufferLineRange('*/10lines.txt', 1, 5)
+  let expected = [
+    \ 'sixth line',
+    \ 'seventh line',
+    \ 'eighth line',
+    \ 'ninth line',
+    \ 'tenth line',
+  \ ]
+  AssertEqual expected, result
+  edit! 10lines.txt
+
+################################################################################
+# FetchContext tests
+################################################################################
+" Execute (Error Check: Non-Integer around_line):
+" Execute (Error Check: Non-Integer num_lines):
+" Execute (Error Check: Zero-valued around_line):
+" Execute (Error Check: Zero-valued num_lines):
+" Execute (Get One-Line Context):
+" Execute (Get Even-Sized Context):
+" Execute (Get Odd-Sized Context):
+" Execute (Get Context, Cut Off by Top of File):
+" Execute (Get Context, Cut Off by Bottom of File):
