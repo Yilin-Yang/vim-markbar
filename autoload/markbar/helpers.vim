@@ -51,7 +51,7 @@ function! markbar#helpers#FetchBufferLineRange(buffer_no, start, end) abort
     if empty(l:filename) | return [] | endif
 
     if !has('win32')
-        let l:text  = system('sed -n ' .a:start.','.a:end.'p '. l:filename),
+        let l:text  = system('sed -n ' .a:start.','.a:end.'p '. l:filename)
         " keep leading blank lines, remove always-spurious empty last line
         let l:lines = split(l:text, '\r\{0,1}\n', 1)
         call remove(l:lines, -1)
@@ -96,6 +96,10 @@ function! markbar#helpers#FetchContext(buffer_no, around_line, num_lines) abort
     " even a:num_lines), scooch l:start down by one
     if l:end - l:start >=# a:num_lines
         let l:start += 1
+    endif
+
+    if l:start <# 1
+        let l:start = 1
     endif
 
     return markbar#helpers#FetchBufferLineRange(a:buffer_no, l:start, l:end)
