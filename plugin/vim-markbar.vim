@@ -7,24 +7,13 @@ let g:vim_markbar_autoloaded = 1
 " GLOBAL VARIABLES: ==========================================================
 "==============================================================================
 
-" BRIEF:    The search pattern to use when matching the columns header and
-"           leading whitespace.
-fu! g:MARKS_COLUMNS_HEADER_SEARCH_PATTERN()
-    return '.\{-}mark line  col file/text.\{-}\n*\r*'
-endf
-
-" BRIEF:    The null 'buffer number' used to index the global mark database.
-fu! g:GLOBAL_MARKS()
-    return 0
-endf
-
 " BRIEF:    Association between buffer numbers and their local mark databases.
 " DETAILS:  The buffer with number '0' holds 'global' marks, such as file marks.
-let g:buffersToDatabases = { GLOBAL_MARKS() : [] }
+let g:buffersToDatabases = { markbar#constants#GLOBAL_MARKS() : [] }
 
 " BRIEF:    Association between buffer numbers and mark-to-context dictionaries.
 " DETAILS:  The buffer with number '0' holds 'global' marks, such as file marks.
-let g:buffersToContexts = { GLOBAL_MARKS() : {} }
+let g:buffersToContexts = { markbar#constants#GLOBAL_MARKS() : {} }
 
 "==============================================================================
 " FUNCTIONS: =================================================================

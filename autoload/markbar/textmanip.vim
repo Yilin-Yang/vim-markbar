@@ -8,7 +8,7 @@ function! markbar#textmanip#TrimMarksHeader(raw_marks) abort
     endif
     let l:trimmed = substitute(
         \ a:raw_marks,
-        \ MARKS_COLUMNS_HEADER_SEARCH_PATTERN(),
+        \ markbar#constants#MARKS_COLUMNS_HEADER_SEARCH_PATTERN(),
         \ '',
         \ ''
     \ )
