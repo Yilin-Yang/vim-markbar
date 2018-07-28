@@ -19,83 +19,8 @@ let g:buffersToContexts = { markbar#constants#GLOBAL_MARKS() : {} }
 " FUNCTIONS: =================================================================
 "==============================================================================
 
-" RETURNS:  (v:t_bool)      `v:true` if the given line number, in the *current
-"                           buffer*, has a mark. `v:false` otherwise.
-function! g:LineHasMark(line_no) abort
-    let l:cur_buffer = bufnr('%')
-    let l:marks_ptr = g:buffersToDatabases[l:cur_buffer] " alias
-    let l:i = 0
-    while l:i <# len(l:marks_ptr)
-        if l:marks_ptr[l:i][1] ==# a:line_no
-            return v:true
-        endif
-        let l:i += 1
-    endwhile
 
-    let l:marks_ptr = g:buffersToDatabases[0] " alias
-    let l:i = 0
-    while l:i <# len(l:marks_ptr)
-        let l:mark_ptr = l:marks_ptr[l:i]
-        if InCurrentBuffer(l:mark_ptr[0]) && l:mark_ptr[1] ==# a:line_no
-            return v:true
-        endif
-        let l:i += 1
-    endwhile
 
-    return v:false
-endfunction
-
-" RETURNS:  (v:t_bool)      `v:true` if a line number in the given range, in
-"                           the *current buffer*, has a mark. `v:false`
-"                           otherwise.
-function! g:RangeHasMark(start, end) abort
-    if a:start ># a:end || a:start <# 0 || a:end <# 0
-        throw 'Invalid range in call to RangeHasMark: '.a:start.','.a:end
-    endif
-
-    let l:cur_buffer = bufnr('%')
-    let l:marks_ptr = g:buffersToDatabases[l:cur_buffer] " alias
-    let l:i = 0
-    while l:i <# len(l:marks_ptr)
-        let l:line_no = l:marks_ptr[l:i][1]
-        if l:line_no >=# a:start && l:line_no <= a:end
-            return v:true
-        endif
-        let l:i += 1
-    endwhile
-
-    let l:marks_ptr = g:buffersToDatabases[0] " alias
-    let l:i = 0
-    while l:i <# len(l:marks_ptr)
-        let l:mark_ptr = l:marks_ptr[l:i]
-        let l:line_no = l:mark_ptr[1]
-        if InCurrentBuffer(l:mark_ptr[0])
-        \ && (l:line_no >=# a:start && l:line_no <=# a:end)
-            return v:true
-        endif
-        let l:i += 1
-    endwhile
-
-    return v:false
-endfunction
-
-" EFFECTS:  Totally reconstruct the local marks database for the current
-"           buffer.
-function! g:PopulateBufferDatabase() abort
-    let l:cur_buffer = bufnr('%')
-    let l:raw_local_marks =
-        \ markbar#textmanip#TrimMarksHeader(markbar#helpers#GetLocalMarks())
-    let g:buffersToDatabases[l:cur_buffer] =
-        \ markbar#textmanip#MarksStringToNestedList(l:raw_local_marks)
-endfunction
-
-" EFFECTS:  Totally reconstruct the global marks database.
-function! g:PopulateGlobalDatabase() abort
-    let l:raw_global_marks =
-        \ markbar#textmanip#TrimMarksHeader(markbar#helpers#GetGlobalMarks())
-    let g:buffersToDatabases[0] =
-        \ markbar#textmanip#MarksStringToNestedList(l:raw_global_marks)
-endfunction
 
 "==============================================================================
 " AUTOCMDS: ==================================================================
