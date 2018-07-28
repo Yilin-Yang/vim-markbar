@@ -21,11 +21,10 @@ function! markbar#textmanip#TrimMarksHeader(raw_marks) abort
     return l:trimmed
 endfunction
 
-" RETURNS:  (v:t_list)      The given `marks` string, converted into a
-"                           two-dimensional list-of-lists.
-" DETAILS:  The following is written assuming row-major indexing conventions.
-"           - Each 'row' corresponds to a single mark.
-"           - Each 'column' in that row is one of that mark's fields, in the
+" RETURNS:  (v:t_dict)      The given `marks` string, converted into a
+"                           dictionary of lists.
+" DETAILS:  - Each dictionary entry corresponds to a single mark.
+"           - Each element in an entry is one of that mark's fields, in the
 "           following order (by index):
 "               0.  the mark itself
 "               1.  the mark's line number
@@ -33,18 +32,19 @@ endfunction
 "               3.  the mark's 'file/text'
 " PARAM:    trimmed_marks   (v:t_string)    A `marks` string, without its
 "                                           column header.
-function! markbar#textmanip#MarksStringToNestedList(trimmed_marks) abort
+function! markbar#textmanip#MarksStringToDictionary(trimmed_marks) abort
     let l:marks = split(a:trimmed_marks, '\r\{0,1}\n') " split on linebreaks
+    let l:dict = {}
     let l:i = 0
     while l:i <# len(l:marks)
-        let l:marks[l:i] = matchlist(
+        let l:marklist = matchlist(
             \ l:marks[l:i],
             \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)'
         \ )[1:4]
+        if !empty(l:marklist)
+            let l:dict[l:marklist[0]] = l:marklist
+        endif
         let l:i += 1
     endwhile
-    if len(l:marks) && empty(l:marks[-1])
-        call remove(l:marks, -1)
-    endif
-    return l:marks
+    return l:dict
 endfunction

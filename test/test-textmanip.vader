@@ -149,47 +149,47 @@ Then:
   AssertThrows markbar#textmanip#TrimMarksHeader(markstring)
 
 ################################################################################
-# MarksStringToNestedList tests
+# MarksStringToDictionary tests
 ################################################################################
 
 Execute (Empty Trimmed String):
   let trimmed_string = ''
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  AssertEqual [], result
+  AssertEqual {}, result
 
 Execute (LF-Terminated Empty Trimmed String):
   let trimmed_string = "\n"
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  AssertEqual [], result
+  AssertEqual {}, result
 
 Execute (CRLF-Terminated Empty Trimmed String):
   let trimmed_string = "\r\n"
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  AssertEqual [], result
+  AssertEqual {}, result
 
 Execute (Single Item Trimmed String):
   let trimmed_string = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
   \ "
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  let expected = [
-    \ ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-  \ ]
+  let expected = {
+    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
+  \ }
   AssertEqual expected, result
 
 Execute (CRLF-Terminated Single Item Trimmed String):
   let trimmed_string = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
   \ "
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  let expected = [
-    \ ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-  \ ]
+  let expected = {
+    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
+  \ }
   AssertEqual expected, result
 
 Execute (Two Item Trimmed String):
@@ -197,12 +197,12 @@ Execute (Two Item Trimmed String):
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
     \ ]     24    0 Then:\n
   \ "
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  let expected = [
-    \ ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ [']', '24', '0', 'Then:'],
-  \ ]
+  let expected = {
+    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
+    \ ']': [']', '24', '0', 'Then:'],
+  \ }
   AssertEqual expected, result
 
 Execute (No File/Text Trimmed String):
@@ -211,13 +211,13 @@ Execute (No File/Text Trimmed String):
     \ ]     24    0 Then:\n
     \ .     23    0\n
   \ "
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  let expected = [
-    \ ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ [']', '24', '0', 'Then:'],
-    \ ['.', '23', '0', ''],
-  \ ]
+  let expected = {
+    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
+    \ ']': [']', '24', '0', 'Then:'],
+    \ '.': ['.', '23', '0', ''],
+  \ }
   AssertEqual expected, result
 
 Execute (Multiitem Trimmed String):
@@ -228,15 +228,15 @@ Execute (Multiitem Trimmed String):
     \ ^     23    2\n
     \ .     23    0\n
   \ "
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  let expected = [
-    \ ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ ['[', '1', '0', 'The quick brown fox jumps over the lazy dog'],
-    \ [']', '24', '0', 'Then:'],
-    \ ['^', '23', '2', ''],
-    \ ['.', '23', '0', ''],
-  \ ]
+  let expected = {
+    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
+    \ '[': ['[', '1', '0', 'The quick brown fox jumps over the lazy dog'],
+    \ ']': [']', '24', '0', 'Then:'],
+    \ '^': ['^', '23', '2', ''],
+    \ '.': ['.', '23', '0', ''],
+  \ }
   AssertEqual expected, result
 
 Execute (CRLF-Terminated Multiitem Trimmed String):
@@ -247,13 +247,13 @@ Execute (CRLF-Terminated Multiitem Trimmed String):
     \ ^     23    2\r\n
     \ .     23    0\r\n
   \ "
-  let result = markbar#textmanip#MarksStringToNestedList(trimmed_string)
+  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
 Then:
-  let expected = [
-    \ ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ ['[', '1', '0', 'The quick brown fox jumps over the lazy dog'],
-    \ [']', '24', '0', 'Then:'],
-    \ ['^', '23', '2', ''],
-    \ ['.', '23', '0', ''],
-  \ ]
+  let expected = {
+    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
+    \ '[': ['[', '1', '0', 'The quick brown fox jumps over the lazy dog'],
+    \ ']': [']', '24', '0', 'Then:'],
+    \ '^': ['^', '23', '2', ''],
+    \ '.': ['.', '23', '0', ''],
+  \ }
   AssertEqual expected, result
