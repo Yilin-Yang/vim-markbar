@@ -9,5 +9,5 @@ before_script: |
   nvim --version
 
 script: |
-  vim  -Nu .travis_vimrc -c 'Vader! test/*' > /dev/null
-  nvim -Nu .travis_vimrc -c 'Vader! test/*' > /dev/null
+  vim  -Nu .travis_vimrc -c 'Vader! test/*vader' > /dev/null
+  nvim -Nu .travis_vimrc -c 'Vader! test/*vader' > /dev/null

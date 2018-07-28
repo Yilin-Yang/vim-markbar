@@ -1,0 +1,149 @@
+################################################################################
+# TrimMarksHeader tests
+################################################################################
+
+Execute (Empty Mark String):
+  let markstring = 'mark line  col file/text'
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  AssertEqual '', result
+
+Execute (LF-Terminated Empty Mark String):
+  let markstring = "mark line  col file/text\n"
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  AssertEqual '', result
+
+Execute (CRLF-Terminated Empty Mark String):
+  let markstring = "mark line  col file/text\r\n"
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  AssertEqual '', result
+
+Execute (Leading Whitespace Mark String):
+  let markstring = "
+    \  \n \n \n mark line  col file/text\n
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+  \ "
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  let expected = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+  \ "
+  AssertEqual expected, result
+
+Execute (Single Item Mark String):
+  let markstring = "
+    \ mark line  col file/text\n
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+  \ "
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  let expected = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+  \ "
+  AssertEqual expected, result
+
+Execute (CRLF-Terminated Single Item Mark String):
+  let markstring = "
+    \ mark line  col file/text\n
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
+  \ "
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  let expected = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
+  \ "
+  AssertEqual expected, result
+
+Execute (Two Item Mark String):
+  let markstring = "
+    \ mark line  col file/text\n
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+    \ ]     24    0 Then:\n
+  \ "
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  let expected = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+    \ ]     24    0 Then:\n
+  \ "
+  AssertEqual expected, result
+
+Execute (Three Item Mark String):
+  let markstring = "
+    \ mark line  col file/text\n
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+    \ ]     24    0 Then:\n
+    \ .     23    0\n
+  \ "
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  let expected = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+    \ ]     24    0 Then:\n
+    \ .     23    0\n
+  \ "
+  AssertEqual expected, result
+
+Execute (Multiitem Mark String):
+  let markstring = "
+    \ mark line  col file/text\n
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+    \ [      1    0 The quick brown fox jumps over the lazy dog\n
+    \ ]     24    0 Then:\n
+    \ ^     23    2\n
+    \ .     23    0\n
+  \ "
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  let expected = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+    \ [      1    0 The quick brown fox jumps over the lazy dog\n
+    \ ]     24    0 Then:\n
+    \ ^     23    2\n
+    \ .     23    0\n
+  \ "
+  AssertEqual expected, result
+
+Execute (CRLF-Terminated Multiitem Mark String):
+  let markstring = "
+    \ mark line  col file/text\r\n
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
+    \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
+    \ ]     24    0 Then:\r\n
+    \ ^     23    2\r\n
+    \ .     23    0\r\n
+  \ "
+  let result = markbar#textmanip#TrimMarksHeader(markstring)
+Then:
+  let expected = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
+    \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
+    \ ]     24    0 Then:\r\n
+    \ ^     23    2\r\n
+    \ .     23    0\r\n
+  \ "
+  AssertEqual expected, result
+
+Execute (Error-Check Already Trimmed):
+  let markstring = "
+    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
+    \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
+    \ ]     24    0 Then:\r\n
+    \ ^     23    2\r\n
+    \ .     23    0\r\n
+  \ "
+Then:
+  AssertThrows markbar#textmanip#TrimMarksHeader(markstring)
+
+Execute (Error-Check Already Trimmed Edge Case):
+  let markstring = "
+    \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
+    \ ]     24    0 Then:\r\n
+    \ ^     23    2\r\n
+    \ a     97    0 mark line  col file/text\r\n
+    \ .     23    0\r\n
+  \ "
+Then:
+  AssertThrows markbar#textmanip#TrimMarksHeader(markstring)
