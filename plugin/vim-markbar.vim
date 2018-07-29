@@ -48,6 +48,9 @@ let g:buffersToMarks = { markbar#constants#GLOBAL_MARKS() : [] }
 "
 let g:buffersToMarksToContexts = { markbar#constants#GLOBAL_MARKS() : {} }
 
+" BRIEF:    Association between buffer numbers and those of their markbars.
+let g:buffersToMarkbars = {}
+
 "==============================================================================
 " FUNCTIONS: =================================================================
 "==============================================================================
