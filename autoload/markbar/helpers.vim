@@ -15,6 +15,15 @@ function! markbar#helpers#GetGlobalMarks() abort
     return l:to_return
 endfunction
 
+" RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a global
+"                           mark (i.e. a file mark, or a ShaDa numerical mark),
+"                           and `false` otherwise.
+function! markbar#helpers#IsGlobalMark(mark) abort
+    if len(a:mark) !=# 1 | return v:false | endif
+    let l:idx = match('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', a:mark)
+    return l:idx !=# -1
+endfunction
+
 " RETURNS:  (v:t_bool)              `v:true` if the given mark *is global* and
 "                                   is located within the current buffer.
 " PARAM:    mark    (v:t_string)    The single character identifying the mark.
