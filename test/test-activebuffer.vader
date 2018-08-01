@@ -1,0 +1,35 @@
+Execute (IsRealBuffer Markbar):
+  let b:is_markbar = 1
+Then:
+  let result = markbar#helpers#IsRealBuffer('%')
+  AssertEqual 0, result
+
+Execute (IsRealBuffer Not Markbar):
+  unlet b:is_markbar
+Then:
+  let result = markbar#helpers#IsRealBuffer('%')
+  AssertEqual 1, result
+
+  setlocal bufhidden=hide
+  AssertEqual 1, markbar#helpers#IsRealBuffer('%')
+
+Execute (IsRealBuffer bh=delete):
+  vnew
+  setlocal bufhidden=delete
+Then:
+  let result = markbar#helpers#IsRealBuffer('%')
+  AssertEqual 0, result
+
+Execute (IsRealBuffer bh=unload):
+  vnew
+  setlocal bufhidden=unload
+Then:
+  let result = markbar#helpers#IsRealBuffer('%')
+  AssertEqual 0, result
+
+Execute (IsRealBuffer bh=wipe):
+  vnew
+  setlocal bufhidden=wipe
+Then:
+  let result = markbar#helpers#IsRealBuffer('%')
+  AssertEqual 0, result
