@@ -6,7 +6,7 @@ Given (Test Buffer):
   fifth line
 
 Execute (Replace Single Line):
-  call markbar#helpers#SetBufferLineRange(0, 3, 4, ['foo'])
+  call markbar#helpers#SetBufferLineRange('%', 3, 4, ['foo'])
 Expect:
   first line
   second line
@@ -15,7 +15,7 @@ Expect:
   fifth line
 
 Execute (Delete Single Line):
-  call markbar#helpers#SetBufferLineRange(0, 3, 4, [])
+  call markbar#helpers#SetBufferLineRange('%', 3, 4, [])
 Expect:
   first line
   second line
@@ -24,18 +24,18 @@ Expect:
 
 " NOTE: the buffer will still have one line remaining, after a wipe
 Execute (Wipe Buffer, Crude):
-  call markbar#helpers#SetBufferLineRange(0, 1, 99999999, [])
+  call markbar#helpers#SetBufferLineRange('%', 1, 99999999, [])
 Then:
   AssertEqual 1, line('$')
 
 " the 'crude' method is probably faster, and better, in practice.
 Execute (Wipe Buffer, Proper):
-  call markbar#helpers#SetBufferLineRange(0, 1, len(getbufline('%', 1, '$')) + 1, [])
+  call markbar#helpers#SetBufferLineRange('%', 1, len(getbufline('%', 1, '$')) + 1, [])
 Then:
   AssertEqual 1, line('$')
 
 Execute (Replace Range of Lines Removing):
-  call markbar#helpers#SetBufferLineRange(0, 3, 5, ['foo'])
+  call markbar#helpers#SetBufferLineRange('%', 3, 5, ['foo'])
 Expect:
   first line
   second line
@@ -43,7 +43,7 @@ Expect:
   fifth line
 
 Execute (Replace Range of Lines, Adding):
-  call markbar#helpers#SetBufferLineRange(0, 3, 4, ['foo', 'bar'])
+  call markbar#helpers#SetBufferLineRange('%', 3, 4, ['foo', 'bar'])
 Expect:
   first line
   second line
@@ -53,7 +53,7 @@ Expect:
   fifth line
 
 Execute (Replace First Line):
-  call markbar#helpers#SetBufferLineRange(0, 1, 2, ['foo'])
+  call markbar#helpers#SetBufferLineRange('%', 1, 2, ['foo'])
 Expect:
   foo
   second line
@@ -62,7 +62,7 @@ Expect:
   fifth line
 
 Execute (Prepend Before First Line):
-  call markbar#helpers#SetBufferLineRange(0, 1, 1, ['foo'])
+  call markbar#helpers#SetBufferLineRange('%', 1, 1, ['foo'])
 Expect:
   foo
   first line
@@ -72,7 +72,7 @@ Expect:
   fifth line
 
 Execute (Append Lines, Explicit):
-  call markbar#helpers#SetBufferLineRange(0, 6, 6, ['foo'])
+  call markbar#helpers#SetBufferLineRange('%', 6, 6, ['foo'])
 Expect:
   first line
   second line
@@ -82,7 +82,7 @@ Expect:
   foo
 
 Execute (Append Lines, Zero-Indexing):
-  call markbar#helpers#SetBufferLineRange(0, 0, 0, ['foo'])
+  call markbar#helpers#SetBufferLineRange('%', 0, 0, ['foo'])
 Expect:
   first line
   second line
@@ -92,7 +92,7 @@ Expect:
   foo
 
 Execute (Replace Single Line, Negative-Indexing):
-  call markbar#helpers#SetBufferLineRange(0, -1, 0, ['foo'])
+  call markbar#helpers#SetBufferLineRange('%', -1, 0, ['foo'])
 Expect:
   first line
   second line
@@ -100,9 +100,26 @@ Expect:
   fourth line
   foo
 
+Execute (Replace Multiple Lines, Negative- and Zero-Indexing):
+  call markbar#helpers#SetBufferLineRange('%', -3, 0, ['foo'])
+Expect:
+  first line
+  second line
+  foo
+
+Execute (Replace Multiple Lines, Negative-Indexing):
+  call markbar#helpers#SetBufferLineRange('%', -3, -2, ['foo', 'boo'])
+Expect:
+  first line
+  second line
+  foo
+  boo
+  fourth line
+  fifth line
+
 " YAGNI
 " Execute (Replace Several Lines, Wrap Around End of File):
-"   call markbar#helpers#SetBufferLineRange(0, -1, 3, ['foo', 'bar', 'goo'])
+"   call markbar#helpers#SetBufferLineRange('%', -1, 3, ['foo', 'bar', 'goo'])
 " Expect:
 "   bar
 "   goo

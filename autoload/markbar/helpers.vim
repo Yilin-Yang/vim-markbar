@@ -79,10 +79,33 @@ function! markbar#helpers#SetBufferLineRange(buffer_expr, start, end, lines) abo
     call assert_true(exists('*nvim_buf_set_lines') || exists('*setbufline'),
         \ '(vim-markbar) vim version is too old! '
         \ . '(Need nvim with `nvim_buf_set_lines`, or vim with `setbufline`.)')
+    let l:target_buf = bufnr(a:buffer_expr)
     if has('nvim')
-        call nvim_buf_set_lines(a:buffer_expr, a:start - 1, a:end - 1, 0, a:lines)
+        call nvim_buf_set_lines(l:target_buf, a:start - 1, a:end - 1, 0, a:lines)
     else
-        " TODO
+        let l:cur_buffer = bufnr('%')
+        let l:hidden = &hidden
+        set hidden
+
+        execute 'buffer ' . l:target_buf
+        let l:num_lines = line('$')
+        if    !a:start      | let l:start = l:num_lines + 1
+        elseif a:start <# 0 | let l:start = a:start + l:num_lines + 1
+        else                | let l:start = a:start
+        endif
+
+        if    !a:end        | let l:end = l:num_lines + 1
+        elseif a:end   <# 0 | let l:end = a:end + l:num_lines + 1
+        else                | let l:end = a:end
+        endif
+
+        if !(l:start ==# l:end)
+            execute l:target_buf . 'bufdo normal! '.l:start.'GV'.(l:end - 1).'G"_x'
+        endif
+        call append(l:start - 1, a:lines)
+        execute 'buffer ' . l:cur_buffer
+
+        let &hidden = l:hidden
     endif
 endfunction
 
