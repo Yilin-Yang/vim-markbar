@@ -56,6 +56,36 @@ function! markbar#helpers#ParentFilename(mark) abort
     return bufname(l:buf_no)
 endfunction
 
+" EFFECTS:  - Replace the line range in the given buffer with the given lines.
+"           - If the number of elements in the list is different from the
+"           number of lines in the given range, add/remove lines as needed.
+" DETAILS:  - See `:help nvim_buf_set_lines` (in neovim) or `:help setbufline`
+"           (in vim).
+"           - To insert a line at a given line number (pushing the original
+"           line down without removing it), set both `a:start` and `a:end` to
+"           the target line number.
+"           - To replace a line at a given line number `line`, let
+"           `a:start = line` and `a:end = line + 1`.
+"           - To append lines at the end of the buffer, either manually
+"           specify the 'line-past-the-end', or set both `a:start` and `a:end`
+"           to 0.
+"           - To insert lines before the last line of the buffer, use negative
+"           indexing (e.g. `a:start = a:end = -1` inserts a line above the
+"           last line in the buffer).
+" PARAM:    start   (v:t_number)    The first line to replace, inclusive.
+" PARAM:    end     (v:t_number)    The last line to replace, exclusive.
+" PARAM:    lines   (v:t_list)      The 'new' lines to insert.
+function! markbar#helpers#SetBufferLineRange(buffer_expr, start, end, lines) abort
+    call assert_true(exists('*nvim_buf_set_lines') || exists('*setbufline'),
+        \ '(vim-markbar) vim version is too old! '
+        \ . '(Need nvim with `nvim_buf_set_lines`, or vim with `setbufline`.)')
+    if has('nvim')
+        call nvim_buf_set_lines(a:buffer_expr, a:start - 1, a:end - 1, 0, a:lines)
+    else
+        " TODO
+    endif
+endfunction
+
 " EFFECTS:  Retrieve the given line range (inclusive) from the requested
 "           buffer.
 " RETURNS:  (v:t_list)      The requested line range from the requested
