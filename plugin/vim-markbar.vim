@@ -51,8 +51,13 @@ let g:buffersToMarksToContexts = { markbar#constants#GLOBAL_MARKS() : {} }
 " BRIEF:    Association between buffer numbers and those of their markbars.
 let g:buffersToMarkbars = {}
 
-" BRIEF:    The number of the active 'real buffer.'
-let g:activeBuffer = 1
+" BRIEF:    Record of the 'real buffers' most recently accessed by the user.
+" DETAILS:  Maintained so that functions can figure out the 'active buffer',
+"           even when `bufnr('%')` returns the buffer number of a markbar
+"           buffer. (`markbar#helpers#IsRealBuffer()`, by itself, isn't
+"           sufficient, since a new markbar buffer will register as a 'real'
+"           buffer immediately after its creation.)
+let g:activeBufferStack = [1]
 
 "==============================================================================
 " FUNCTIONS: =================================================================
@@ -66,7 +71,7 @@ let g:activeBuffer = 1
 
 augroup vim_markbar_buffer_updates
     au!
-    autocmd BufEnter * call markbar#state#UpdateActiveBuffer()
+    autocmd BufEnter * call markbar#state#PushNewActiveBuffer()
 augroup end
 
 " TODO: only trigger when performing actions that affect lines with marks

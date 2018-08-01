@@ -38,7 +38,8 @@ endfunction
 "                           i.e. a buffer in which vim-markbar should track
 "                           marks.
 function! markbar#helpers#IsRealBuffer(buffer_expr) abort
-    return !getbufvar(a:buffer_expr, 'is_markbar')
+    return bufexists(bufnr(a:buffer_expr))
+        \  && !getbufvar(a:buffer_expr, 'is_markbar')
         \  && !has_key(markbar#settings#IgnoreBufferCriteria(), &bufhidden)
 endfunction
 

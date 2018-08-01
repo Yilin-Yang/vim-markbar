@@ -10,32 +10,37 @@ Then:
   let result = markbar#helpers#IsRealBuffer('%')
   AssertEqual 1, result
 
+Execute (IsRealBuffer bh=hide):
+  new
   setlocal bufhidden=hide
+Then:
+  let result = markbar#helpers#IsRealBuffer('%')
   AssertEqual 1, markbar#helpers#IsRealBuffer('%')
 
 Execute (IsRealBuffer bh=delete):
-  vnew
+  new
   setlocal bufhidden=delete
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
   AssertEqual 0, result
 
 Execute (IsRealBuffer bh=unload):
-  vnew
+  new
   setlocal bufhidden=unload
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
   AssertEqual 0, result
 
 Execute (IsRealBuffer bh=wipe):
-  vnew
+  new
   setlocal bufhidden=wipe
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
   AssertEqual 0, result
 
 Execute (activeBuffer Check):
-  vnew
+  new
   let curr_buffer = bufnr('%')
 Then:
-  AssertEqual curr_buffer, g:activeBuffer
+  let result = markbar#state#GetActiveBuffer()
+  AssertEqual curr_buffer, result

@@ -88,3 +88,17 @@ function! markbar#settings#IgnoreBufferCriteria() abort
     endfor
     return l:criteria
 endfunction
+
+function! markbar#settings#MaximumActiveBufferHistory() abort
+    if !exists('g:markbar_maximum_active_buffer_history')
+        let g:markbar_maximum_active_buffer_history = 100
+    endif
+    if type(g:markbar_maximum_active_buffer_history) !=# v:t_number
+        throw 'Invalid data type for g:markbar_maximum_active_buffer_history.'
+    endif
+    if g:markbar_maximum_active_buffer_history <# 2
+        throw 'Value too small for g:markbar_maximum_active_buffer_history: '
+            \ . g:markbar_maximum_active_buffer_history
+    endif
+    return g:markbar_maximum_active_buffer_history
+endfunction

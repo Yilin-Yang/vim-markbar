@@ -146,11 +146,68 @@ function! markbar#state#UpdateAllContexts(num_lines) abort
     endwhile
 endfunction
 
-" EFFECTS:  Sets `g:activeBuffer` to `a:buffer_no` if `a:buffer_no` is a real
-"           buffer.
-function! markbar#state#UpdateActiveBuffer() abort
+" EFFECTS:  Pushes `a:buffer_no` onto `g:activeBufferStack` if `a:buffer_no`
+"           is a real buffer.
+function! markbar#state#PushNewActiveBuffer() abort
     let a:buffer_no = expand('<abuf>') + 0
     if markbar#helpers#IsRealBuffer(a:buffer_no)
-        let g:activeBuffer = a:buffer_no
+        let g:activeBufferStack += [a:buffer_no]
     endif
+    call markbar#state#SizeCheckActiveBufferStack()
+endfunction
+
+" RETURN:   The topmost active buffer in the stack.
+" MODIFIES: `g:activeBufferStack`, if the topmost buffer is a 'fake' buffer.
+function! markbar#state#GetActiveBuffer() abort
+    while len(g:activeBufferStack)
+            \ && !markbar#helpers#IsRealBuffer(g:activeBufferStack[-1])
+        call remove(g:activeBufferStack, -1)
+    endwhile
+    return g:activeBufferStack[-1]
+endfunction
+
+" EFFECTS:  Walks through the active buffer stack and removes buffers that are
+"           now known to be 'fake'.
+" MODIFIES: `g:activeBufferStack`, if it contains 'fake' buffers.
+function! markbar#state#CleanActiveBufferStack() abort
+    let l:i = len(g:activeBufferStack)
+    while l:i
+        let l:i -= 1
+        if markbar#helpers#IsRealBuffer(g:activeBufferStack[l:i])
+            continue
+        endif
+        remove(g:activeBufferStack, l:i)
+    endwhile
+endfunction
+
+" EFFECTS:  Reduce the size of the active buffer stack if it exceeds a
+"           threshold.
+" MODIFIES: `g:activeBufferStack`
+function! markbar#state#SizeCheckActiveBufferStack() abort
+    let l:max_stack_size = markbar#settings#MaximumActiveBufferHistory()
+    if len(g:activeBufferStack) ># l:max_stack_size
+        call markbar#state#CleanActiveBufferStack()
+    else
+        return
+    endif
+    let l:stack_len = len(g:activeBufferStack)
+    if  l:stack_len ># l:max_stack_size
+        let g:activeBufferStack = g:activeBufferStack[l:stack_len / 2 : ]
+    endif
+endfunction
+
+" EFFECTS:  - Creates a new markbar buffer for the given buffer, with
+"           the appropriate buffer-local settings.
+"           - Opens the new buffer.
+"           - Creates an entry for the given buffer in `g:buffersToMarkbars`.
+" RETURN:   (v:t_number)    The buffer number of the new buffer.
+function! markbar#state#SpawnNewMarkbarBuffer(buffer_no) abort
+    if has_key(g:buffersToMarkbars, a:buffer_no)
+        throw 'Tried to create a new markbar for a buffer that already had one!'
+    endif
+    vnew
+    let l:markbar = bufnr('%')
+    let g:buffersToMarkbars[a:buffer_no] = l:markbar
+    call markbar#ui#SetMarkbarSettings()
+    return l:markbar
 endfunction

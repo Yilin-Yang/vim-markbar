@@ -34,6 +34,11 @@ Execute (Wipe Buffer, Proper):
 Then:
   AssertEqual 1, line('$')
 
+Execute (Wipe Buffer, More Proper):
+  call markbar#helpers#SetBufferLineRange('%', 1, 0, [])
+Then:
+  AssertEqual 1, line('$')
+
 Execute (Replace Range of Lines Removing):
   call markbar#helpers#SetBufferLineRange('%', 3, 5, ['foo'])
 Expect:
