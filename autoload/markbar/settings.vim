@@ -70,6 +70,8 @@ function! markbar#settings#MarkbarSectionSeparator() abort
     return l:separator
 endfunction
 
+" RETURN:   (v:t_dict)      A dictionary populated with the `bufhidden` values
+"                           that indicate that a buffer should be ignored.
 function! markbar#settings#IgnoreBufferCriteria() abort
     if !exists('g:markbar_ignore_buffer_criteria')
         let g:markbar_ignore_buffer_criteria = ['unload', 'delete', 'wipe']
@@ -90,6 +92,8 @@ function! markbar#settings#IgnoreBufferCriteria() abort
     return l:criteria
 endfunction
 
+" RETURN:   (v:t_number)    The maximum permissible size of
+"                           `g:activeBufferStack`.
 function! markbar#settings#MaximumActiveBufferHistory() abort
     if !exists('g:markbar_maximum_active_buffer_history')
         let g:markbar_maximum_active_buffer_history = 100
@@ -102,4 +106,13 @@ function! markbar#settings#MaximumActiveBufferHistory() abort
             \ . g:markbar_maximum_active_buffer_history
     endif
     return g:markbar_maximum_active_buffer_history
+endfunction
+
+" RETURN:   (v:t_number)    The number of lines of context to retrieve around
+"                           marks, including the line that holds the mark.
+function! markbar#settings#NumLinesContext() abort
+    if !exists('g:markbar_num_lines_context')
+        let g:markbar_num_lines_context = 5
+    endif
+    return g:markbar_num_lines_context
 endfunction

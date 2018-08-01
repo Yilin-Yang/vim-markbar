@@ -146,6 +146,31 @@ function! markbar#state#UpdateAllContexts(num_lines) abort
     endwhile
 endfunction
 
+" EFFECTS:  - Repopulates the mark cache for the given buffer, if it is the
+"           currently focused buffer.
+"           - Repopulates the global buffer cache.
+"           - Fetch new contexts from the local buffer and for global marks.
+function! markbar#state#UpdateCacheForBuffer(buffer_no) abort
+    if !bufexists(a:buffer_no)
+        throw "Can't update cache for nonexistent buffer: " . a:buffer_no
+    endif
+    if !markbar#helpers#IsRealBuffer(a:buffer_no)
+        throw "Can't update cache for ignored buffer: " . a:buffer_no
+    endif
+    if a:buffer_no ==# bufnr('%')
+        call markbar#state#PopulateBufferDatabase()
+    endif
+    call markbar#state#PopulateGlobalDatabase()
+    call markbar#state#UpdateContextsForBuffer(
+        \ a:buffer_no,
+        \ markbar#settings#NumLinesContext()
+    \ )
+    call markbar#state#UpdateContextsForBuffer(
+        \ 0,
+        \ markbar#settings#NumLinesContext()
+    \ )
+endfunction
+
 " EFFECTS:  Pushes `a:buffer_no` onto `g:activeBufferStack` if `a:buffer_no`
 "           is a real buffer.
 function! markbar#state#PushNewActiveBuffer() abort
