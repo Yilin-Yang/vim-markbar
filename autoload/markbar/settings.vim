@@ -41,6 +41,14 @@ function! markbar#settings#ContextIndentBlock() abort
         let g:markbar_context_indent_block = l:block_to_return
     endif
 
+    if !len(g:markbar_context_indent_block)
+        throw 'Error: Must provide at least some indentation for markbar contexts!'
+    endif
+    if len(matchstr(g:markbar_context_indent_block, '['))
+        throw 'Error: Given context indent block: "' . g:markbar_context_indent_block
+            \ . '" may cause issues with markbar.'
+    endif
+
     return g:markbar_context_indent_block
 endfunction
 

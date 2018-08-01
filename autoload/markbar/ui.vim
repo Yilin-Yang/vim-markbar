@@ -1,11 +1,44 @@
+function! s:CheckBadBufferType() abort
+    if !w:is_markbar || !b:is_markbar
+        throw '(vim-markbar) Cannot invoke this function outside of a markbar buffer/window!'
+    endif
+endfunction
+
 " RETURN:   (v:t_list)      The given mark, reformatted into a markbar
 "                           'section heading'.
-function! markbar#ui#GetMarkHeading(mark) abort
+function! markbar#ui#MarkHeading(mark) abort
     let l:suffix = ' '
     if markbar#helpers#IsGlobalMark(a:mark)
         let l:suffix .= markbar#helpers#ParentFilename(a:mark)
     endif
     return ["['" . a:mark . ']:   ' . l:suffix]
+endfunction
+
+" REQUIRES: User has focused a markbar buffer/window.
+" RETURN:   (v:t_string)    The 'currently selected' mark, or an empty string
+"                           if no mark is selected.
+function! markbar#ui#GetCurrentMarkHeading() abort
+    call s:CheckBadBufferType()
+    let l:cur_heading = search(
+        \ "^\['.\]",
+        \ 'bnc',
+        \ 1
+    \ )
+    return getline(l:cur_heading)[2]
+endfunction
+
+function! s:GoToTag() abort
+    let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
+    if !len(l:selected_mark) | return | endif
+
+endfunction
+
+" REQUIRES: A markbar buffer is active and focused.
+" EFFECTS:  Sets a buffer-local mapping that sends the user to the selected
+"           tag.
+function! markbar#actions#SetGoToTag() abort
+    call s:CheckBadBufferType()
+    noremap <silent> <buffer> <cr> :call <SID>GoToTag()<cr>
 endfunction
 
 " REQUIRES: - `a:buffer_no` is not a markbar buffer.
@@ -32,7 +65,7 @@ function! markbar#ui#LinesInMarkbar(buffer_no, marks) abort
             continue
         endif
 
-        let l:lines += markbar#ui#GetMarkHeading(l:mark)
+        let l:lines += markbar#ui#MarkHeading(l:mark)
 
         let l:contexts =
             \ markbar#helpers#IsGlobalMark(l:mark) ?
@@ -72,8 +105,14 @@ function! markbar#ui#OpenMarkbar() abort
     call append(0, markbar#ui#LinesInMarkbar(l:cur_buffer, l:marks_to_display))
     execute 'vertical resize ' . markbar#settings#MarkbarWidth()
     setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
-    setlocal nowrap
+    setlocal nowrap cursorline
+
     execute 'silent! file ' . markbar#settings#MarkbarBufferName()
+    set filetype=markbar syntax=markbar
+
     let w:is_markbar = 1
     let b:is_markbar = 1
+
+    " TODO: go back to old position?
+    normal! gg
 endfunction
