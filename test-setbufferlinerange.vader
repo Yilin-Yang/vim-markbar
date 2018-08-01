@@ -126,3 +126,13 @@ Expect:
 "   third line
 "   fourth line
 "   foo
+
+Execute (Edit Another Buffer, Switch Back to Initial, Side Effects):
+  set nohidden
+  let s:test_buffer = bufnr('%')
+  vnew
+  let s:final_buffer = bufnr('%')
+  call markbar#helpers#SetBufferLineRange(s:test_buffer, -3, -2, ['foo', 'boo'])
+Then:
+  AssertEqual 1, line('$')
+  AssertEqual 0, &hidden
