@@ -145,3 +145,12 @@ function! markbar#state#UpdateAllContexts(num_lines) abort
         call markbar#state#UpdateContextsForBuffer(l:buffer_no, a:num_lines)
     endwhile
 endfunction
+
+" EFFECTS:  Sets `g:activeBuffer` to `a:buffer_no` if `a:buffer_no` is a real
+"           buffer.
+function! markbar#state#UpdateActiveBuffer() abort
+    let a:buffer_no = expand('<abuf>') + 0
+    if markbar#helpers#IsRealBuffer(a:buffer_no)
+        let g:activeBuffer = a:buffer_no
+    endif
+endfunction

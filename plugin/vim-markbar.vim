@@ -51,16 +51,23 @@ let g:buffersToMarksToContexts = { markbar#constants#GLOBAL_MARKS() : {} }
 " BRIEF:    Association between buffer numbers and those of their markbars.
 let g:buffersToMarkbars = {}
 
+" BRIEF:    The number of the active 'real buffer.'
+let g:activeBuffer = 1
+
 "==============================================================================
 " FUNCTIONS: =================================================================
 "==============================================================================
 
 
 
-
 "==============================================================================
 " AUTOCMDS: ==================================================================
 "==============================================================================
+
+augroup vim_markbar_buffer_updates
+    au!
+    autocmd BufEnter * call markbar#state#UpdateActiveBuffer()
+augroup end
 
 " TODO: only trigger when performing actions that affect lines with marks
 " TODO: does `x` from visual mode trigger TextChanged?
