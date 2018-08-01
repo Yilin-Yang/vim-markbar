@@ -27,7 +27,7 @@ endfunction
 "                           context in the markbar proper.
 function! markbar#settings#ContextIndentBlock() abort
     if !exists('g:markbar_context_indent_block')
-        let g:markbar_context_indent_block = "    "
+        let g:markbar_context_indent_block = '    '
     endif
 
     " if user specified a number, 'assemble' an indent block
@@ -78,8 +78,9 @@ function! markbar#settings#IgnoreBufferCriteria() abort
     let l:valid_ignore_criteria = ['unload', 'delete', 'wipe', 'hide', '<empty>']
     let l:criteria = {}
     for l:criterion in g:markbar_ignore_buffer_criteria
-        call assert_true(index(l:valid_ignore_criteria, l:criterion),
-            \ '(vim-markbar) Invalid IgnoreBuffer criterion: ' . l:criterion)
+        if index(l:valid_ignore_criteria, l:criterion) ==# -1
+            throw '(vim-markbar) Invalid IgnoreBuffer criterion: ' . l:criterion
+        endif
         if l:criterion ==# '<empty>'
             let l:criteria[''] = 1
         else
