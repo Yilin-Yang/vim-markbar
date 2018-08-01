@@ -176,7 +176,7 @@ function! markbar#state#CleanActiveBufferStack() abort
         if markbar#helpers#IsRealBuffer(g:activeBufferStack[l:i])
             continue
         endif
-        remove(g:activeBufferStack, l:i)
+        call remove(g:activeBufferStack, l:i)
     endwhile
 endfunction
 
