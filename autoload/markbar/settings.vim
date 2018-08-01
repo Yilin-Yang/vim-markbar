@@ -69,3 +69,22 @@ function! markbar#settings#MarkbarSectionSeparator() abort
     endwhile
     return l:separator
 endfunction
+
+function! markbar#settings#MarkbarIgnoreBufferCriteria() abort
+    if !exists('g:markbar_ignore_buffer_criteria')
+        let g:markbar_ignore_buffer_criteria = ['unload', 'delete', 'wipe']
+    endif
+
+    let l:valid_ignore_criteria = ['unload', 'delete', 'wipe', 'hide', '<empty>']
+    let l:criteria = {}
+    for l:criterion in g:markbar_ignore_buffer_criteria
+        assert_true(index(l:valid_ignore_criteria, l:criterion),
+            \ '(vim-markbar) Invalid IgnoreBuffer criterion: ' . l:criterion)
+        if l:criterion ==# '<empty>'
+            let l:criteria[''] = 1
+        else
+            let l:criteria[l:criterion] = 1
+        endif
+    endfor
+    return l:criteria
+endfunction

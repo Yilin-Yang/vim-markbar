@@ -34,6 +34,14 @@ function! markbar#helpers#InCurrentBuffer(mark) abort
     return getpos("'" . a:mark)[0] ==# bufnr('%') ? v:true : v:false
 endfunction
 
+" RETURNS:  (v:t_bool)      `v:true` if the given buffer is a 'real' buffer,
+"                           i.e. a buffer in which vim-markbar should track
+"                           marks.
+function! markbar#helpers#IsRealBuffer(buffer_expr) abort
+    return !getbufvar(a:buffer_expr, 'is_markbar')
+        \  && !has_key(markbar#settings#IgnoreBufferCriteria(), &bufhidden)
+endfunction
+
 " RETURNS:  (v:t_number)    The buffer number of the buffer that contains the
 "                           requested mark.
 " PARAM:    mark    (v:t_string)    The single character identifying the mark,
