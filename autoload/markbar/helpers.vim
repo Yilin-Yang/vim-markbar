@@ -117,6 +117,12 @@ function! markbar#helpers#SetBufferLineRange(buffer_expr, start, end, lines) abo
     endif
 endfunction
 
+" EFFECTS:  Totally replace the contents of the given buffer with the given
+"           lines.
+function! markbar#helpers#ReplaceBuffer(buffer_expr, lines) abort
+    call markbar#helpers#SetBufferLineRange(a:buffer_expr, 1, 0, a:lines)
+endfunction
+
 " EFFECTS:  Retrieve the given line range (inclusive) from the requested
 "           buffer.
 " RETURNS:  (v:t_list)      The requested line range from the requested
