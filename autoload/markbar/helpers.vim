@@ -59,7 +59,7 @@ endfunction
 "                                   not including the leading single quote.
 function! markbar#helpers#BufferNo(mark) abort
     if len(a:mark) !=# 1
-        throw 'Invalid mark: ' . a:mark
+        throw '(markbar#helpers#BufferNo) Invalid mark: ' . a:mark
     endif
     return getpos("'" . a:mark)[0]
 endfunction
@@ -143,7 +143,7 @@ endfunction
 " PARAM:    buffer_expr (expr)          See `:h bufname()`.
 function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
     " if buffer is loaded,
-    let l:lines = getbufline(a:buffer_expr, a:start, a:end)
+    let l:lines = getbufline(bufnr(a:buffer_expr), a:start, a:end)
     if len(l:lines) | return l:lines | endif
 
     " buffer isn't loaded, and/or file doesn't exist.
@@ -152,15 +152,23 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
 
     if !has('win32')
         let l:text  = system('sed -n ' .a:start.','.a:end.'p '. l:filename)
-        " keep leading blank lines, remove always-spurious empty last line
-        let l:lines = split(l:text, '\r\{0,1}\n', 1)
-        call remove(l:lines, -1)
-    else
-        " assume that `sed` is unavailable on windows
-        " readfile() loads entire file into memory, making it more expensive
-        " than printing line range with `sed`
-        let l:lines = readfile(l:filename)[a:start : a:end]
+        if !v:shell_error
+            " keep leading blank lines, remove always-spurious empty last line
+            let l:lines = split(l:text, '\r\{0,1}\n', 1)
+            call remove(l:lines, -1)
+            return l:lines
+        endif
     endif
+
+    " assume that `sed` is unavailable on windows, or that sed failed
+    " readfile() loads entire file into memory, making it more expensive
+    " than printing line range with `sed`
+    " note: zero-based indexing for lists
+    try
+        let l:lines = readfile(l:filename)[a:start - 1 : a:end - 1]
+    catch
+        let l:lines = ['[buffer line read failed]']
+    endtry
 
     return l:lines
 endfunction
