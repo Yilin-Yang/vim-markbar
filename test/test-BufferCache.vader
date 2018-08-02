@@ -1,4 +1,4 @@
-Execute (Delete All Marks; Open Buffers):
+Execute (BufferCache: Delete All Marks; Open Buffers):
   " Delete all preexisting marks.
   delmarks a-zA-Z0-9<>\"^.
 
@@ -27,17 +27,17 @@ Execute (Delete All Marks; Open Buffers):
     let s:i += 1
   endwhile
 
-Execute (isGlobal Test, True):
+Execute (BufferCache: isGlobal Test, True):
   let temp_cache = markbar#BufferCache#new(markbar#constants#GLOBAL_MARKS())
 Then:
   Assert temp_cache['isGlobal()']()
 
-Execute (isGlobal Test, False):
+Execute (BufferCache: isGlobal Test, False):
   let temp_cache = markbar#BufferCache#new(bufnr('%'))
 Then:
   Assert !temp_cache['isGlobal()']()
 
-Execute (Populate Local Cache):
+Execute (BufferCache: Populate Local Cache):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
   execute  '5mark a'
   execute '15mark b'
@@ -55,7 +55,7 @@ Then:
   AssertEqual ['d', '35', '0'],   buffer_marks['d']['_data']
   AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
 
-Execute (Populate Global Cache):
+Execute (BufferCache: Populate Global Cache):
   " should still be on 50lines.txt, but just in case,
   execute 'normal! :e! #' . g:bufno_50lines . "\<cr>"
   execute '30mark C'
@@ -70,7 +70,7 @@ Then:
   AssertEqual ['D', '40', '0'],   buffer_marks['D']['_data']
   AssertEqual ['E', '50', '0'],   buffer_marks['E']['_data']
 
-Execute (Add More Global Marks; Add Local Marks):
+Execute (BufferCache: Add More Global Marks; Add Local Marks):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   let g:bufno_30lines = bufnr('%')
   execute '10mark A'
@@ -110,7 +110,7 @@ Then:
   AssertEqual ['E', '50', '0'],   buffer_marks['E']['_data']
 
 
-Execute (Fetch Contexts for Onscreen Buffer):
+Execute (BufferCache: Fetch Contexts for Onscreen Buffer):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
   call cache_50lines['updateContexts()'](3)
 Then:
@@ -134,14 +134,14 @@ Then:
   AssertEqual expected, buffer_marks['e']['_context']
 
 
-Execute (Delete Mark, Update Local Contexts, 30lines.txt):
+Execute (BufferCache: Delete Mark, Update Local Contexts, 30lines.txt):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'delmarks a'
   call cache_30lines['updateCache()'](markbar#helpers#GetLocalMarks())
 Then:
   Assert !has_key(cache_30lines['_marks_dict'], 'a')
 
-Execute (Update Globals in Offscreen, Unloaded Buffer):
+Execute (BufferCache: Update Globals in Offscreen, Unloaded Buffer):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'bunload ' . g:bufno_50lines
   call global_cache['updateContexts()'](3)
