@@ -69,14 +69,16 @@ endfunction
 function! markbar#MarkbarBuffers#openMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
 
-    call markbar#MarkbarBuffers#updateCurrentAndGlobal(a:self)
+    call a:self['updateCurrentAndGlobal()']()
     let l:active_buffer       = a:self['_active_buffer_stack']['top()']()
     let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
 
     let l:markbar_buffer = l:active_buffer_cache['_markbar_buffer_no']
     if l:markbar_buffer <# 0
         " no existing markbar buffer
-        call a:self['spawnNewMarkbarBuffer()']()
+        let l:active_buffer_cache['_markbar_buffer_no'] =
+            \ a:self['spawnNewMarkbarBuffer()']()
+        let l:markbar_buffer = l:active_buffer_cache['_markbar_buffer_no']
     else
         " existing markbar buffer
         call markbar#ui#OpenMarkbarSplit(l:active_buffer_cache['_markbar_buffer_no'])
@@ -91,11 +93,11 @@ endfunction
 function! markbar#MarkbarBuffers#spawnNewMarkbarBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     " TODO: handle exception for no active buffer
-    let l:active_buffer = a:self['_active_buffer_stack']['top()']
+    let l:active_buffer = a:self['_active_buffer_stack']['top()']()
     let l:buffer_cache  = a:self['_buffer_caches'][l:active_buffer]
-    if l:buffer_cache['_markbar_buffer_no'] <# 0
+    if l:buffer_cache['_markbar_buffer_no'] ># 0
         throw '(markbar#MarkbarBuffers) Active buffer already has a markbar buffer: '
-            \ . l:buffer_cache
+            \ . string(l:buffer_cache)
     endif
 
     vnew
@@ -119,8 +121,8 @@ function! markbar#MarkbarBuffers#getMarkbarContents(self, buffer_no, marks) abor
     if a:buffer_no ==# markbar#constants#GLOBAL_MARKS()
         throw '(markbar#MarkbarBuffers.vim) Bad argument value: ' . a:buffer_no
     endif
-    let l:marks   = a:self['_buffer_caches'][a:buffer_no]
-    let l:globals = a:self['_buffer_caches'][markbar#constants#GLOBAL_MARKS()]
+    let l:marks   = a:self['_buffer_caches'][a:buffer_no]['_marks_dict']
+    let l:globals = a:self['_buffer_caches'][markbar#constants#GLOBAL_MARKS()]['_marks_dict']
 
     let l:lines = [] " to return
     let l:section_separator = markbar#settings#MarkbarSectionSeparator()
@@ -129,23 +131,23 @@ function! markbar#MarkbarBuffers#getMarkbarContents(self, buffer_no, marks) abor
         let l:i += 1
         let l:mark_char = a:marks[l:i]
 
-        if !has_key(l:marks, l:mark) && !has_key(l:globals, l:mark)
+        if !has_key(l:marks, l:mark_char) && !has_key(l:globals, l:mark_char)
             continue
         endif
 
         let l:mark =
-            \ markbar#helpers#IsGlobalMark(l:mark) ?
-                \ l:globals[l:mark]
+            \ markbar#helpers#IsGlobalMark(l:mark_char) ?
+                \ l:globals[l:mark_char]
                 \ :
-                \ l:marks[l:mark]
-        let l:lines += markbar#ui#MarkHeading(l:mark)
+                \ l:marks[l:mark_char]
+        let l:lines += markbar#ui#MarkHeading(l:mark_char)
 
         let l:indent_block = markbar#settings#ContextIndentBlock()
         for l:line in l:mark['_context']
             let l:lines += [l:indent_block . l:line]
         endfor
 
-        let l:lines += [l:section_separator]
+        let l:lines += l:section_separator
     endwhile
 
     return l:lines
@@ -161,7 +163,10 @@ function! markbar#MarkbarBuffers#populateWithMarkbar(
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     let l:buffer_cache = a:self['getBufferCache()'](a:for_buffer_no)
     call a:self['updateCurrentAndGlobal()']()
-    let l:contents = a:self['getMarkbarContents()'](a:for_buffer_no)
+    let l:contents = a:self['getMarkbarContents()'](
+        \ a:for_buffer_no,
+        \ markbar#settings#MarksToDisplay()
+    \ )
     call markbar#helpers#ReplaceBuffer(a:into_buffer_expr, l:contents)
 endfunction
 

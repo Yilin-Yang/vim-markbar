@@ -1,5 +1,5 @@
 function! s:CheckBadBufferType() abort
-    if !w:is_markbar || !b:is_markbar
+    if !exists('b:is_markbar') || !b:is_markbar
         throw '(vim-markbar) Cannot invoke this function outside of a markbar buffer/window!'
     endif
 endfunction
@@ -41,35 +41,6 @@ function! markbar#ui#SetGoToMark() abort
     noremap <silent> <buffer> <cr> :call <SID>GoToMark()<cr>
 endfunction
 
-" REQUIRES: No buffer in the given range shall be a markbar buffer.
-" EFFECTS:  Clear and repopulate the marks and contexts of the markbar
-"           buffers corresponding to the given buffers.
-" PARAM:    bufno_start (v:t_number)    The number of the first buffer to
-"                                       refresh.
-" PARAM:    bufno_end   (v:t_number)    The number of the last buffer to
-"                                       refresh, inclusive. If not specified,
-"                                       assumed to be equal to a:bufno_start.
-function! markbar#ui#RefreshMarkbar(...) abort
-    if get(a:, 0) !=# 1 && get(a:, 0) !=#  2
-        throw 'Invalid argument number for markbar#ui#RefreshMarkbar: '
-            \ . get(a:, 0)
-    endif
-    let l:marks_to_display = markbar#settings#MarksToDisplay()
-    let a:bufno_start = get(a:, 1)
-    let a:bufno_end   = get(a:, 2, a:bufno_start)
-    for l:bufno in range(a:bufno_start, a:bufno_end)
-        if !markbar#helpers#IsRealBuffer(l:bufno)
-            throw '(vim-markbar) Given buffer is not a "real" buffer: '.l:bufno
-        endif
-        call markbar#state#UpdateCacheForBuffer(l:bufno)
-        let l:markbar = g:buffersToMarkbars[l:bufno]
-        call markbar#helpers#ReplaceBuffer(
-            \ l:markbar,
-            \ markbar#ui#LinesInMarkbar(l:bufno, l:marks_to_display)
-        \ )
-    endfor
-endfunction
-
 " EFFECTS:  Sets buffer-local markbar settings for the current buffer.
 function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
@@ -81,9 +52,17 @@ function! markbar#ui#SetMarkbarSettings() abort
     set filetype=markbar syntax=markbar
 
     let b:is_markbar = 1
+
+    call markbar#ui#SetGoToMark()
 endfunction
 
+" EFFECTS:  Opens an appropriately sized vertical split for a markbar.
 function! markbar#ui#OpenMarkbarSplit(markbar) abort
     execute 'vsplit #' . a:markbar
     execute 'vertical resize ' . markbar#settings#MarkbarWidth()
+endfunction
+
+" EFFECTS:  Opens a markbar for the currently active buffer.
+function! markbar#ui#OpenMarkbar() abort
+    call g:markbar_buffers['openMarkbar()']()
 endfunction
