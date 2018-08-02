@@ -1,23 +1,18 @@
 " EFFECTS:  Default-initialize a BufferCache object.
 " DETAILS:  BufferCache stores marks, contexts, and (potentially) a markbar
 "           buffer for a particular buffer.
-function! markbar#BufferCache#new() abort
+" PARAM:    buffer_no   (v:t_number)
+function! markbar#BufferCache#new(...) abort
+    let a:buffer_no = get(a:, 1, -1)
     let l:new = {
         \ 'TYPE': 'BufferCache',
         \ '_marks_dict': {},
-        \ '_buffer_no': -1,
+        \ '_buffer_no': a:buffer_no,
         \ '_markbar_buffer_no': -1
     \ }
     let l:new['isGlobal()']       = function('markbar#BufferCache#isGlobal',       [l:new])
     let l:new['updateCache()']    = function('markbar#BufferCache#updateCache',    [l:new])
     let l:new['updateContexts()'] = function('markbar#BufferCache#updateContexts', [l:new])
-    return l:new
-endfunction
-
-" EFFECTS:  Construct a BufferCache object for a particular buffer.
-function! markbar#BufferCache#new(buffer_no) abort
-    let l:new = markbar#BufferCache#new()
-    let l:new['_buffer_no'] =  a:buffer_no
     return l:new
 endfunction
 
