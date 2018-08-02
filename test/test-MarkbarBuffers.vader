@@ -27,6 +27,8 @@ Execute (MarkbarBuffers: Delete All Marks; Open Buffers):
     let s:i += 1
   endwhile
 
+  let g:markbar_num_lines_context = 3
+
   let mbs = markbar#MarkbarBuffers#new()
 
 Execute (MarkbarBuffers: Populate Local Cache):
@@ -90,6 +92,8 @@ Then:
   AssertEqual ['d', '35', '0'],   buffer_marks['d']['_data']
   AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
 
+  let global_marks =
+    \ mbs['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
   AssertEqual ['A', '10', '0'],   global_marks['A']['_data']
   AssertEqual ['B', '20', '0'],   global_marks['B']['_data']
   AssertEqual ['C', '30', '0'],   global_marks['C']['_data']
@@ -114,6 +118,13 @@ Then:
   AssertEqual expected, buffer_marks['a']['_context']
 
   let expected = [
+      \ 'twenty-fourth line',
+      \ 'twenty-fifth line',
+      \ 'twenty-sixth line',
+    \ ]
+  AssertEqual expected, buffer_marks['c']['_context']
+
+  let expected = [
       \ 'forty-fourth line',
       \ 'forty-fifth line',
       \ 'forty-sixth line',
@@ -134,6 +145,8 @@ Execute (MarkbarBuffers: Update Globals in Offscreen, Unloaded Buffer):
   execute 'bunload ' . g:bufno_50lines
   call mbs['updateCurrentAndGlobal()']()
 Then:
+  let global_marks =
+    \ mbs['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
   " even after unloading the buffer, the plugin should still be able to fetch
   " contexts from the files on disk
   let expected = [

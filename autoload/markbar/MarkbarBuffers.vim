@@ -55,6 +55,8 @@ function! markbar#MarkbarBuffers#updateCurrentAndGlobal(self) abort
     let l:global_buffer_cache = a:self['getBufferCache()'](markbar#constants#GLOBAL_MARKS())
     call    l:cur_buffer_cache['updateCache()'](markbar#helpers#GetLocalMarks())
     call l:global_buffer_cache['updateCache()'](markbar#helpers#GetGlobalMarks())
+    call    l:cur_buffer_cache['updateContexts()'](markbar#settings#NumLinesContext())
+    call l:global_buffer_cache['updateContexts()'](markbar#settings#NumLinesContext())
 endfunction
 
 " EFFECTS:  - Creates a markbar buffer for the currently active buffer if one
