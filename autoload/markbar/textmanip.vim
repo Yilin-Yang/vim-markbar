@@ -20,31 +20,3 @@ function! markbar#textmanip#TrimMarksHeader(raw_marks) abort
     endif
     return l:trimmed
 endfunction
-
-" RETURNS:  (v:t_dict)      The given `marks` string, converted into a
-"                           dictionary of lists.
-" DETAILS:  - Each dictionary entry corresponds to a single mark.
-"           - Each element in an entry is one of that mark's fields, in the
-"           following order (by index):
-"               0.  the mark itself
-"               1.  the mark's line number
-"               2.  the mark's column number
-"               3.  the mark's 'file/text'
-" PARAM:    trimmed_marks   (v:t_string)    A `marks` string, without its
-"                                           column header.
-function! markbar#textmanip#MarksStringToDictionary(trimmed_marks) abort
-    let l:marks = split(a:trimmed_marks, '\r\{0,1}\n') " split on linebreaks
-    let l:dict = {}
-    let l:i = 0
-    while l:i <# len(l:marks)
-        let l:marklist = matchlist(
-            \ l:marks[l:i],
-            \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)'
-        \ )[1:4]
-        if !empty(l:marklist)
-            let l:dict[l:marklist[0]] = l:marklist
-        endif
-        let l:i += 1
-    endwhile
-    return l:dict
-endfunction
