@@ -41,70 +41,6 @@ function! markbar#ui#SetGoToMark() abort
     noremap <silent> <buffer> <cr> :call <SID>GoToMark()<cr>
 endfunction
 
-" REQUIRES: - `a:buffer_no` is not a markbar buffer.
-"           - `a:buffer_no` is a buffer *number.*
-" EFFECTS:  - Returns a list populated linewise with the requested marks
-"           and those marks' contexts.
-" PARAM:    marks   (v:t_string)    Every mark that the user wishes to
-"                                   display, in order from left to right (i.e.
-"                                   first character is the mark that should
-"                                   appear at the top of the markbar.)
-function! markbar#ui#LinesInMarkbar(buffer_no, marks) abort
-    let l:marks   = g:buffersToMarks[a:buffer_no]
-    let l:globals = g:buffersToMarks[0]
-    let l:marks_to_contexts   = g:buffersToMarksToContexts[a:buffer_no]
-    let l:globals_to_contexts = g:buffersToMarksToContexts[0]
-
-    let l:lines = []
-    let l:i = -1
-    while l:i <# len(a:marks)
-        let l:i += 1
-        let l:mark = a:marks[l:i]
-
-        if !has_key(l:marks, l:mark) && !has_key(l:globals, l:mark)
-            continue
-        endif
-
-        let l:lines += markbar#ui#MarkHeading(l:mark)
-
-        let l:contexts =
-            \ markbar#helpers#IsGlobalMark(l:mark) ?
-                \ l:globals_to_contexts[l:mark]
-                \ :
-                \ l:marks_to_contexts[l:mark]
-
-        let l:j = 0
-        while l:j <# len(l:contexts)
-            let l:lines +=
-                \ [markbar#settings#ContextIndentBlock() . l:contexts[l:j]]
-            let l:j += 1
-        endwhile
-
-        let l:lines += markbar#settings#MarkbarSectionSeparator()
-    endwhile
-
-    return l:lines
-endfunction
-
-" EFFECTS:  Opens the given markbar buffer in an appropriately-sized split.
-function! markbar#ui#OpenMarkbarSplit(markbar) abort
-    execute 'vsplit #' . a:markbar
-    execute 'vertical resize ' . markbar#settings#MarkbarWidth()
-endfunction
-
-" EFFECTS:  Sets buffer-local markbar settings for the current buffer.
-function! markbar#ui#SetMarkbarSettings() abort
-    " TODO: user-configurable buffer settings?
-
-    execute 'vertical resize ' . markbar#settings#MarkbarWidth()
-    setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
-    setlocal nowrap cursorline
-    execute 'silent! file ' . markbar#settings#MarkbarBufferName()
-    set filetype=markbar syntax=markbar
-
-    let b:is_markbar = 1
-endfunction
-
 " REQUIRES: No buffer in the given range shall be a markbar buffer.
 " EFFECTS:  Clear and repopulate the marks and contexts of the markbar
 "           buffers corresponding to the given buffers.
@@ -134,22 +70,20 @@ function! markbar#ui#RefreshMarkbar(...) abort
     endfor
 endfunction
 
-" REQUIRES: - `g:markbar_marks_to_display` is a properly configured
-"           `v:t_string`.
-" EFFECTS:  Opens a sidebar with marks visible.
-" DETAILS:  Partially adapted from:
-"           https://gist.github.com/romainl/eae0a260ab9c135390c30cd370c20cd7
-function! markbar#ui#OpenMarkbar() abort
-    let l:cur_buffer = markbar#state#GetActiveBuffer()
+" EFFECTS:  Sets buffer-local markbar settings for the current buffer.
+function! markbar#ui#SetMarkbarSettings() abort
+    " TODO: user-configurable buffer settings?
 
-    if !has_key(g:buffersToMarkbars, l:cur_buffer)
-        call markbar#state#SpawnNewMarkbarBuffer(l:cur_buffer)
-    else
-        let l:markbar = g:buffersToMarkbars[l:cur_buffer]
-        call markbar#ui#OpenMarkbarSplit(l:markbar)
-    endif
-    call markbar#ui#RefreshMarkbar(l:cur_buffer)
+    execute 'vertical resize ' . markbar#settings#MarkbarWidth()
+    setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
+    setlocal nowrap cursorline
+    execute 'silent! file ' . markbar#settings#MarkbarBufferName()
+    set filetype=markbar syntax=markbar
 
-    " TODO: go back to old position?
-    normal! gg
+    let b:is_markbar = 1
+endfunction
+
+function! markbar#ui#OpenMarkbarSplit(markbar) abort
+    execute 'vsplit #' . a:markbar
+    execute 'vertical resize ' . markbar#settings#MarkbarWidth()
 endfunction
