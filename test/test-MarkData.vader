@@ -148,112 +148,62 @@ Execute (Error-Check Already Trimmed Edge Case):
 Then:
   AssertThrows markbar#textmanip#TrimMarksHeader(markstring)
 
+
 ################################################################################
-# MarksStringToDictionary tests
+# MarkData tests
 ################################################################################
 
-Execute (Empty Trimmed String):
-  let trimmed_string = ''
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
-Then:
-  AssertEqual {}, result
-
-Execute (LF-Terminated Empty Trimmed String):
-  let trimmed_string = "\n"
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
-Then:
-  AssertEqual {}, result
-
-Execute (CRLF-Terminated Empty Trimmed String):
-  let trimmed_string = "\r\n"
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
-Then:
-  AssertEqual {}, result
-
-Execute (Single Item Trimmed String):
-  let trimmed_string = "
-    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+Execute (MarkData: Local Mark):
+  let markstring = "
+    \ a     97    0 mark line  col file/text\r\n
   \ "
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
+  let result = markbar#MarkData#fromMarkString(markstring)
 Then:
-  let expected = {
-    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-  \ }
-  AssertEqual expected, result
+  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual 'a',  result['getMark()']()
+  AssertEqual '97', result['getLineNo()']()
+  AssertEqual '0',  result['getColumnNo()']()
+  Assert           !result['isGlobal()']()
 
-Execute (CRLF-Terminated Single Item Trimmed String):
-  let trimmed_string = "
-    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
-  \ "
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
-Then:
-  let expected = {
-    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-  \ }
-  AssertEqual expected, result
-
-Execute (Two Item Trimmed String):
-  let trimmed_string = "
-    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
-    \ ]     24    0 Then:\n
-  \ "
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
-Then:
-  let expected = {
-    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ ']': [']', '24', '0', 'Then:'],
-  \ }
-  AssertEqual expected, result
-
-Execute (No File/Text Trimmed String):
-  let trimmed_string = "
-    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
-    \ ]     24    0 Then:\n
-    \ .     23    0\n
-  \ "
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
-Then:
-  let expected = {
-    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ ']': [']', '24', '0', 'Then:'],
-    \ '.': ['.', '23', '0', ''],
-  \ }
-  AssertEqual expected, result
-
-Execute (Multiitem Trimmed String):
-  let trimmed_string = "
-    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
+Execute (MarkData: Non-Alphabetic Mark):
+  let markstring = "
     \ [      1    0 The quick brown fox jumps over the lazy dog\n
-    \ ]     24    0 Then:\n
-    \ ^     23    2\n
-    \ .     23    0\n
   \ "
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
+  let result = markbar#MarkData#fromMarkString(markstring)
 Then:
-  let expected = {
-    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ '[': ['[', '1', '0', 'The quick brown fox jumps over the lazy dog'],
-    \ ']': [']', '24', '0', 'Then:'],
-    \ '^': ['^', '23', '2', ''],
-    \ '.': ['.', '23', '0', ''],
-  \ }
-  AssertEqual expected, result
+  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual '[', result['getMark()']()
+  AssertEqual '1', result['getLineNo()']()
+  AssertEqual '0', result['getColumnNo()']()
+  Assert          !result['isGlobal()']()
 
-Execute (CRLF-Terminated Multiitem Trimmed String):
-  let trimmed_string = "
-    \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
-    \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
-    \ ]     24    0 Then:\r\n
-    \ ^     23    2\r\n
-    \ .     23    0\r\n
+Execute (MarkData: Global File Mark):
+  let markstring = "
+    \ D      64    31 The quick brown fox jumps over the lazy dog\r\n
   \ "
-  let result = markbar#textmanip#MarksStringToDictionary(trimmed_string)
+  let result = markbar#MarkData#fromMarkString(markstring)
 Then:
-  let expected = {
-    \ 'A': ['A', '97', '0', '~/plugin/vim-markbar/plugin/vim-markbar.vim'],
-    \ '[': ['[', '1', '0', 'The quick brown fox jumps over the lazy dog'],
-    \ ']': [']', '24', '0', 'Then:'],
-    \ '^': ['^', '23', '2', ''],
-    \ '.': ['.', '23', '0', ''],
-  \ }
-  AssertEqual expected, result
+  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual 'D',  result['getMark()']()
+  AssertEqual '64', result['getLineNo()']()
+  AssertEqual '31', result['getColumnNo()']()
+  Assert            result['isGlobal()']()
+
+Execute (MarkData: ShaDa Numeric Mark):
+  let markstring = "
+    \ 8      19   5 The quick brown fox jumps over the lazy dog\n
+  \ "
+  let result = markbar#MarkData#fromMarkString(markstring)
+Then:
+  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual '8',  result['getMark()']()
+  AssertEqual '19', result['getLineNo()']()
+  AssertEqual '5',  result['getColumnNo()']()
+  Assert            result['isGlobal()']()
+
+Execute (MarkData: Error Check, Invalid Markstring):
+  let markstring = "
+    \ D      1  The quick brown fox jumps over the lazy dog\r\n
+  \ "
+Then:
+  AssertThrows markbar#MarkData#fromMarkString(markstring)

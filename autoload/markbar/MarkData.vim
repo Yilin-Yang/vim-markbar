@@ -8,10 +8,11 @@ function! markbar#MarkData#new() abort
         \ '_data': [],
         \ '_context': [],
     \ }
-    let l:new['getColumnNo'] = function('markbar#MarkData#getColumnNo', [l:new])
-    let l:new['getLineNo']   = function('markbar#MarkData#getLineNo',   [l:new])
-    let l:new['getMark']     = function('markbar#MarkData#getMark',     [l:new])
-    let l:new['isGlobal']    = function('markbar#MarkData#isGlobal',    [l:new])
+    let l:new['getColumnNo()'] = function('markbar#MarkData#getColumnNo', [l:new])
+    let l:new['getLineNo()']   = function('markbar#MarkData#getLineNo',   [l:new])
+    let l:new['getMark()']     = function('markbar#MarkData#getMark',     [l:new])
+    let l:new['isGlobal()']    = function('markbar#MarkData#isGlobal',    [l:new])
+    return l:new
 endfunction
 
 " EFFECTS:  Create a MarkData object from a one-line 'markstring'.
@@ -33,7 +34,7 @@ function! markbar#MarkData#fromMarkString(markstring) abort
     let l:new_markdata['_data'] = matchlist(
         \ a:markstring,
         \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)'
-    \ )[1:4]
+    \ )[1:3]
     if empty(l:new_markdata['_data'])
         throw '(markbar#MarkData) markstring parsing failed for: ' . a:markstring
     endif
