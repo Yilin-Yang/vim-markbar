@@ -1,0 +1,91 @@
+Execute (Declare Validity Function, Helper Function):
+  function! IsEven(number)
+    return !float2nr(fmod(a:number, 2))
+  endfunction
+
+  function! ValidList(list)
+    let l:valid = len(a:list)
+    if len(a:list) | call remove(a:list, -1) | endif
+    return l:valid
+  endfunction
+
+  function! NewStack()
+    return markbar#ConditionalStack#new(function('IsEven'), 4)
+  endfunction
+
+  function! NewStackComplex()
+    return markbar#ConditionalStack#new(function('ValidList'), 4)
+  endfunction
+
+Execute (Test Push, Succeed):
+  let stack = NewStack()
+  let success = stack['push()'](2)
+Then:
+  Assert success
+  AssertEqual 1, stack['size()']()
+
+Execute (Test Push, Fail):
+  let stack = NewStack()
+  let success = stack['push()'](1)
+Then:
+  Assert !success
+  AssertEqual 0, stack['size()']()
+
+Execute (Test Push, Small Series):
+  let stack = NewStack()
+  call stack['push()'](2)
+  call stack['push()'](3)
+  call stack['push()'](2)
+Then:
+  AssertEqual 2, stack['size()']()
+
+Execute (Test Push, Shrink):
+  let stack = NewStack()
+  call stack['push()'](2)
+  call stack['push()'](2)
+  call stack['push()'](2)
+  call stack['push()'](2)
+  call stack['push()'](2)
+Then:
+  AssertEqual 3, stack['size()']()
+
+Execute (Test Push, Pop Invalid, Top):
+  let stack = NewStackComplex()
+  call stack['push()']([1, 1, 1])
+  call stack['push()']([2, 2, 1])
+  call stack['push()']([1])
+  call stack['push()']([1])
+Then:
+  AssertEqual 4, stack['size()']()
+  AssertEqual [2], stack['top()']()
+  AssertEqual 2, stack['size()']()
+
+Execute (Test Clean):
+  let stack = NewStackComplex()
+  call stack['push()']([1])
+  call stack['push()']([1, 1, 1])
+  call stack['push()']([2, 2, 1, 1])
+  call stack['push()']([1])
+Then:
+  AssertEqual 4, stack['size()']()
+  call stack['clean()']()
+  AssertEqual 2, stack['size()']()
+  AssertEqual [2], stack['top()']()
+
+Execute (Test Extended Push):
+  let stack = NewStackComplex()
+  call stack['push()']([1])
+  call stack['push()']([1, 1, 1, 1, 1])
+  call stack['push()']([2, 2, 1, 1, 1])
+  call stack['push()']([1])
+  call stack['push()']([1])
+  call stack['push()']([4, 2, 1])
+  call stack['push()']([1])
+  call stack['push()']([3, 2, 1])
+  call stack['push()']([1])
+  call stack['push()']([1])
+  call stack['push()']([2, 2, 1])
+Then:
+  AssertEqual 3, stack['size()']()
+  AssertEqual [2], stack['top()']()
+  AssertEqual [[], [], [2]], stack['_data']

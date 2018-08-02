@@ -12,38 +12,28 @@
 "           this maximum size, it will shrink: either by 'garbage-collecting'
 "           invalid elements, or by arbitrarily throwing away the first half
 "           of the stack.
-function! markbar#ConditionalStack#new() abort
+function! markbar#ConditionalStack#new(...) abort
+    let l:Funcref  = get(a:, 1, -1)
+    let l:max_size = get(a:, 2, 999999999)
+
+    if type(l:Funcref) !=# v:t_number && type(l:Funcref) !=# v:t_func
+        throw '(markbar#ConditionalStack) Given argument should be a funcref: ' . l:Funcref
+    endif
+    if !l:max_size || l:max_size <# 2
+        throw '(markbar#ConditionalStack) Invalid max_size: ' . a:max_size
+    endif
+
     let l:new = {
         \ 'TYPE': 'ConditionalStack',
         \ '_data': [],
-        \ '_max_size': 9999999999,
-        \ '_is_valid()': -1,
+        \ '_max_size': l:max_size,
+        \ '_is_valid()': l:Funcref,
     \ }
     let l:new['clean()']  = function('markbar#ConditionalStack#clean',  [l:new])
     let l:new['push()']   = function('markbar#ConditionalStack#push',   [l:new])
     let l:new['shrink()'] = function('markbar#ConditionalStack#shrink', [l:new])
+    let l:new['size()']   = function('markbar#ConditionalStack#size',   [l:new])
     let l:new['top()']    = function('markbar#ConditionalStack#top',    [l:new])
-endfunction
-
-" EFFECTS:  Construct a conditional stack with a given validity funcref.
-function! markbar#ConditionalStack#new(funcref) abort
-    if type(a:funcref) !=# v:t_func
-        throw '(markbar#ConditionalStack) Bad argument type for: ' . a:funcref
-    endif
-    let l:new = markbar#ConditionalStack#new()
-    let l:new['_is_valid()'] = a:funcref
-    return l:new
-endfunction
-
-" EFFECTS:  Construct a conditional stack with a given validity funcref and
-"           maximum size.
-function! markbar#ConditionalStack#new(funcref, max_size) abort
-    let l:max_size = a:max_size + 0
-    if !l:max_size || l:max_size <# 2
-        throw '(markbar#ConditionalStack) Invalid max_size: ' . a:max_size
-    endif
-    let l:new = markbar#ConditionalStack#new(a:funcref)
-    let l:new['_max_size'] = l:max_size
     return l:new
 endfunction
 
@@ -60,6 +50,10 @@ function! markbar#ConditionalStack#push(self, element) abort
     call markbar#ConditionalStack#AssertIsConditionalStack(a:self)
     if !a:self['_is_valid()'](a:element) | return v:false | endif
     let a:self['_data'] += [a:element]
+    if a:self['size()']() ># a:self['_max_size']
+        call a:self['clean()']()
+        call a:self['shrink()']()
+    endif
     return v:true
 endfunction
 
@@ -69,9 +63,9 @@ endfunction
 function! markbar#ConditionalStack#top(self) abort
     call markbar#ConditionalStack#AssertIsConditionalStack(a:self)
     let l:stack = a:self['_data']
-    let l:is_valid = a:self['_is_valid()']
-    while !l:is_valid(l:stack[-1])
-        call remove(l:stack[-1])
+    let l:IsValid = a:self['_is_valid()']
+    while len(l:stack) && !l:IsValid(l:stack[-1])
+        call remove(l:stack, -1)
     endwhile
 
     if empty(l:stack) | throw '(markbar#ConditionalStack) Called top() when empty!' | endif
@@ -85,15 +79,22 @@ function! markbar#ConditionalStack#top(self) abort
     return l:top
 endfunction
 
+" EFFECTS:  Returns the total number of elements, valid and invalid, currently
+"           in the ConditionalStack.
+function! markbar#ConditionalStack#size(self) abort
+    call markbar#ConditionalStack#AssertIsConditionalStack(a:self)
+    return len(a:self['_data'])
+endfunction
+
 " EFFECTS:  Removes all invalid elements from the stack.
 function! markbar#ConditionalStack#clean(self) abort
     call markbar#ConditionalStack#AssertIsConditionalStack(a:self)
     let l:stack = a:self['_data']
-    let l:is_valid = a:self['_is_valid()']
+    let l:IsValid = a:self['_is_valid()']
     let l:i = len(l:stack)
     while l:i
         let l:i -= 1
-        if l:is_valid(l:stack[l:i]) | continue | endif
+        if l:IsValid(l:stack[l:i]) | continue | endif
         call remove(l:stack, l:i)
     endwhile
 endfunction
@@ -105,6 +106,6 @@ function! markbar#ConditionalStack#shrink(self) abort
     let l:stack = a:self['_data']
     let l:size = len(l:stack)
     if l:size > a:self['_max_size']
-        let l:stack = l:stack[l:size / 2 : ]
+        let a:self['_data'] = l:stack[l:size / 2 : ]
     endif
 endfunction
