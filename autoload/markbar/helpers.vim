@@ -1,17 +1,27 @@
 " RETURNS:  (v:t_string)    All buffer-local marks active within the current
 "                           file as a 'raw' string.
 function! markbar#helpers#GetLocalMarks() abort
-    redir => l:to_return
-    silent marks abcdefghijklmnopqrstuvwxyz<>'"^.(){}
-    redir end
+    let l:to_return = ''
+    try
+        redir => l:to_return
+        silent marks abcdefghijklmnopqrstuvwxyz<>'"^.(){}
+        redir end
+    catch /E283/
+        let l:to_return = 'mark line  col file/text\n'
+    endtry
     return l:to_return
 endfunction
 
 " RETURNS:  (v:t_string)    All global marks as a 'raw' string.
 function! markbar#helpers#GetGlobalMarks() abort
-    redir => l:to_return
-    silent marks ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
-    redir end
+    let l:to_return = ''
+    try
+        redir => l:to_return
+        silent marks ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+        redir end
+    catch /E283/
+        let l:to_return = 'mark line  col file/text\n'
+    endtry
     return l:to_return
 endfunction
 

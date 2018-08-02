@@ -5,6 +5,7 @@
 "           markbar buffers in response to user commands.
 function! markbar#MarkbarBuffers#new() abort
     let l:new = {
+        \ 'TYPE': 'MarkbarBuffers',
         \ '_buffer_caches': {},
         \ '_active_buffer_stack':
             \ markbar#ConditionalStack#new(
@@ -25,8 +26,7 @@ function! markbar#MarkbarBuffers#new() abort
     let l:new['getMarkbarContents()'] =
         \ function('markbar#MarkbarBuffers#getMarkbarContents', [l:new])
 
-    " TODO: update ALL cache, update contexts
-    " TODO: populate markbar
+    return l:new
 endfunction
 
 function! markbar#MarkbarBuffers#AssertIsMarkbarBuffers(object) abort
