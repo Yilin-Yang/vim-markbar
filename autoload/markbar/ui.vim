@@ -114,15 +114,18 @@ endfunction
 "                                       refresh, inclusive. If not specified,
 "                                       assumed to be equal to a:bufno_start.
 function! markbar#ui#RefreshMarkbar(...) abort
-    call assert_inrange(1, 2, a:0,
-        \ 'Invalid argument number for markbar#ui#RefreshMarkbar.')
+    if get(a:, 0) !=# 1 && get(a:, 0) !=#  2
+        throw 'Invalid argument number for markbar#ui#RefreshMarkbar: '
+            \ . get(a:, 0)
+    endif
     let l:marks_to_display = markbar#settings#MarksToDisplay()
-    let a:bufno_start = a:1
+    let a:bufno_start = get(a:, 1)
     let a:bufno_end   = get(a:, 2, a:bufno_start)
     for l:bufno in range(a:bufno_start, a:bufno_end)
         if !markbar#helpers#IsRealBuffer(l:bufno)
             throw '(vim-markbar) Given buffer is not a "real" buffer: '.l:bufno
         endif
+        call markbar#state#UpdateCacheForBuffer(l:bufno)
         let l:markbar = g:buffersToMarkbars[l:bufno]
         call markbar#helpers#ReplaceBuffer(
             \ l:markbar,
