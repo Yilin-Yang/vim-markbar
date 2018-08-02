@@ -29,8 +29,6 @@ Execute (MarkbarBuffers: Delete All Marks; Open Buffers):
 
   let g:markbar_num_lines_context = 3
 
-  let mbs = markbar#MarkbarBuffers#new()
-
 Execute (MarkbarBuffers: Populate Local Cache):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
   execute  '5mark a'
@@ -38,10 +36,10 @@ Execute (MarkbarBuffers: Populate Local Cache):
   execute '25mark c'
   execute '35mark d'
   execute '45mark e'
-  call mbs['updateCurrentAndGlobal()']()
+  call g:markbar_buffers['updateCurrentAndGlobal()']()
 Then:
   let g:bufno_50lines = bufnr('%')
-  let buffer_marks = mbs['getBufferCache()'](g:bufno_50lines)['_marks_dict']
+  let buffer_marks = g:markbar_buffers['getBufferCache()'](g:bufno_50lines)['_marks_dict']
   AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
   AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
   AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
@@ -54,11 +52,11 @@ Execute (MarkbarBuffers: Populate Global Cache):
   execute '30mark C'
   execute '40mark D'
   execute '50mark E'
-  call mbs['updateCurrentAndGlobal()']()
+  call g:markbar_buffers['updateCurrentAndGlobal()']()
 Then:
   " check globals
   let global_marks =
-    \ mbs['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
+    \ g:markbar_buffers['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
   AssertEqual ['C', '30', '0'],   global_marks['C']['_data']
   AssertEqual ['D', '40', '0'],   global_marks['D']['_data']
   AssertEqual ['E', '50', '0'],   global_marks['E']['_data']
@@ -75,9 +73,9 @@ Execute (MarkbarBuffers: Add More Global Marks; Add Local Marks):
   execute '15mark b'
   execute '20mark a'
 
-  call mbs['updateCurrentAndGlobal()']()
+  call g:markbar_buffers['updateCurrentAndGlobal()']()
 Then:
-  let buffer_marks = mbs['getBufferCache()'](g:bufno_30lines)['_marks_dict']
+  let buffer_marks = g:markbar_buffers['getBufferCache()'](g:bufno_30lines)['_marks_dict']
   AssertEqual ['e',  '1', '0'],   buffer_marks['e']['_data']
   AssertEqual ['d',  '5', '0'],   buffer_marks['d']['_data']
   AssertEqual ['c', '10', '0'],   buffer_marks['c']['_data']
@@ -85,7 +83,7 @@ Then:
   AssertEqual ['a', '20', '0'],   buffer_marks['a']['_data']
 
   " make sure that we didn't somehow overwrite these older ones
-  let buffer_marks = mbs['getBufferCache()'](g:bufno_50lines)['_marks_dict']
+  let buffer_marks = g:markbar_buffers['getBufferCache()'](g:bufno_50lines)['_marks_dict']
   AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
   AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
   AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
@@ -93,7 +91,7 @@ Then:
   AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
 
   let global_marks =
-    \ mbs['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
+    \ g:markbar_buffers['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
   AssertEqual ['A', '10', '0'],   global_marks['A']['_data']
   AssertEqual ['B', '20', '0'],   global_marks['B']['_data']
   AssertEqual ['C', '30', '0'],   global_marks['C']['_data']
@@ -103,12 +101,12 @@ Then:
 
 Execute (MarkbarBuffers: Fetch Contexts for Onscreen Buffer):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
-  call mbs['updateCurrentAndGlobal()']()
+  call g:markbar_buffers['updateCurrentAndGlobal()']()
 Then:
   " Only check 'indicator' values, for brevity. If these are fine, and if the
   " `test-fetchlines.vader` tests pass, assume that context fetching itself is
   " fine.
-  let buffer_marks = mbs['getBufferCache()'](g:bufno_50lines)['_marks_dict']
+  let buffer_marks = g:markbar_buffers['getBufferCache()'](g:bufno_50lines)['_marks_dict']
 
   let expected = [
       \ 'fourth line',
@@ -135,18 +133,18 @@ Then:
 Execute (MarkbarBuffers: Delete Mark, Update Local Contexts, 30lines.txt):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'delmarks a'
-  call mbs['updateCurrentAndGlobal()']()
+  call g:markbar_buffers['updateCurrentAndGlobal()']()
 Then:
-  let buffer_marks = mbs['getBufferCache()'](g:bufno_30lines)['_marks_dict']
+  let buffer_marks = g:markbar_buffers['getBufferCache()'](g:bufno_30lines)['_marks_dict']
   Assert !has_key(buffer_marks, 'a')
 
 Execute (MarkbarBuffers: Update Globals in Offscreen, Unloaded Buffer):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'bunload ' . g:bufno_50lines
-  call mbs['updateCurrentAndGlobal()']()
+  call g:markbar_buffers['updateCurrentAndGlobal()']()
 Then:
   let global_marks =
-    \ mbs['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
+    \ g:markbar_buffers['getBufferCache()'](markbar#constants#GLOBAL_MARKS())['_marks_dict']
   " even after unloading the buffer, the plugin should still be able to fetch
   " contexts from the files on disk
   let expected = [
@@ -168,3 +166,10 @@ Then:
       \ 'fiftieth line',
     \ ]
   AssertEqual expected, global_marks['E']['_context']
+
+Execute (MarkbarBuffers: Active Buffer Check):
+  new
+  let curr_buffer = bufnr('%')
+Then:
+  let result = g:markbar_buffers['getActiveBuffer()']()
+  AssertEqual curr_buffer, result

@@ -13,12 +13,16 @@ function! markbar#MarkbarBuffers#new() abort
                 \ markbar#settings#MaximumActiveBufferHistory()
             \ ),
     \ }
+    let l:new['getActiveBuffer()'] =
+        \ function('markbar#MarkbarBuffers#getActiveBuffer', [l:new])
     let l:new['getBufferCache()'] =
         \ function('markbar#MarkbarBuffers#getBufferCache', [l:new])
     let l:new['openMarkbar()'] =
         \ function('markbar#MarkbarBuffers#openMarkbar', [l:new])
     let l:new['populateWithMarkbar()'] =
         \ function('markbar#MarkbarBuffers#populateWithMarkbar', [l:new])
+    let l:new['pushNewBuffer()'] =
+        \ function('markbar#MarkbarBuffers#pushNewBuffer', [l:new])
     let l:new['spawnNewMarkbarBuffer()'] =
         \ function('markbar#MarkbarBuffers#spawnNewMarkbarBuffer', [l:new])
     let l:new['updateCurrentAndGlobal()'] =
@@ -159,4 +163,18 @@ function! markbar#MarkbarBuffers#populateWithMarkbar(
     call a:self['updateCurrentAndGlobal()']()
     let l:contents = a:self['getMarkbarContents()'](a:for_buffer_no)
     call markbar#helpers#ReplaceBuffer(a:into_buffer_expr, l:contents)
+endfunction
+
+" EFFECTS:  Pushes the given buffer number onto the active buffer
+"           ConditionalStack.
+function! markbar#MarkbarBuffers#pushNewBuffer(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    let a:buffer_no = expand('<abuf>') + 0
+    call a:self['_active_buffer_stack']['push()'](a:buffer_no)
+endfunction
+
+" RETURN:   (v:t_number)    The most recently accessed 'real' buffer.
+function! markbar#MarkbarBuffers#getActiveBuffer(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    return a:self['_active_buffer_stack']['top()']()
 endfunction

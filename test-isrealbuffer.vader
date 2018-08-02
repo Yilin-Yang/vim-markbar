@@ -37,10 +37,3 @@ Execute (IsRealBuffer bh=wipe):
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
   AssertEqual 0, result
-
-Execute (activeBuffer Check):
-  new
-  let curr_buffer = bufnr('%')
-Then:
-  let result = markbar#state#GetActiveBuffer()
-  AssertEqual curr_buffer, result
