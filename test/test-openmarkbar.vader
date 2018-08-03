@@ -121,7 +121,6 @@ Expect:
   eighth line
   ninth line
   tenth line
-
 " TODO: Vader keeps reporting test failure, even though it seems to work
 " properly when I do it myself?
 " Do (Test For Fixed Markbar Width, Even After Closing Other Splits):
@@ -133,9 +132,7 @@ Expect:
 "   :call markbar#ui#OpenMarkbar()\<cr>
 " Then:
 "   AssertEqual g:markbar_width, winwidth(winnr())
-
 " TODO: ditto the above, but for markbar height
-  
 " TODO: Vader wipes out the older Markbar, which doesn't happen when I try
 " doing it myself?
 " Do (Jump Back to Preexisting Markbar After Modifications):
