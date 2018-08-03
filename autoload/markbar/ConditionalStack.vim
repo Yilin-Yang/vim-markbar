@@ -44,7 +44,7 @@ function! markbar#ConditionalStack#AssertIsConditionalStack(object) abort
 endfunction
 
 " EFFECTS:  Pushes a new element onto the given ConditionalStack.
-" RETURN:   (v:t_bool)  `v:true` if the push succeeded (i.e. if the new
+" RETURNS:  (v:t_bool)  `v:true` if the push succeeded (i.e. if the new
 "                       element was valid, and was added to the stack.)
 function! markbar#ConditionalStack#push(self, element) abort
     call markbar#ConditionalStack#AssertIsConditionalStack(a:self)

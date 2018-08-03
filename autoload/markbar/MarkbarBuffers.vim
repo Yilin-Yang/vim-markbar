@@ -47,7 +47,7 @@ endfunction
 
 " EFFECTS:  - Adds a new BufferCache for the requested buffer, if one does not
 "           yet exist.
-" RETURN:   (markbar#BufferCache)   The buffer cache for the requested buffer.
+" RETURNS:  (markbar#BufferCache)   The buffer cache for the requested buffer.
 function! markbar#MarkbarBuffers#getBufferCache(self, buffer_no)
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     if !has_key(a:self['_buffer_caches'], a:buffer_no)
@@ -104,7 +104,7 @@ endfunction
 
 " EFFECTS:  Closes the markbar that is open in the current tab page, if one
 "           exists. Else, does nothing.
-" RETURN:   (v:t_bool)      `v:true` if a markbar was actually closed,
+" RETURNS:  (v:t_bool)      `v:true` if a markbar was actually closed,
 "                           `v:false` otherwise.
 function! markbar#MarkbarBuffers#closeMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
@@ -129,7 +129,7 @@ endfunction
 
 " EFFECTS:  - Creates a new markbar buffer for the currently active buffer.
 "           - Opens this new markbar buffer in a split.
-" RETURN:   (v:t_number)    The buffer number of the new buffer.
+" RETURNS:  (v:t_number)    The buffer number of the new buffer.
 function! markbar#MarkbarBuffers#spawnNewMarkbarBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     " TODO: handle exception for no active buffer
@@ -216,13 +216,13 @@ function! markbar#MarkbarBuffers#pushNewBuffer(self) abort
     call a:self['_active_buffer_stack']['push()'](a:buffer_no)
 endfunction
 
-" RETURN:   (v:t_number)    The most recently accessed 'real' buffer.
+" RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.
 function! markbar#MarkbarBuffers#getActiveBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     return a:self['_active_buffer_stack']['top()']()
 endfunction
 
-" RETURN:   (v:t_number)    The buffer number of the active buffer's
+" RETURNS:  (v:t_number)    The buffer number of the active buffer's
 "                           markbar, or a negative number if it doesn't have
 "                           one.
 function! markbar#MarkbarBuffers#getActiveBufferMarkbar(self) abort
@@ -232,7 +232,7 @@ function! markbar#MarkbarBuffers#getActiveBufferMarkbar(self) abort
     return l:active_buffer_cache['_markbar_buffer_no']
 endfunction
 
-" RETURN:   (v:t_bool)      `v:true` if a markbar is open in the current tab,
+" RETURNS:  (v:t_bool)      `v:true` if a markbar is open in the current tab,
 "                           `v:false` otherwise.
 function! markbar#MarkbarBuffers#markbarIsOpenCurrentTab(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)

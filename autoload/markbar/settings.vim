@@ -1,4 +1,4 @@
-" RETURN:   (v:t_string)    All marks to display in the markbar, in order.
+" RETURNS:  (v:t_string)    All marks to display in the markbar, in order.
 function! markbar#settings#MarksToDisplay() abort
     if !exists('g:markbar_marks_to_display')
         let g:markbar_marks_to_display =
@@ -7,7 +7,7 @@ function! markbar#settings#MarksToDisplay() abort
     return g:markbar_marks_to_display
 endfunction
 
-" RETURN:   (v:t_bool)      Whether to open markbars as vertical splits
+" RETURNS:  (v:t_bool)      Whether to open markbars as vertical splits
 "                           (`v:true`) or horizontal splits (`v:false`).
 function! markbar#settings#MarkbarOpenVertical() abort
     if !exists('g:markbar_open_vertical')
@@ -16,7 +16,7 @@ function! markbar#settings#MarkbarOpenVertical() abort
     return g:markbar_open_vertical
 endfunction
 
-" RETURN:   (v:t_number)    The width of an opened vertical markbar, in columns.
+" RETURNS:  (v:t_number)    The width of an opened vertical markbar, in columns.
 function! markbar#settings#MarkbarWidth() abort
     if !exists('g:markbar_width')
         let g:markbar_width = 30
@@ -24,7 +24,7 @@ function! markbar#settings#MarkbarWidth() abort
     return g:markbar_width
 endfunction
 
-" RETURN:   (v:t_number)    The height of an opened horizontal markbar, in lines.
+" RETURNS:  (v:t_number)    The height of an opened horizontal markbar, in lines.
 function! markbar#settings#MarkbarHeight() abort
     if !exists('g:markbar_height')
         let g:markbar_height = 30
@@ -32,7 +32,7 @@ function! markbar#settings#MarkbarHeight() abort
     return g:markbar_height
 endfunction
 
-" RETURN:   (v:t_bool)      Whether to close an open markbar after jumping to
+" RETURNS:  (v:t_bool)      Whether to close an open markbar after jumping to
 "                           a mark from the markbar.
 function! markbar#settings#CloseAfterGoTo() abort
     if !exists('g:markbar_close_after_go_to')
@@ -41,7 +41,7 @@ function! markbar#settings#CloseAfterGoTo() abort
     return g:markbar_close_after_go_to
 endfunction
 
-" RETURN:   (v:t_string)    The positional command modifier to apply when
+" RETURNS:  (v:t_string)    The positional command modifier to apply when
 "                           opening the markbar.
 function! markbar#settings#OpenPosition() abort
     if !exists('g:markbar_open_position')
@@ -57,7 +57,7 @@ function! markbar#settings#OpenPosition() abort
     return g:markbar_open_position
 endfunction
 
-" RETURN:   (v:t_string)    The name to give to any opened markbar buffers.
+" RETURNS:  (v:t_string)    The name to give to any opened markbar buffers.
 function! markbar#settings#MarkbarBufferName() abort
     if !exists('g:markbar_buffer_name')
         let g:markbar_buffer_name = '[ Markbar ]'
@@ -65,7 +65,7 @@ function! markbar#settings#MarkbarBufferName() abort
     return g:markbar_buffer_name
 endfunction
 
-" RETURN:   (v:t_string)    A block of text with which to indent lines of
+" RETURNS:  (v:t_string)    A block of text with which to indent lines of
 "                           context in the markbar proper.
 function! markbar#settings#ContextIndentBlock() abort
     if !exists('g:markbar_context_indent_block')
@@ -107,7 +107,7 @@ function! markbar#settings#ContextIndentBlock() abort
     return g:markbar_context_indent_block
 endfunction
 
-" RETURN:   (v:t_list)      A list populated with a number of zero-length
+" RETURNS:  (v:t_list)      A list populated with a number of zero-length
 "                           strings equal to the number of blank spaces that
 "                           should exist in between markbar 'section
 "                           headings'. Should be at least 1, or else syntax
@@ -137,7 +137,7 @@ function! markbar#settings#MarkbarSectionSeparator() abort
     return l:separator
 endfunction
 
-" RETURN:   (v:t_dict)      A dictionary populated with the `bufhidden` values
+" RETURNS:  (v:t_dict)      A dictionary populated with the `bufhidden` values
 "                           that indicate that a buffer should be ignored.
 function! markbar#settings#IgnoreBufferCriteria() abort
     if !exists('g:markbar_ignore_buffer_criteria')
@@ -159,7 +159,7 @@ function! markbar#settings#IgnoreBufferCriteria() abort
     return l:criteria
 endfunction
 
-" RETURN:   (v:t_number)    The maximum permissible size of
+" RETURNS:  (v:t_number)    The maximum permissible size of
 "                           `g:activeBufferStack`.
 function! markbar#settings#MaximumActiveBufferHistory() abort
     if !exists('g:markbar_maximum_active_buffer_history')
@@ -175,7 +175,7 @@ function! markbar#settings#MaximumActiveBufferHistory() abort
     return g:markbar_maximum_active_buffer_history
 endfunction
 
-" RETURN:   (v:t_number)    The number of lines of context to retrieve around
+" RETURNS:  (v:t_number)    The number of lines of context to retrieve around
 "                           marks, including the line that holds the mark.
 function! markbar#settings#NumLinesContext() abort
     if !exists('g:markbar_num_lines_context')
@@ -184,7 +184,7 @@ function! markbar#settings#NumLinesContext() abort
     return g:markbar_num_lines_context
 endfunction
 
-" RETURN:   (v:t_bool)      `v:true` if the 'jump to mark from markbar'
+" RETURNS:  (v:t_bool)      `v:true` if the 'jump to mark from markbar'
 "                           mapping should go to the exact line *and column*
 "                           of the mark, or `v:false` if it should go to the
 "                           line (and column zero).

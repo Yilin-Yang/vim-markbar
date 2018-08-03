@@ -4,7 +4,7 @@ function! s:CheckBadBufferType() abort
     endif
 endfunction
 
-" RETURN:   (v:t_list)      The given mark, reformatted into a markbar
+" RETURNS:  (v:t_list)      The given mark, reformatted into a markbar
 "                           'section heading'.
 function! markbar#ui#MarkHeading(mark) abort
     let l:suffix = ' '
@@ -15,7 +15,7 @@ function! markbar#ui#MarkHeading(mark) abort
 endfunction
 
 " REQUIRES: User has focused a markbar buffer/window.
-" RETURN:   (v:t_string)    The 'currently selected' mark, or an empty string
+" RETURNS:  (v:t_string)    The 'currently selected' mark, or an empty string
 "                           if no mark is selected.
 function! markbar#ui#GetCurrentMarkHeading() abort
     call s:CheckBadBufferType()
