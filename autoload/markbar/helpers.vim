@@ -109,14 +109,12 @@ function! markbar#helpers#SetBufferLineRange(buffer_expr, start, end, lines) abo
 
         execute 'buffer ' . l:target_buf
         let l:num_lines = line('$')
-        if    !a:start      | let l:start = l:num_lines + 1
-        elseif a:start <# 0 | let l:start = a:start + l:num_lines + 1
-        else                | let l:start = a:start
+        if      a:start <=# 0 | let l:start = a:start + l:num_lines + 1
+        else                  | let l:start = a:start
         endif
 
-        if    !a:end        | let l:end = l:num_lines + 1
-        elseif a:end   <# 0 | let l:end = a:end + l:num_lines + 1
-        else                | let l:end = a:end
+        if      a:end   <=# 0 | let l:end = a:end + l:num_lines + 1
+        else                  | let l:end = a:end
         endif
 
         if !(l:start ==# l:end)
