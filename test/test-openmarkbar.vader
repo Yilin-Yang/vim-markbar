@@ -53,6 +53,23 @@ Expect:
       ninth line
       tenth line
   
+Do (Close Markbar, then Re-Open):
+  :q\<cr>
+  :call markbar#ui#OpenMarkbar()\<cr>
+Expect:
+  ['A]:    10lines.txt
+      first line
+      second line
+
+  ['B]:    10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]:    10lines.txt
+      ninth line
+      tenth line
+  
 Do (Move Cursor to Existing Markbar):
   \<C-w>p:call markbar#ui#OpenMarkbar()\<cr>
 Then:
