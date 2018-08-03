@@ -17,6 +17,8 @@ function! markbar#MarkbarBuffers#new() abort
         \ function('markbar#MarkbarBuffers#getActiveBuffer', [l:new])
     let l:new['getBufferCache()'] =
         \ function('markbar#MarkbarBuffers#getBufferCache', [l:new])
+    let l:new['markbarOpenCurrentTab()'] =
+        \ function('markbar#MarkbarBuffers#markbarOpenCurrentTab', [l:new])
     let l:new['openMarkbar()'] =
         \ function('markbar#MarkbarBuffers#openMarkbar', [l:new])
     let l:new['populateWithMarkbar()'] =
@@ -81,7 +83,13 @@ function! markbar#MarkbarBuffers#openMarkbar(self) abort
         let l:markbar_buffer = l:active_buffer_cache['_markbar_buffer_no']
     else
         " existing markbar buffer
-        call markbar#ui#OpenMarkbarSplit(l:active_buffer_cache['_markbar_buffer_no'])
+        let l:markbar_window = bufwinnr(l:markbar_buffer)
+        if l:markbar_window ==# -1
+            call markbar#ui#OpenMarkbarSplit(l:active_buffer_cache['_markbar_buffer_no'])
+        else
+            " switch to existing markbar window
+            execute l:markbar_window . 'wincmd w'
+        endif
     endif
 
     call a:self['populateWithMarkbar()'](l:active_buffer, l:markbar_buffer)
@@ -182,4 +190,22 @@ endfunction
 function! markbar#MarkbarBuffers#getActiveBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     return a:self['_active_buffer_stack']['top()']()
+endfunction
+
+" RETURN:   (v:t_bool)      `v:true` if the active buffer's markbar is
+"                           open in the current tab, `v:false` otherwise.
+function! markbar#MarkbarBuffers#markbarOpenCurrentTab(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    try
+        let l:active_buffer = a:self['_active_buffer_stack']['top()']()
+    catch /Called top() when empty!/
+        return v:false
+    endtry
+    if !has_key(a:self['_buffer_caches'], l:active_buffer)
+        return v:false
+    endif
+    let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
+    let l:markbar_buffer = l:active_buffer_cache['_markbar_buffer_no']
+    let l:markbar_window = bufwinnr(l:markbar_buffer)
+    return l:markbar_window ==# -1 ? v:false : v:true
 endfunction

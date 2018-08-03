@@ -52,6 +52,7 @@ function! markbar#ui#SetMarkbarSettings() abort
     set filetype=markbar syntax=markbar
 
     let b:is_markbar = 1
+    let w:is_markbar = 1
 
     call markbar#ui#SetGoToMark()
 endfunction

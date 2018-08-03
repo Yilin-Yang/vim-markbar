@@ -13,6 +13,10 @@ let g:markbar_buffers = markbar#MarkbarBuffers#new()
 augroup vim_markbar_buffer_updates
     au!
     autocmd BufEnter * call g:markbar_buffers['pushNewBuffer()']()
+    autocmd BufEnter *
+        \ if g:markbar_buffers['markbarOpenCurrentTab()']()
+            \ | call g:markbar_buffers['updateCurrentAndGlobal()']()
+        \ | endif
 augroup end
 
 " TODO: only trigger when performing actions that affect lines with marks

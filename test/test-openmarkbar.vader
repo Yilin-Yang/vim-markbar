@@ -1,0 +1,93 @@
+Execute (Delete All Preexisting Marks, Set Settings):
+  let g:markbar_num_lines_context = 3
+  delmarks a-zA-Z0-9<>\"^.
+
+  " Open test files.
+  let s:test_files = [
+    \ '10lines.txt',
+  \ ]
+
+  " Check if we're running from tests folder.
+
+  " This check won't work correctly if we're in some other directory that has
+  " a file named '1lines.txt' for some reason, but that won't happen on Travis.
+
+  let s:test_file_to_check = s:test_files[0]
+  if !filereadable(s:test_file_to_check)
+    throw 'ERROR: required test file "'
+      \ . s:test_file_to_check
+      \ . '" not available in PWD!'
+  endif
+
+  let s:i = 0
+  while s:i <# len(s:test_files)
+    execute 'normal :edit! ' . s:test_files[s:i] . "\<cr>"
+    let s:i += 1
+  endwhile
+
+Do (Open Markbar, No Marks):
+  call markbar#ui#OpenMarkbar()
+Expect:
+  
+
+Do (Set Marks, Open Markbar):
+  :edit! 10lines.txt\<cr>
+  1GmA5GmB10GmC
+Then:
+  let g:markbar_num_lines_context = 3
+  let buf_workbench = bufnr('%')
+  call markbar#ui#OpenMarkbar()
+  " let num_windows = len(tabpagebuflist())
+  AssertEqual buf_workbench, g:markbar_buffers['getActiveBuffer()']()
+Expect:
+  ['A]:    10lines.txt
+      first line
+      second line
+
+  ['B]:    10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]:    10lines.txt
+      ninth line
+      tenth line
+  
+Do (Move Cursor to Existing Markbar):
+  \<C-w>p:call markbar#ui#OpenMarkbar()\<cr>
+Then:
+  " TODO: find a way to check for 'didn't create a new split'
+  " AssertEqual num_windows, len(tabpagebuflist())
+Expect:
+  ['A]:    10lines.txt
+      first line
+      second line
+
+  ['B]:    10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]:    10lines.txt
+      ninth line
+      tenth line
+  
+" TODO: Vader wipes out the older Markbar, which doesn't happen when I try doing it myself?
+" Do (Jump Back to Preexisting Markbar After Modifications):
+"   :tabnew 30lines.txt\<cr>
+"   mA
+"   :tabprev\<cr>
+" Expect:
+"   ['A]:    30lines.txt
+"       first line
+"       second line
+
+"   ['B]:    10lines.txt
+"       fourth line
+"       fifth line
+"       sixth line
+
+"   ['C]:    10lines.txt
+"       ninth line
+"       tenth line
+"  
