@@ -45,7 +45,7 @@ endfunction
 function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
 
-    execute 'vertical resize ' . markbar#settings#MarkbarWidth()
+    setlocal winfixwidth
     setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
     setlocal nowrap cursorline
     execute 'silent! file ' . markbar#settings#MarkbarBufferName()
@@ -57,10 +57,34 @@ function! markbar#ui#SetMarkbarSettings() abort
     call markbar#ui#SetGoToMark()
 endfunction
 
-" EFFECTS:  Opens an appropriately sized vertical split for a markbar.
-function! markbar#ui#OpenMarkbarSplit(markbar) abort
-    execute 'vsplit #' . a:markbar
-    execute 'vertical resize ' . markbar#settings#MarkbarWidth()
+" EFFECTS:  - Opens an appropriately sized vertical split for a markbar.
+"           - Sets appropriate markbar settings, if a new buffer was created.
+" PARAM:    markbar     (v:t_number)    The buffer number to be opened in the
+"                                       split. If none is provided, a new
+"                                       buffer will be created.
+" RETURNS:  (v:t_number)    The buffer number of the opened markbar.
+function! markbar#ui#OpenMarkbarSplit(...) abort
+    let a:markbar = get(a:, 1, '')
+
+    let l:position = markbar#settings#OpenPosition() . ' '
+    let l:orientation =
+        \ markbar#settings#MarkbarOpenVertical() ?
+            \ 'vertical ' : ' '
+    let l:size = markbar#settings#MarkbarWidth() . ' '
+    let l:command = empty(a:markbar) ? 'new ' : 'split #' . a:markbar
+
+    try
+        execute 'keepalt ' . l:position . l:orientation . l:size . l:command
+    catch /E499/
+        execute 'keepalt ' . l:position . l:orientation . l:size
+            \ . 'split | buffer! ' . a:markbar
+    endtry
+    if empty(a:markbar)
+        call markbar#ui#SetMarkbarSettings()
+        return bufnr('%')
+    endif
+
+    return a:markbar
 endfunction
 
 " EFFECTS:  Opens a markbar for the currently active buffer.

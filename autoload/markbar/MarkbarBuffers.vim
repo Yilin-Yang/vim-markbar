@@ -96,7 +96,7 @@ function! markbar#MarkbarBuffers#openMarkbar(self) abort
 endfunction
 
 " EFFECTS:  - Creates a new markbar buffer for the currently active buffer.
-"           - Opens this new markbar buffer in a sidebar.
+"           - Opens this new markbar buffer in a split.
 " RETURN:   (v:t_number)    The buffer number of the new buffer.
 function! markbar#MarkbarBuffers#spawnNewMarkbarBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
@@ -108,10 +108,8 @@ function! markbar#MarkbarBuffers#spawnNewMarkbarBuffer(self) abort
             \ . string(l:buffer_cache)
     endif
 
-    vnew
-    let l:markbar = bufnr('%')
+    let l:markbar = markbar#ui#OpenMarkbarSplit()
     let l:buffer_cache['_markbar_buffer_no'] = l:markbar
-    call markbar#ui#SetMarkbarSettings()
     return l:markbar
 endfunction
 

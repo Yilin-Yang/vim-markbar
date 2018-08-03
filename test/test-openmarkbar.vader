@@ -53,8 +53,22 @@ Expect:
       ninth line
       tenth line
   
-Do (Close Markbar, then Re-Open):
+Do (Close Markbar):
   :q\<cr>
+Expect:
+  first line
+  second line
+  third line
+  fourth line
+  fifth line
+  sixth line
+  seventh line
+  eighth line
+  ninth line
+  tenth line
+
+
+Do (Re-Open Closed Markbar (E499 Check)):
   :call markbar#ui#OpenMarkbar()\<cr>
 Expect:
   ['A]:    10lines.txt

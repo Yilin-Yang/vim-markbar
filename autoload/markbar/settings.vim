@@ -7,12 +7,45 @@ function! markbar#settings#MarksToDisplay() abort
     return g:markbar_marks_to_display
 endfunction
 
-" RETURN:   (v:t_string)    The width of an opened markbar, in columns.
+" RETURN:   (v:t_bool)      Whether to open markbars as vertical splits
+"                           (`v:true`) or horizontal splits (`v:false`).
+function! markbar#settings#MarkbarOpenVertical() abort
+    if !exists('g:markbar_open_vertical')
+        let g:markbar_open_vertical = v:true
+    endif
+    return g:markbar_open_vertical
+endfunction
+
+" RETURN:   (v:t_number)    The width of an opened vertical markbar, in columns.
 function! markbar#settings#MarkbarWidth() abort
     if !exists('g:markbar_width')
         let g:markbar_width = 30
     endif
     return g:markbar_width
+endfunction
+
+" RETURN:   (v:t_number)    The height of an opened horizontal markbar, in lines.
+function! markbar#settings#MarkbarHeight() abort
+    if !exists('g:markbar_height')
+        let g:markbar_height = 30
+    endif
+    return g:markbar_height
+endfunction
+
+" RETURN:   (v:t_string)    The positional command modifier to apply when
+"                           opening the markbar.
+function! markbar#settings#OpenPosition() abort
+    if !exists('g:markbar_open_position')
+        let g:markbar_open_position = 'botright'
+    endif
+    let l:valid_positions = [
+        \ 'leftabove', 'aboveleft', 'rightbelow',
+        \ 'belowright', 'topleft', 'botright'
+    \ ]
+    if index(l:valid_positions, g:markbar_open_position) ==# -1
+        throw '(vim-markbar) Bad value for g:markbar_open_position: ' . g:markbar_open_position
+    endif
+    return g:markbar_open_position
 endfunction
 
 " RETURN:   (v:t_string)    The name to give to any opened markbar buffers.
