@@ -1,10 +1,12 @@
 language: vim
 
 before_script: |
+  sudo add-apt-repository ppa:jonathonf/vim       -y
   sudo add-apt-repository ppa:neovim-ppa/unstable -y
   sudo add-apt-repository ppa:neovim-ppa/stable   -y
   sudo apt-get update  -q
-  sudo apt-get install -y neovim
+  sudo apt-get remove vim -y
+  sudo apt-get install -y neovim vim
   vim  --version
   nvim --version
   git clone https://github.com/junegunn/vader.vim.git
