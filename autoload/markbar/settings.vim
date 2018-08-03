@@ -158,3 +158,14 @@ function! markbar#settings#NumLinesContext() abort
     endif
     return g:markbar_num_lines_context
 endfunction
+
+" RETURN:   (v:t_bool)      `v:true` if the 'jump to mark from markbar'
+"                           mapping should go to the exact line *and column*
+"                           of the mark, or `v:false` if it should go to the
+"                           line (and column zero).
+function! markbar#settings#JumpToExactPosition() abort
+    if !exists('g:markbar_jump_to_exact_position')
+        let g:markbar_jump_to_exact_position = v:true
+    endif
+    return g:markbar_jump_to_exact_position
+endfunction

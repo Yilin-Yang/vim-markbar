@@ -31,7 +31,10 @@ function! s:GoToMark() abort
     let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
     if !len(l:selected_mark) | return | endif
     execute 'wincmd p'
-    execute 'normal! `' . l:selected_mark
+    let l:jump_command = 'normal! '
+    let l:jump_command .= markbar#settings#JumpToExactPosition() ?
+        \ '`' : "'"
+    execute l:jump_command . l:selected_mark
     if markbar#settings#CloseAfterGoTo()
         call markbar#ui#CloseMarkbar()
     endif
