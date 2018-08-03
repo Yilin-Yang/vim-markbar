@@ -13,17 +13,6 @@ noremap <silent> <Plug>ToggleMarkbar    :call markbar#ui#ToggleMarkbar()<cr>
 augroup vim_markbar_buffer_updates
     au!
     autocmd BufEnter * call g:markbar_buffers['pushNewBuffer()']()
-    autocmd BufEnter *
-        \ if g:markbar_buffers['markbarIsOpenCurrentTab()']()
-            \ | call g:markbar_buffers['updateCurrentAndGlobal()']()
-        \ | endif
+    autocmd BufEnter,TextChanged,TextChangedI,CursorHold,FileChangedShellPost
+        \ * call markbar#ui#RefreshMarkbar()
 augroup end
-
-" TODO: only trigger when performing actions that affect lines with marks
-" TODO: does `x` from visual mode trigger TextChanged?
-" augroup vim_markbar_database_populators
-"     au!
-"     autocmd BufEnter,TextYankPost,TextChanged,TextChangedI
-"         \ *
-"         \ g:PopulateBufferDatabase() | g:PopulateGlobalDatabase()
-" augroup end

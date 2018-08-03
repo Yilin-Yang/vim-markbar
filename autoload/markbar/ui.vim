@@ -110,3 +110,14 @@ endfunction
 function! markbar#ui#ToggleMarkbar() abort
     call g:markbar_buffers['toggleMarkbar()']()
 endfunction
+
+" EFFECTS:  If any markbars are open,
+"           - Closes any open markbars,
+"           - Opens an updated markbar for the current active buffer.
+function! markbar#ui#RefreshMarkbar() abort
+    if g:markbar_buffers['markbarIsOpenCurrentTab()']()
+        let l:cur_winnr = winnr()
+        call markbar#ui#OpenMarkbar()
+        execute l:cur_winnr . 'wincmd w'
+    endif
+endfunction

@@ -69,13 +69,16 @@ function! markbar#MarkbarBuffers#updateCurrentAndGlobal(self) abort
     call l:global_buffer_cache['updateContexts()'](markbar#settings#NumLinesContext())
 endfunction
 
-" EFFECTS:  - Creates a markbar buffer for the currently active buffer if one
+" EFFECTS:  - Closes any existing markbars.
+"           - Creates a markbar buffer for the currently active buffer if one
 "           does not yet exist.
 "           - Opens this markbar buffer in a sidebar.
 function! markbar#MarkbarBuffers#openMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
 
+    call a:self['closeMarkbar()']()
     call a:self['updateCurrentAndGlobal()']()
+
     let l:active_buffer       = a:self['_active_buffer_stack']['top()']()
     let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
 
@@ -188,7 +191,7 @@ function! markbar#MarkbarBuffers#getMarkbarContents(self, buffer_no, marks) abor
     return l:lines
 endfunction
 
-" EFFECTS:  - *Replaces* the given buffer with the marks and contexts of the
+" EFFECTS:  *Replaces* the given buffer with the marks and contexts of the
 "           given buffer.
 function! markbar#MarkbarBuffers#populateWithMarkbar(
     \ self,
