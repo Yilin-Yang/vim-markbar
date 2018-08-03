@@ -197,7 +197,7 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
 
     let l:half_context = a:num_lines / 2
     let l:end = a:around_line + l:half_context
-    let l:start = max( [ a:around_line - l:half_context, 1 ] )
+    let l:start = a:around_line - l:half_context
 
     " if resulting range is one line too large (i.e. caller gave
     " even a:num_lines), scooch l:start down by one
@@ -205,9 +205,19 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
         let l:start += 1
     endif
 
-    if l:start <# 1
-        let l:start = 1
-    endif
+    let l:context_prefix = []
+    while l:start <# 1
+        let l:context_prefix += ['~']
+        let l:start += 1
+    endwhile
 
-    return markbar#helpers#FetchBufferLineRange(a:buffer_expr, l:start, l:end)
+    let l:context =
+        \ l:context_prefix
+        \ + markbar#helpers#FetchBufferLineRange(a:buffer_expr, l:start, l:end)
+
+    while len(l:context) <# a:num_lines
+        let l:context += ['~']
+    endwhile
+
+    return l:context
 endfunction

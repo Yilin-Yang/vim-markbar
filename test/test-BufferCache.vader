@@ -166,5 +166,6 @@ Then:
   let expected = [
       \ 'forty-ninth line',
       \ 'fiftieth line',
+      \ '~',
     \ ]
   AssertEqual expected, global_marks['E']['_context']

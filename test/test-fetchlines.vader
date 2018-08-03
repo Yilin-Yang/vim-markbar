@@ -121,6 +121,7 @@ Execute (Get Context, Cut Off by Top of File):
   let result = markbar#helpers#FetchContext('*/2lines.txt', 1, 3)
 Then:
   let expected = [
+    \ '~',
     \ 'first line',
     \ 'second line',
   \ ]
@@ -132,5 +133,6 @@ Then:
   let expected = [
     \ 'first line',
     \ 'second line',
+    \ '~',
   \ ]
   AssertEqual expected, result

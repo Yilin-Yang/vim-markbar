@@ -42,6 +42,7 @@ Then:
   AssertEqual buf_workbench, g:markbar_buffers['getActiveBuffer()']()
 Expect:
   ['A]:    10lines.txt
+      ~
       first line
       second line
 
@@ -53,6 +54,7 @@ Expect:
   ['C]:    10lines.txt
       ninth line
       tenth line
+      ~
   
 Do (Close Markbar):
   :q\<cr>
@@ -73,6 +75,7 @@ Do (Re-Open Closed Markbar (E499 Check)):
   :call markbar#ui#OpenMarkbar()\<cr>
 Expect:
   ['A]:    10lines.txt
+      ~
       first line
       second line
 
@@ -84,6 +87,7 @@ Expect:
   ['C]:    10lines.txt
       ninth line
       tenth line
+      ~
   
 Do (Move Cursor to Existing Markbar):
   \<C-w>p:call markbar#ui#OpenMarkbar()\<cr>
@@ -92,6 +96,7 @@ Then:
   " AssertEqual num_windows, len(tabpagebuflist())
 Expect:
   ['A]:    10lines.txt
+      ~
       first line
       second line
 
@@ -103,6 +108,7 @@ Expect:
   ['C]:    10lines.txt
       ninth line
       tenth line
+      ~
   
 Execute (Close Markbar):
   edit! 10lines.txt
