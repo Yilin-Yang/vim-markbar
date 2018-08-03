@@ -52,11 +52,11 @@ endfunction
 function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
 
-    set winfixwidth winfixheight
+    setlocal winfixwidth winfixheight cursorline
     setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
-    setlocal nowrap cursorline
+    setlocal nowrap nospell
     execute 'silent! file ' . markbar#settings#MarkbarBufferName()
-    set filetype=markbar syntax=markbar
+    setlocal filetype=markbar syntax=markbar
 
     let b:is_markbar = 1
     let w:is_markbar = 1
