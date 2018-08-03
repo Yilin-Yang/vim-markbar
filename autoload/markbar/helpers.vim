@@ -103,27 +103,25 @@ function! markbar#helpers#SetBufferLineRange(buffer_expr, start, end, lines) abo
     if has('nvim')
         call nvim_buf_set_lines(l:target_buf, a:start - 1, a:end - 1, 0, a:lines)
     else
-        let l:cur_buffer = bufnr('%')
-        let l:hidden = &hidden
-        set hidden
-
-        execute 'buffer ' . l:target_buf
-        let l:num_lines = line('$')
-        if      a:start <=# 0 | let l:start = a:start + l:num_lines + 1
-        else                  | let l:start = a:start
+        let l:num_lines = len(getbufline(l:target_buf, 1, '$'))
+        if     !a:start       | let l:start = l:num_lines
+        elseif  a:start <#  0 | let l:start = a:start + l:num_lines
+        else                  | let l:start = a:start - 1
         endif
 
-        if      a:end   <=# 0 | let l:end = a:end + l:num_lines + 1
-        else                  | let l:end = a:end
+        if     !a:end      | let l:end = l:num_lines
+        elseif  a:end <# 0 | let l:end = a:end + l:num_lines
+        else               | let l:end = a:end - 1
         endif
 
-        if !(l:start ==# l:end)
-            execute l:target_buf . 'bufdo normal! '.l:start.'GV'.(l:end - 1).'G"_x'
+        call deletebufline(l:target_buf, l:start + 1, l:end)
+        let l:buffer_wiped = getbufline(l:target_buf, 1, '$') ==# [''] ? 1 : 0
+        call appendbufline(l:target_buf, l:start, a:lines)
+        if l:buffer_wiped
+            " 'deleting everything' and then appending will leave one more
+            " empty line than nvim_buf_set_lines
+            call deletebufline(l:target_buf, '$')
         endif
-        call append(l:start - 1, a:lines)
-        execute 'buffer ' . l:cur_buffer
-
-        let &hidden = l:hidden
     endif
 endfunction
 
