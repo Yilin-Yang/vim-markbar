@@ -20,7 +20,7 @@ endfunction
 function! markbar#ui#GetCurrentMarkHeading() abort
     call s:CheckBadBufferType()
     let l:cur_heading = search(
-        \ "^\['.\]",
+        \ '^\[''.\]',
         \ 'bnc',
         \ 1
     \ )
@@ -30,7 +30,11 @@ endfunction
 function! s:GoToMark() abort
     let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
     if !len(l:selected_mark) | return | endif
-
+    execute 'wincmd p'
+    execute 'normal! `' . l:selected_mark
+    if markbar#settings#CloseAfterGoTo()
+        call markbar#ui#CloseMarkbar()
+    endif
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.

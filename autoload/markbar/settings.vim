@@ -32,6 +32,15 @@ function! markbar#settings#MarkbarHeight() abort
     return g:markbar_height
 endfunction
 
+" RETURN:   (v:t_bool)      Whether to close an open markbar after jumping to
+"                           a mark from the markbar.
+function! markbar#settings#CloseAfterGoTo() abort
+    if !exists('g:markbar_close_after_go_to')
+        let g:markbar_close_after_go_to = v:true
+    endif
+    return g:markbar_close_after_go_to
+endfunction
+
 " RETURN:   (v:t_string)    The positional command modifier to apply when
 "                           opening the markbar.
 function! markbar#settings#OpenPosition() abort
