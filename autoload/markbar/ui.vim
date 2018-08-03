@@ -104,3 +104,9 @@ endfunction
 function! markbar#ui#CloseMarkbar() abort
     return g:markbar_buffers['closeMarkbar()']()
 endfunction
+
+" EFFECTS:  Closes the currently open markbar(s), if they are open. If none
+"           are open, open a markbar for the active buffer.
+function! markbar#ui#ToggleMarkbar() abort
+    call g:markbar_buffers['toggleMarkbar()']()
+endfunction

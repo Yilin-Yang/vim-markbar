@@ -6,9 +6,9 @@ let g:vim_markbar_autoloaded = 1
 " BRIEF:    The entire vim-markbar state, not including user settings.
 let g:markbar_buffers = markbar#MarkbarBuffers#new()
 
-"==============================================================================
-" AUTOCMDS: ==================================================================
-"==============================================================================
+noremap <silent> <Plug>OpenMarkbar      :call markbar#ui#OpenMarkbar()<cr>
+noremap <silent> <Plug>CloseMarkbar     :call markbar#ui#CloseMarkbar()<cr>
+noremap <silent> <Plug>ToggleMarkbar    :call markbar#ui#ToggleMarkbar()<cr>
 
 augroup vim_markbar_buffer_updates
     au!

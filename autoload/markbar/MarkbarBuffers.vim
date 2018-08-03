@@ -29,6 +29,8 @@ function! markbar#MarkbarBuffers#new() abort
         \ function('markbar#MarkbarBuffers#pushNewBuffer', [l:new])
     let l:new['spawnNewMarkbarBuffer()'] =
         \ function('markbar#MarkbarBuffers#spawnNewMarkbarBuffer', [l:new])
+    let l:new['toggleMarkbar()'] =
+        \ function('markbar#MarkbarBuffers#toggleMarkbar', [l:new])
     let l:new['updateCurrentAndGlobal()'] =
         \ function('markbar#MarkbarBuffers#updateCurrentAndGlobal', [l:new])
     let l:new['getMarkbarContents()'] =
@@ -112,6 +114,14 @@ function! markbar#MarkbarBuffers#closeMarkbar(self) abort
         endif
     endfor
     return l:closed_windows
+endfunction
+
+" EFFECTS:  Closes the currently open markbar, if one is open. If no markbar
+"           is open, open a markbar for the active buffer.
+function! markbar#MarkbarBuffers#toggleMarkbar(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    if   a:self['closeMarkbar()']() | return | endif
+    call a:self['openMarkbar()']()
 endfunction
 
 " EFFECTS:  - Creates a new markbar buffer for the currently active buffer.
