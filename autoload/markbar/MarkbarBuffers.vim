@@ -13,12 +13,16 @@ function! markbar#MarkbarBuffers#new() abort
                 \ markbar#settings#MaximumActiveBufferHistory()
             \ ),
     \ }
+    let l:new['closeMarkbar()'] =
+        \ function('markbar#MarkbarBuffers#closeMarkbar', [l:new])
     let l:new['getActiveBuffer()'] =
         \ function('markbar#MarkbarBuffers#getActiveBuffer', [l:new])
+    let l:new['getActiveBufferMarkbarWindow()'] =
+        \ function('markbar#MarkbarBuffers#getActiveBufferMarkbarWindow', [l:new])
     let l:new['getBufferCache()'] =
         \ function('markbar#MarkbarBuffers#getBufferCache', [l:new])
-    let l:new['markbarOpenCurrentTab()'] =
-        \ function('markbar#MarkbarBuffers#markbarOpenCurrentTab', [l:new])
+    let l:new['markbarIsOpenCurrentTab()'] =
+        \ function('markbar#MarkbarBuffers#markbarIsOpenCurrentTab', [l:new])
     let l:new['openMarkbar()'] =
         \ function('markbar#MarkbarBuffers#openMarkbar', [l:new])
     let l:new['populateWithMarkbar()'] =
@@ -93,6 +97,18 @@ function! markbar#MarkbarBuffers#openMarkbar(self) abort
     endif
 
     call a:self['populateWithMarkbar()'](l:active_buffer, l:markbar_buffer)
+endfunction
+
+" EFFECTS:  Closes the markbar that is open in the current tab page, if one
+"           exists. Else, does nothing.
+" RETURN:   (v:t_bool)      `v:true` if a markbar was actually closed,
+"                           `v:false` otherwise.
+function! markbar#MarkbarBuffers#closeMarkbar(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    let l:markbar_window = a:self['getActiveBufferMarkbarWindow()']()
+    if l:markbar_window ==# -1 | return v:false | endif
+    execute l:markbar_window . 'close'
+    return v:true
 endfunction
 
 " EFFECTS:  - Creates a new markbar buffer for the currently active buffer.
@@ -190,9 +206,19 @@ function! markbar#MarkbarBuffers#getActiveBuffer(self) abort
     return a:self['_active_buffer_stack']['top()']()
 endfunction
 
-" RETURN:   (v:t_bool)      `v:true` if the active buffer's markbar is
-"                           open in the current tab, `v:false` otherwise.
-function! markbar#MarkbarBuffers#markbarOpenCurrentTab(self) abort
+" RETURN:   (v:t_number)    The buffer number of the active buffer's
+"                           markbar, or a negative number if it doesn't have
+"                           one.
+function! markbar#MarkbarBuffers#getActiveBufferMarkbar(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    let l:active_buffer       = a:self['_active_buffer_stack']['top()']()
+    let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
+    return l:active_buffer_cache['_markbar_buffer_no']
+endfunction
+
+" RETURN:   (v:t_number)    The window number of the active buffer's markbar,
+"                           or -1 if it isn't open.
+function! markbar#MarkbarBuffers#getActiveBufferMarkbarWindow(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     try
         let l:active_buffer = a:self['_active_buffer_stack']['top()']()
@@ -205,5 +231,12 @@ function! markbar#MarkbarBuffers#markbarOpenCurrentTab(self) abort
     let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
     let l:markbar_buffer = l:active_buffer_cache['_markbar_buffer_no']
     let l:markbar_window = bufwinnr(l:markbar_buffer)
-    return l:markbar_window ==# -1 ? v:false : v:true
+    return l:markbar_window
+endfunction
+
+" RETURN:   (v:t_bool)      `v:true` if the active buffer's markbar is
+"                           open in the current tab, `v:false` otherwise.
+function! markbar#MarkbarBuffers#markbarIsOpenCurrentTab(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    return a:self['getActiveBufferMarkbarWindow()']() ==# -1 ? v:false : v:true
 endfunction

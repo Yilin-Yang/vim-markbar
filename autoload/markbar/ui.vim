@@ -45,7 +45,7 @@ endfunction
 function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
 
-    setlocal winfixwidth
+    set winfixwidth winfixheight
     setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
     setlocal nowrap cursorline
     execute 'silent! file ' . markbar#settings#MarkbarBufferName()
@@ -90,4 +90,10 @@ endfunction
 " EFFECTS:  Opens a markbar for the currently active buffer.
 function! markbar#ui#OpenMarkbar() abort
     call g:markbar_buffers['openMarkbar()']()
+endfunction
+
+" EFFECTS:  Closes the markbar for the currently active buffer, if a markbar
+"           is open.
+function! markbar#ui#CloseMarkbar() abort
+    return g:markbar_buffers['closeMarkbar()']()
 endfunction

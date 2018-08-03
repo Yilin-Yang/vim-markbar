@@ -14,7 +14,7 @@ augroup vim_markbar_buffer_updates
     au!
     autocmd BufEnter * call g:markbar_buffers['pushNewBuffer()']()
     autocmd BufEnter *
-        \ if g:markbar_buffers['markbarOpenCurrentTab()']()
+        \ if g:markbar_buffers['markbarIsOpenCurrentTab()']()
             \ | call g:markbar_buffers['updateCurrentAndGlobal()']()
         \ | endif
 augroup end

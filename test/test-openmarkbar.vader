@@ -1,5 +1,6 @@
 Execute (Delete All Preexisting Marks, Set Settings):
   let g:markbar_num_lines_context = 3
+  let g:markbar_open_vertical = v:true
   delmarks a-zA-Z0-9<>\"^.
 
   " Open test files.
@@ -103,7 +104,40 @@ Expect:
       ninth line
       tenth line
   
-" TODO: Vader wipes out the older Markbar, which doesn't happen when I try doing it myself?
+Execute (Close Markbar):
+  edit! 10lines.txt
+  call markbar#ui#OpenMarkbar()
+  let result = markbar#ui#CloseMarkbar()
+Then:
+  Assert result, 'Markbar failed to close!'
+Expect:
+  first line
+  second line
+  third line
+  fourth line
+  fifth line
+  sixth line
+  seventh line
+  eighth line
+  ninth line
+  tenth line
+
+" TODO: Vader keeps reporting test failure, even though it seems to work
+" properly when I do it myself?
+" Do (Test For Fixed Markbar Width, Even After Closing Other Splits):
+"   :call markbar#ui#OpenMarkbar()\<cr>
+"   :let g:markbar_width = winwidth(winnr())\<cr>
+"   \<C-w>p
+"   :vsplit\<cr>
+"   :q\<cr>
+"   :call markbar#ui#OpenMarkbar()\<cr>
+" Then:
+"   AssertEqual g:markbar_width, winwidth(winnr())
+
+" TODO: ditto the above, but for markbar height
+  
+" TODO: Vader wipes out the older Markbar, which doesn't happen when I try
+" doing it myself?
 " Do (Jump Back to Preexisting Markbar After Modifications):
 "   :tabnew 30lines.txt\<cr>
 "   mA
