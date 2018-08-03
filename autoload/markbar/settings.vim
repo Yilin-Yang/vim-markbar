@@ -83,12 +83,25 @@ function! markbar#settings#ContextIndentBlock() abort
         let g:markbar_context_indent_block = l:block_to_return
     endif
 
-    if !len(g:markbar_context_indent_block)
-        throw 'Error: Must provide at least some indentation for markbar contexts!'
-    endif
-    if len(matchstr(g:markbar_context_indent_block, '['))
-        throw 'Error: Given context indent block: "' . g:markbar_context_indent_block
-            \ . '" may cause issues with markbar.'
+    if !exists('g:markbar_context_indent_block_NOWARN')
+        let l:silence_text =
+            \ '(Set g:markbar_context_indent_block_NOWARN '
+            \ . 'to 1 to silence this warning.)'
+        if !len(g:markbar_context_indent_block)
+                \ ||  (g:markbar_context_indent_block[0] !=# ' '
+                \   && g:markbar_context_indent_block[0] !=# "\t")
+            echoerr '(vim-markbar) WARNING: Context indentation block '
+                \ . 'that doesn''t start with a space or tab '
+                \ . 'will break markbar syntax highlighting. '
+                \ . l:silence_text
+        endif
+        if len(matchstr(g:markbar_context_indent_block, '['))
+            echoerr '(vim-markbar) WARNING: Given context indent block: "'
+                \ . g:markbar_context_indent_block
+                \ . '" contains dangerous character "[" that may break '
+                \ . "markbar's 'jump to mark' mappings. "
+                \ . l:silence_text
+        endif
     endif
 
     return g:markbar_context_indent_block
@@ -97,10 +110,22 @@ endfunction
 " RETURN:   (v:t_list)      A list populated with a number of zero-length
 "                           strings equal to the number of blank spaces that
 "                           should exist in between markbar 'section
-"                           headings'.
+"                           headings'. Should be at least 1, or else syntax
+"                           highlighting will break.
 function! markbar#settings#MarkbarSectionSeparator() abort
     if !exists('g:markbar_section_separation')
         let g:markbar_section_separation = 1
+    endif
+
+    if g:markbar_section_separation <# 0
+        throw '(vim-markbar) Bad value for g:markbar_section_separation: '
+            \ . g:markbar_section_separation
+    endif
+
+    if !exists('g:markbar_section_separation_NOWARN') && !g:markbar_section_separation
+        echoerr '(vim-markbar) WARNING: A zero-line section separation will break '
+            \ . 'markbar syntax highlighting. (Set g:markbar_section_separation_NOWARN '
+            \ . 'to 1 to silence this warning.)'
     endif
 
     let l:separator = []
