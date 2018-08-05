@@ -1,0 +1,3 @@
+Execute (Delete All Marks; Open Buffers):
+  " Delete all preexisting marks.
+  delmarks a-zA-Z0-9<>\"^.

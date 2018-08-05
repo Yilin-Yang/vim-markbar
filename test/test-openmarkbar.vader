@@ -1,30 +1,8 @@
-Execute (Delete All Preexisting Marks, Set Settings):
+Include: clear-marks.vader
+
+Execute (Set Settings):
   let g:markbar_num_lines_context = 3
   let g:markbar_open_vertical = v:true
-  delmarks a-zA-Z0-9<>\"^.
-
-  " Open test files.
-  let s:test_files = [
-    \ '10lines.txt',
-  \ ]
-
-  " Check if we're running from tests folder.
-
-  " This check won't work correctly if we're in some other directory that has
-  " a file named '1lines.txt' for some reason, but that won't happen on Travis.
-
-  let s:test_file_to_check = s:test_files[0]
-  if !filereadable(s:test_file_to_check)
-    throw 'ERROR: required test file "'
-      \ . s:test_file_to_check
-      \ . '" not available in PWD!'
-  endif
-
-  let s:i = 0
-  while s:i <# len(s:test_files)
-    execute 'normal :edit! ' . s:test_files[s:i] . "\<cr>"
-    let s:i += 1
-  endwhile
 
 Do (Open Markbar, No Marks):
   call markbar#ui#OpenMarkbar()

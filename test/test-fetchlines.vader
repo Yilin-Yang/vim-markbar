@@ -1,14 +1,11 @@
 Before (Reload Test Files):
+  " Largely a duplicate of load-test-files.vader, but included in a `Before:`
+  " block rather than an `Execute:` block
   let s:test_files = [
     \ '1lines.txt',
     \ '2lines.txt',
     \ '10lines.txt',
   \ ]
-
-  " Check if we're running from tests folder.
-
-  " This won't work correctly if we're in some other directory that has a file
-  " named '1lines.txt' for some reason, but that won't happen on Travis.
 
   let s:test_file_to_check = s:test_files[0]
   if !filereadable(s:test_file_to_check)
