@@ -4,5 +4,8 @@
 #           localvimrc as well as neovim.
 # DETAILS:  Taken, in part, from:
 #               https://github.com/junegunn/vader.vim
+#               https://github.com/neovim/neovim/issues/4842
 
-nvim -Nu .lvimrc +Vader*
+set -p
+export VADER_OUTPUT_FILE=/dev/stderr
+nvim --headless -Nnu .lvimrc -i NONE -c 'Vader! *vader'
