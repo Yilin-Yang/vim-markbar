@@ -15,6 +15,8 @@ function! markbar#MarkbarBuffers#new() abort
     \ }
     let l:new['closeMarkbar()'] =
         \ function('markbar#MarkbarBuffers#closeMarkbar', [l:new])
+    let l:new['evictBufferCache()'] =
+        \ function('markbar#MarkbarBuffers#evictBufferCache', [l:new])
     let l:new['getActiveBuffer()'] =
         \ function('markbar#MarkbarBuffers#getActiveBuffer', [l:new])
     let l:new['getBufferCache()'] =
@@ -243,4 +245,15 @@ function! markbar#MarkbarBuffers#markbarIsOpenCurrentTab(self) abort
         endif
     endfor
     return v:false
+endfunction
+
+" RETURNS:  (v:t_bool)      `v:true` if a cache was successfully removed,
+"                           `v:false` otherwise.
+function! markbar#MarkbarBuffers#evictBufferCache(self, buffer_no) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    if !has_key(a:self['_buffer_caches'], a:buffer_no)
+        return v:false
+    endif
+    call remove(a:self['_buffer_caches'], a:buffer_no)
+    return v:true
 endfunction

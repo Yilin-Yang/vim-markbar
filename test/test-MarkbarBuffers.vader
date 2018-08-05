@@ -174,3 +174,12 @@ Execute (MarkbarBuffers: Active Buffer Check):
 Then:
   let result = g:markbar_buffers['getActiveBuffer()']()
   AssertEqual curr_buffer, result
+
+Execute (MarkbarBuffers: Cache Eviction):
+  " successful eviction
+  Assert has_key(g:markbar_buffers['_buffer_caches'], g:bufno_30lines)
+  Assert g:markbar_buffers['evictBufferCache()'](g:bufno_30lines)
+  Assert !has_key(g:markbar_buffers['_buffer_caches'], g:bufno_30lines)
+
+  " unsuccessful eviction of not-present key
+  Assert !g:markbar_buffers['evictBufferCache()'](g:bufno_30lines)

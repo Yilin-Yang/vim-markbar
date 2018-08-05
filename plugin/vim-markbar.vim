@@ -15,4 +15,6 @@ augroup vim_markbar_buffer_updates
     autocmd BufEnter * call g:markbar_buffers['pushNewBuffer()']()
     autocmd BufEnter,TextChanged,TextChangedI,CursorHold,FileChangedShellPost
         \ * call markbar#ui#RefreshMarkbar()
+    autocmd BufDelete,BufWipeout *
+        \ call g:markbar_buffers['evictBufferCache()'](expand('<abuf>') + 0)
 augroup end
