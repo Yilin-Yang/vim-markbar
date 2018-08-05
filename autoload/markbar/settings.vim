@@ -1,9 +1,40 @@
+function! s:VimLTypeToString(type) abort
+    let l:type = a:type + 0  " cast to number
+    let l:types = {
+        \ 0: 'v:t_number',
+        \ 1: 'v:t_string',
+        \ 2: 'v:t_func',
+        \ 3: 'v:t_list',
+        \ 4: 'v:t_dict',
+        \ 5: 'v:t_float',
+        \ 6: 'v:t_bool',
+        \ 7: 'v:null',
+    \ }
+    if !has_key(l:types, l:type)
+        throw '(vim-markbar) Nonexistent variable type with val: ' . a:type
+    endif
+    return l:types[a:type]
+endfunction
+
+function! s:AssertType(variable, expected, variable_name) abort
+    if type(a:variable) !=# a:expected
+        throw '(vim-markbar) Variable ' . a:variable_name
+            \ . ' should have type: ' . s:VimLTypeToString(a:expected)
+            \ . ' but instead has type: ' . s:VimLTypeToString(type(a:variable))
+    endif
+endfunction
+
 " RETURNS:  (v:t_string)    All marks to display in the markbar, in order.
 function! markbar#settings#MarksToDisplay() abort
     if !exists('g:markbar_marks_to_display')
         let g:markbar_marks_to_display =
             \ 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     endif
+    call s:AssertType(
+        \ g:markbar_marks_to_display,
+        \ v:t_string,
+        \ 'g:markbar_marks_to_display'
+    \ )
     return g:markbar_marks_to_display
 endfunction
 
@@ -13,6 +44,11 @@ function! markbar#settings#MarkbarOpenVertical() abort
     if !exists('g:markbar_open_vertical')
         let g:markbar_open_vertical = v:true
     endif
+    call s:AssertType(
+        \ g:markbar_open_vertical,
+        \ v:t_bool,
+        \ 'g:markbar_open_vertical'
+    \ )
     return g:markbar_open_vertical
 endfunction
 
@@ -21,6 +57,11 @@ function! markbar#settings#MarkbarWidth() abort
     if !exists('g:markbar_width')
         let g:markbar_width = 30
     endif
+    call s:AssertType(
+        \ g:markbar_width,
+        \ v:t_number,
+        \ 'g:markbar_width'
+    \ )
     return g:markbar_width
 endfunction
 
@@ -29,6 +70,11 @@ function! markbar#settings#MarkbarHeight() abort
     if !exists('g:markbar_height')
         let g:markbar_height = 30
     endif
+    call s:AssertType(
+        \ g:markbar_height,
+        \ v:t_number,
+        \ 'g:markbar_height'
+    \ )
     return g:markbar_height
 endfunction
 
@@ -38,6 +84,11 @@ function! markbar#settings#CloseAfterGoTo() abort
     if !exists('g:markbar_close_after_go_to')
         let g:markbar_close_after_go_to = v:true
     endif
+    call s:AssertType(
+        \ g:markbar_close_after_go_to,
+        \ v:t_bool,
+        \ 'g:markbar_close_after_go_to'
+    \ )
     return g:markbar_close_after_go_to
 endfunction
 
@@ -47,6 +98,11 @@ function! markbar#settings#OpenPosition() abort
     if !exists('g:markbar_open_position')
         let g:markbar_open_position = 'botright'
     endif
+    call s:AssertType(
+        \ g:markbar_open_position,
+        \ v:t_string,
+        \ 'g:markbar_open_position'
+    \ )
     let l:valid_positions = [
         \ 'leftabove', 'aboveleft', 'rightbelow',
         \ 'belowright', 'topleft', 'botright'
@@ -62,6 +118,11 @@ function! markbar#settings#MarkbarBufferName() abort
     if !exists('g:markbar_buffer_name')
         let g:markbar_buffer_name = '[ Markbar ]'
     endif
+    call s:AssertType(
+        \ g:markbar_buffer_name,
+        \ v:t_string,
+        \ 'g:markbar_buffer_name'
+    \ )
     return g:markbar_buffer_name
 endfunction
 
@@ -82,6 +143,12 @@ function! markbar#settings#ContextIndentBlock() abort
         endwhile
         let g:markbar_context_indent_block = l:block_to_return
     endif
+
+    call s:AssertType(
+        \ g:markbar_context_indent_block,
+        \ v:t_string,
+        \ 'g:markbar_context_indent_block'
+    \ )
 
     if !exists('g:markbar_context_indent_block_NOWARN')
         let l:silence_text =
@@ -116,6 +183,11 @@ function! markbar#settings#MarkbarSectionSeparator() abort
     if !exists('g:markbar_section_separation')
         let g:markbar_section_separation = 1
     endif
+    call s:AssertType(
+        \ g:markbar_section_separation,
+        \ v:t_number,
+        \ 'g:markbar_section_separation'
+    \ )
 
     if g:markbar_section_separation <# 0
         throw '(vim-markbar) Bad value for g:markbar_section_separation: '
@@ -143,6 +215,11 @@ function! markbar#settings#IgnoreBufferCriteria() abort
     if !exists('g:markbar_ignore_buffer_criteria')
         let g:markbar_ignore_buffer_criteria = ['unload', 'delete', 'wipe']
     endif
+    call s:AssertType(
+        \ g:markbar_ignore_buffer_criteria,
+        \ v:t_list,
+        \ 'g:markbar_ignore_buffer_criteria'
+    \ )
 
     let l:valid_ignore_criteria = ['unload', 'delete', 'wipe', 'hide', '<empty>']
     let l:criteria = {}
@@ -165,9 +242,11 @@ function! markbar#settings#MaximumActiveBufferHistory() abort
     if !exists('g:markbar_maximum_active_buffer_history')
         let g:markbar_maximum_active_buffer_history = 100
     endif
-    if type(g:markbar_maximum_active_buffer_history) !=# v:t_number
-        throw 'Invalid data type for g:markbar_maximum_active_buffer_history.'
-    endif
+    call s:AssertType(
+        \ g:markbar_maximum_active_buffer_history,
+        \ v:t_number,
+        \ 'g:markbar_maximum_active_buffer_history'
+    \ )
     if g:markbar_maximum_active_buffer_history <# 2
         throw 'Value too small for g:markbar_maximum_active_buffer_history: '
             \ . g:markbar_maximum_active_buffer_history
@@ -181,6 +260,11 @@ function! markbar#settings#NumLinesContext() abort
     if !exists('g:markbar_num_lines_context')
         let g:markbar_num_lines_context = 5
     endif
+    call s:AssertType(
+        \ g:markbar_num_lines_context,
+        \ v:t_number,
+        \ 'g:markbar_num_lines_context'
+    \ )
     return g:markbar_num_lines_context
 endfunction
 
@@ -192,5 +276,10 @@ function! markbar#settings#JumpToExactPosition() abort
     if !exists('g:markbar_jump_to_exact_position')
         let g:markbar_jump_to_exact_position = v:true
     endif
+    call s:AssertType(
+        \ g:markbar_jump_to_exact_position,
+        \ v:t_bool,
+        \ 'g:markbar_jump_to_exact_position'
+    \ )
     return g:markbar_jump_to_exact_position
 endfunction
