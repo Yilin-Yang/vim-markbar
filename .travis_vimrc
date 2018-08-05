@@ -3,17 +3,11 @@
 " Taken from:
 "   https://github.com/junegunn/vader.vim
 "----------------------------------------
-" To load this file automatically when in the `test` folder, use
-" vim-localvimrc, which can be found here:
-"   https://github.com/embear/vim-localvimrc
-"-------------------------------------------
 filetype off
-set runtimepath+=vader.vim
 set runtimepath+=.
 set runtimepath+=..
+set runtimepath+=vader.vim
 set runtimepath+=~/.vim/bundle/vader.vim
-set runtimepath+=~/.vim/bundle/vim-markdown
-set runtimepath+=~/.vim/bundle/vim-markdown/after
 filetype plugin indent on
 syntax enable
 set autoread
