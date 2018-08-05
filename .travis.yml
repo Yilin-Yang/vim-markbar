@@ -1,17 +1,21 @@
 language: vim
 
-before_script: |
-  sudo add-apt-repository ppa:jonathonf/vim       -y
-  sudo add-apt-repository ppa:neovim-ppa/unstable -y
-  sudo add-apt-repository ppa:neovim-ppa/stable   -y
-  sudo apt-get update  -q
-  sudo apt-get remove vim -y
-  sudo apt-get install -y neovim vim
-  vim  --version
-  nvim --version
-  git clone https://github.com/junegunn/vader.vim.git test/vader.vim
+before_script:
+  - |
+    sudo add-apt-repository ppa:jonathonf/vim       -y
+    sudo add-apt-repository ppa:neovim-ppa/unstable -y
+    sudo add-apt-repository ppa:neovim-ppa/stable   -y
+  - sudo apt-get update  -q
+  - |
+    sudo apt-get remove vim -y
+    sudo apt-get install -y vim
+    vim  --version
+  - |
+    sudo apt-get install -y neovim vim
+    nvim --version
+  - git clone https://github.com/junegunn/vader.vim.git test/vader.vim
 
-script: |
-  cd test # to make handling filepaths easier
-  ./run_tests_nvim.sh
-  ./run_tests_vim.sh
+script:
+  - cd test # to make handling filepaths easier
+  - ./run_tests_nvim.sh
+  - ./run_tests_vim.sh
