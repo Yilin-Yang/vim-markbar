@@ -3,6 +3,12 @@ Include: clear-marks.vader
 Execute (Set Settings):
   let g:markbar_num_lines_context = 3
   let g:markbar_open_vertical = v:true
+  let g:markbar_mark_name_format_string     = ''
+  let g:markbar_file_mark_format_string     = '%s'
+  let g:markbar_numbered_mark_format_string = ''
+  let g:markbar_mark_name_arguments     = []
+  let g:markbar_file_mark_arguments     = ['fname']
+  let g:markbar_numbered_mark_arguments = []
 
 Do (Open Markbar, No Marks):
   call markbar#ui#OpenMarkbar()

@@ -7,11 +7,14 @@ function! markbar#MarkData#new() abort
         \ 'TYPE': 'MarkData',
         \ '_data': [],
         \ '_context': [],
+        \ '_name': ''
     \ }
     let l:new['getColumnNo()'] = function('markbar#MarkData#getColumnNo', [l:new])
     let l:new['getLineNo()']   = function('markbar#MarkData#getLineNo',   [l:new])
     let l:new['getMark()']     = function('markbar#MarkData#getMark',     [l:new])
+    let l:new['getName()']     = function('markbar#MarkData#getName',     [l:new])
     let l:new['isGlobal()']    = function('markbar#MarkData#isGlobal',    [l:new])
+    let l:new['setName()']     = function('markbar#MarkData#setName',     [l:new])
     return l:new
 endfunction
 
@@ -62,9 +65,19 @@ function! markbar#MarkData#getColumnNo(self) abort
     return a:self['_data'][2]
 endfunction
 
+function! markbar#MarkData#getName(self) abort
+    call markbar#MarkData#AssertIsMarkData(a:self)
+    return a:self['_name']
+endfunction
+
 function! markbar#MarkData#isGlobal(self) abort
     call markbar#MarkData#AssertIsMarkData(a:self)
     return markbar#helpers#IsGlobalMark(
         \ markbar#MarkData#getMark(a:self)
     \ )
+endfunction
+
+function! markbar#MarkData#setName(self, new_name) abort
+    call markbar#MarkData#AssertIsMarkData(a:self)
+    let a:self['_name'] = a:new_name
 endfunction

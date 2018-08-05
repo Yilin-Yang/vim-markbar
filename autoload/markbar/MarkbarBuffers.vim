@@ -180,7 +180,7 @@ function! markbar#MarkbarBuffers#getMarkbarContents(self, buffer_no, marks) abor
                 \ l:globals[l:mark_char]
                 \ :
                 \ l:marks[l:mark_char]
-        let l:lines += markbar#ui#MarkHeading(l:mark_char)
+        let l:lines += [ markbar#ui#MarkHeading(l:mark) ]
 
         let l:indent_block = markbar#settings#ContextIndentBlock()
         for l:line in l:mark['_context']
@@ -216,6 +216,22 @@ function! markbar#MarkbarBuffers#pushNewBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     let a:buffer_no = expand('<abuf>') + 0
     call a:self['_active_buffer_stack']['push()'](a:buffer_no)
+endfunction
+
+" EFFECTS:  Assigns a name to the given mark.
+" PARAM:    mark    (v:t_string)    The symbol corresponding to the target
+"                                   mark. If the mark is local, it is assumed
+"                                   to belong to the active buffer.
+function! markbar#MarkbarBuffers#nameMark(self, mark, name) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    if markbar#helpers#IsGlobalMark(a:mark)
+        let l:buffer_cache =
+            \ a:self['getBufferCache()'](markbar#constants#GLOBAL_MARKS())
+    else
+        let l:buffer_cache = a:self['getActiveBuffer()']()
+    endif
+    let l:mark_data = l:buffer_cache['_marks_dict'][a:mark]
+    call l:mark_data['setName()'](a:name)
 endfunction
 
 " RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.

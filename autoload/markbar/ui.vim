@@ -4,14 +4,60 @@ function! s:CheckBadBufferType() abort
     endif
 endfunction
 
-" RETURNS:  (v:t_list)      The given mark, reformatted into a markbar
+" RETURNS:  (v:t_string)    The given mark, reformatted into a markbar
 "                           'section heading'.
+" PARAM:    mark    (MarkData)  The mark for which to produce a heading.
 function! markbar#ui#MarkHeading(mark) abort
+    call markbar#MarkData#AssertIsMarkData(a:mark)
     let l:suffix = ' '
-    if markbar#helpers#IsGlobalMark(a:mark)
-        let l:suffix .= markbar#helpers#ParentFilename(a:mark)
+    let l:user_given_name = a:mark['getName()']()
+    if empty(l:user_given_name)
+        let l:suffix .= markbar#ui#getDefaultName(a:mark)
+    else
+        let l:suffix .= l:user_given_name
     endif
-    return ["['" . a:mark . ']:   ' . l:suffix]
+    return "['" . a:mark['getMark()']() . ']:   ' . l:suffix
+endfunction
+
+" RETURNS:  (v:t_string)    The 'default name' for the given mark, as
+"                           determined by the global mark name format strings.
+" PARAM:    mark    (MarkData)  The mark for which to produce a name.
+function! markbar#ui#getDefaultName(mark) abort
+    call markbar#MarkData#AssertIsMarkData(a:mark)
+    let l:mark_char = a:mark['getMark()']()
+    if !markbar#helpers#IsGlobalMark(l:mark_char)
+        let l:format_str = markbar#settings#MarkNameFormatString()
+        let l:format_arg = markbar#settings#MarkNameArguments()
+    elseif markbar#helpers#IsUppercaseMark(l:mark_char)
+        let l:format_str = markbar#settings#FileMarkFormatString()
+        let l:format_arg = markbar#settings#FileMarkArguments()
+    else " IsNumberedMark
+        let l:format_str = markbar#settings#NumberedMarkFormatString()
+        let l:format_arg = markbar#settings#NumberedMarkArguments()
+    endif
+    let l:name = ''
+    if empty(l:format_str) | return l:name | endif
+
+    let l:cmd = 'let l:name = printf(''' . l:format_str . "'"
+    let l:arg_to_val = {
+        \ 'line':  a:mark['getLineNo()'],
+        \ 'col':   a:mark['getColumnNo()'],
+        \ 'fname': function('markbar#helpers#ParentFilename', [l:mark_char])
+    \ }
+    for l:arg in l:format_arg
+        let l:cmd .= ', '
+        if has_key(l:arg_to_val, l:arg)
+            let l:cmd .=  string(l:arg_to_val[l:arg]())
+        elseif type(l:arg) == v:t_func
+            let l:cmd .=  l:arg()
+        else
+            throw '(markbar#ui#getDefaultName) Unrecognized format argument: '
+                \ . l:arg
+        endif
+    endfor
+    let l:cmd .= ')'
+    execute l:cmd
+    return l:name
 endfunction
 
 " REQUIRES: User has focused a markbar buffer/window.

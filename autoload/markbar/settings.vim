@@ -283,3 +283,96 @@ function! markbar#settings#JumpToExactPosition() abort
     \ )
     return g:markbar_jump_to_exact_position
 endfunction
+
+
+" RETURNS:  (v:t_string)    A format string (see `:help printf`) defining the
+"                           default 'name pattern' for a mark.
+function! markbar#settings#MarkNameFormatString() abort
+    if !exists('g:markbar_mark_name_format_string')
+        let g:markbar_mark_name_format_string =
+            \ 'l: %4d, c: %4d'
+    endif
+    call s:AssertType(
+        \ g:markbar_mark_name_format_string,
+        \ v:t_string,
+        \ 'g:markbar_mark_name_format_string'
+    \ )
+    return g:markbar_mark_name_format_string
+endfunction
+
+" RETURNS:  (v:t_list)      The arguments with which to populate the default
+"                           `name pattern` for a mark.
+function! markbar#settings#MarkNameArguments() abort
+    if !exists('g:markbar_mark_name_arguments')
+        let g:markbar_mark_name_arguments =
+            \ ['line', 'col']
+    endif
+    call s:AssertType(
+        \ g:markbar_mark_name_arguments,
+        \ v:t_list,
+        \ 'g:markbar_mark_name_arguments'
+    \ )
+    return g:markbar_mark_name_arguments
+endfunction
+
+
+" RETURNS:  (v:t_string)    A format string (see `:help printf`) defining the
+"                           default 'name pattern' for an 'uppercase' file mark.
+function! markbar#settings#FileMarkFormatString() abort
+    if !exists('g:markbar_file_mark_format_string')
+        let g:markbar_file_mark_format_string =
+            \ '%s [l: %4d, c: %4d]'
+    endif
+    call s:AssertType(
+        \ g:markbar_file_mark_format_string,
+        \ v:t_string,
+        \ 'g:markbar_file_mark_format_string'
+    \ )
+    return g:markbar_file_mark_format_string
+endfunction
+
+" RETURNS:  (v:t_list)      The arguments with which to populate the default
+"                           `name pattern` for an uppercase file mark.
+function! markbar#settings#FileMarkArguments() abort
+    if !exists('g:markbar_file_mark_arguments')
+        let g:markbar_file_mark_arguments =
+            \ ['fname', 'line', 'col']
+    endif
+    call s:AssertType(
+        \ g:markbar_file_mark_arguments,
+        \ v:t_list,
+        \ 'g:markbar_file_mark_arguments'
+    \ )
+    return g:markbar_file_mark_arguments
+endfunction
+
+
+" RETURNS:  (v:t_string)    A format string (see `:help printf`) defining the
+"                           default 'name pattern' for a 'numbered' mark.
+function! markbar#settings#NumberedMarkFormatString() abort
+    if !exists('g:markbar_numbered_mark_format_string')
+        let g:markbar_numbered_mark_format_string =
+            \ markbar#settings#FileMarkFormatString()
+    endif
+    call s:AssertType(
+        \ g:markbar_numbered_mark_format_string,
+        \ v:t_string,
+        \ 'g:markbar_numbered_mark_format_string'
+    \ )
+    return g:markbar_numbered_mark_format_string
+endfunction
+
+" RETURNS:  (v:t_list)      The arguments with which to populate the default
+"                           `name pattern` for a mark.
+function! markbar#settings#NumberedMarkArguments() abort
+    if !exists('g:markbar_numbered_mark_arguments')
+        let g:markbar_numbered_mark_arguments =
+            \ markbar#settings#FileMarkArguments()
+    endif
+    call s:AssertType(
+        \ g:markbar_numbered_mark_arguments,
+        \ v:t_list,
+        \ 'g:markbar_numbered_mark_arguments'
+    \ )
+    return g:markbar_numbered_mark_arguments
+endfunction
