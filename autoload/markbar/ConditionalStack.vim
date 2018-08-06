@@ -43,7 +43,7 @@ function! markbar#ConditionalStack#AssertIsConditionalStack(object) abort
     endif
 endfunction
 
-" EFFECTS:  Pushes a new element onto the given ConditionalStack.
+" EFFECTS:  Push a new element onto the given ConditionalStack.
 " RETURNS:  (v:t_bool)  `v:true` if the push succeeded (i.e. if the new
 "                       element was valid, and was added to the stack.)
 function! markbar#ConditionalStack#push(self, element) abort
@@ -57,9 +57,9 @@ function! markbar#ConditionalStack#push(self, element) abort
     return v:true
 endfunction
 
-" EFFECTS:  - Returns the topmost valid element in the ConditionalStack.
-"           - Throws an exception if none could be found.
-"           - Shrinks the stack if the new element makes it too large.
+" EFFECTS:  - Return the topmost valid element in the ConditionalStack.
+"           - Throw an exception if none could be found.
+"           - Shrink the stack if the new element makes it too large.
 function! markbar#ConditionalStack#top(self) abort
     call markbar#ConditionalStack#AssertIsConditionalStack(a:self)
     let l:stack = a:self['_data']
@@ -79,14 +79,14 @@ function! markbar#ConditionalStack#top(self) abort
     return l:top
 endfunction
 
-" EFFECTS:  Returns the total number of elements, valid and invalid, currently
+" EFFECTS:  Return the total number of elements, valid and invalid, currently
 "           in the ConditionalStack.
 function! markbar#ConditionalStack#size(self) abort
     call markbar#ConditionalStack#AssertIsConditionalStack(a:self)
     return len(a:self['_data'])
 endfunction
 
-" EFFECTS:  Removes all invalid elements from the stack.
+" EFFECTS:  Remove all invalid elements from the stack.
 function! markbar#ConditionalStack#clean(self) abort
     call markbar#ConditionalStack#AssertIsConditionalStack(a:self)
     let l:stack = a:self['_data']

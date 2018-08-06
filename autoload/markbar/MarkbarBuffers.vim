@@ -1,4 +1,4 @@
-" EFFECTS:  Default-initializes a MarkbarBuffers object.
+" EFFECTS:  Default-initialize a MarkbarBuffers object.
 " DETAILS:  MarkbarBuffers stores cached information on buffers, as well as
 "           those buffers' markbar buffers. It provides an interface for
 "           updating those caches, refreshing markbar buffers, and opening
@@ -49,7 +49,7 @@ function! markbar#MarkbarBuffers#AssertIsMarkbarBuffers(object) abort
     endif
 endfunction
 
-" EFFECTS:  - Adds a new BufferCache for the requested buffer, if one does not
+" EFFECTS:  - Add a new BufferCache for the requested buffer, if one does not
 "           yet exist.
 " RETURNS:  (markbar#BufferCache)   The buffer cache for the requested buffer.
 function! markbar#MarkbarBuffers#getBufferCache(self, buffer_no)
@@ -61,8 +61,8 @@ function! markbar#MarkbarBuffers#getBufferCache(self, buffer_no)
     return a:self['_buffer_caches'][a:buffer_no]
 endfunction
 
-" EFFECTS:  - Updates the BufferCache for the currently focused buffer.
-"           - Updates the BufferCache for global marks (filemarks, etc.)
+" EFFECTS:  - Update the BufferCache for the currently focused buffer.
+"           - Update the BufferCache for global marks (filemarks, etc.)
 function! markbar#MarkbarBuffers#updateCurrentAndGlobal(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     let l:cur_buffer_cache    = a:self['getBufferCache()'](bufnr('%'))
@@ -73,10 +73,10 @@ function! markbar#MarkbarBuffers#updateCurrentAndGlobal(self) abort
     call l:global_buffer_cache['updateContexts()'](markbar#settings#NumLinesContext())
 endfunction
 
-" EFFECTS:  - Closes any existing markbars.
-"           - Creates a markbar buffer for the currently active buffer if one
+" EFFECTS:  - Close any existing markbars.
+"           - Create a markbar buffer for the currently active buffer if one
 "           does not yet exist.
-"           - Opens this markbar buffer in a sidebar.
+"           - Open this markbar buffer in a sidebar.
 function! markbar#MarkbarBuffers#openMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
 
@@ -106,7 +106,7 @@ function! markbar#MarkbarBuffers#openMarkbar(self) abort
     call a:self['populateWithMarkbar()'](l:active_buffer, l:markbar_buffer)
 endfunction
 
-" EFFECTS:  Closes the markbar that is open in the current tab page, if one
+" EFFECTS:  Close the markbar that is open in the current tab page, if one
 "           exists. Else, does nothing.
 " RETURNS:  (v:t_bool)      `v:true` if a markbar was actually closed,
 "                           `v:false` otherwise.
@@ -123,7 +123,7 @@ function! markbar#MarkbarBuffers#closeMarkbar(self) abort
     return l:closed_windows
 endfunction
 
-" EFFECTS:  Closes the currently open markbar, if one is open. If no markbar
+" EFFECTS:  Close the currently open markbar, if one is open. If no markbar
 "           is open, open a markbar for the active buffer.
 function! markbar#MarkbarBuffers#toggleMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
@@ -131,8 +131,8 @@ function! markbar#MarkbarBuffers#toggleMarkbar(self) abort
     call a:self['openMarkbar()']()
 endfunction
 
-" EFFECTS:  - Creates a new markbar buffer for the currently active buffer.
-"           - Opens this new markbar buffer in a split.
+" EFFECTS:  - Create a new markbar buffer for the currently active buffer.
+"           - Open this new markbar buffer in a split.
 " RETURNS:  (v:t_number)    The buffer number of the new buffer.
 function! markbar#MarkbarBuffers#spawnNewMarkbarBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
@@ -152,7 +152,7 @@ endfunction
 " REQUIRES: - `a:buffer_no` is not a markbar buffer.
 "           - `a:buffer_no` is not the global buffer.
 "           - `a:buffer_no` is a buffer *number.*
-" EFFECTS:  - Returns a list populated linewise with the requested marks
+" EFFECTS:  - Return a list populated linewise with the requested marks
 "           and those marks' contexts.
 " PARAM:    marks   (v:t_string)    Every mark that the user wishes to
 "                                   display, in order from left to right (i.e.
@@ -195,7 +195,7 @@ function! markbar#MarkbarBuffers#getMarkbarContents(self, buffer_no, marks) abor
     return l:lines
 endfunction
 
-" EFFECTS:  *Replaces* the given buffer with the marks and contexts of the
+" EFFECTS:  *Replace* the given buffer with the marks and contexts of the
 "           given buffer.
 function! markbar#MarkbarBuffers#populateWithMarkbar(
     \ self,
@@ -212,7 +212,7 @@ function! markbar#MarkbarBuffers#populateWithMarkbar(
     call markbar#helpers#ReplaceBuffer(a:into_buffer_expr, l:contents)
 endfunction
 
-" EFFECTS:  Pushes the given buffer number onto the active buffer
+" EFFECTS:  Push the given buffer number onto the active buffer
 "           ConditionalStack.
 function! markbar#MarkbarBuffers#pushNewBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
@@ -220,7 +220,7 @@ function! markbar#MarkbarBuffers#pushNewBuffer(self) abort
     call a:self['_active_buffer_stack']['push()'](a:buffer_no)
 endfunction
 
-" EFFECTS:  Assigns a name to the given mark.
+" EFFECTS:  Assign a name to the given mark.
 " PARAM:    mark    (v:t_string)    The symbol corresponding to the target
 "                                   mark. If the mark is local, it is assumed
 "                                   to belong to the active buffer.

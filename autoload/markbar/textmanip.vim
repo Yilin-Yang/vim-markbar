@@ -1,4 +1,4 @@
-" EFFECTS:  Strips leading whitespace and the columns header (i.e. the line
+" EFFECTS:  Strip leading whitespace and the columns header (i.e. the line
 "           that starts with 'mark line  col [...]') from the given string.
 " PARAM:    raw_marks   (v:t_string)    The raw `marks` command output to
 "                                       process.

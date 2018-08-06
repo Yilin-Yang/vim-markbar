@@ -88,7 +88,7 @@ function! s:GoToMark() abort
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.
-" EFFECTS:  Sets a buffer-local mapping that sends the user to the selected
+" EFFECTS:  Set a buffer-local mapping that sends the user to the selected
 "           tag.
 function! markbar#ui#SetGoToMark() abort
     call s:CheckBadBufferType()
@@ -98,7 +98,7 @@ function! markbar#ui#SetGoToMark() abort
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.
-" EFFECTS:  Sets a buffer-local mapping that prompts the user to rename the
+" EFFECTS:  Set a buffer-local mapping that prompts the user to rename the
 "           selected mark.
 function! markbar#ui#SetRenameMark() abort
     call s:CheckBadBufferType()
@@ -108,7 +108,7 @@ function! markbar#ui#SetRenameMark() abort
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.
-" EFFECTS:  Sets a buffer-local mapping that resets the name of the current
+" EFFECTS:  Set a buffer-local mapping that resets the name of the current
 "           mark back to its default.
 function! markbar#ui#SetResetMark() abort
     call s:CheckBadBufferType()
@@ -117,7 +117,7 @@ function! markbar#ui#SetResetMark() abort
         \ . ' :call markbar#ui#ResetMarkName()<cr>'
 endfunction
 
-" EFFECTS:  Sets buffer-local markbar settings for the current buffer.
+" EFFECTS:  Set buffer-local markbar settings for the current buffer.
 function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
 
@@ -135,8 +135,8 @@ function! markbar#ui#SetMarkbarSettings() abort
     call markbar#ui#SetResetMark()
 endfunction
 
-" EFFECTS:  - Opens an appropriately sized vertical split for a markbar.
-"           - Sets appropriate markbar settings, if a new buffer was created.
+" EFFECTS:  - Open an appropriately sized vertical split for a markbar.
+"           - Set appropriate markbar settings, if a new buffer was created.
 " PARAM:    markbar     (v:t_number)    The buffer number to be opened in the
 "                                       split. If none is provided, a new
 "                                       buffer will be created.
@@ -165,26 +165,26 @@ function! markbar#ui#OpenMarkbarSplit(...) abort
     return a:markbar
 endfunction
 
-" EFFECTS:  Opens a markbar for the currently active buffer.
+" EFFECTS:  Open a markbar for the currently active buffer.
 function! markbar#ui#OpenMarkbar() abort
     call g:markbar_buffers['openMarkbar()']()
 endfunction
 
-" EFFECTS:  Closes the markbar for the currently active buffer, if a markbar
+" EFFECTS:  Close the markbar for the currently active buffer, if a markbar
 "           is open.
 function! markbar#ui#CloseMarkbar() abort
     return g:markbar_buffers['closeMarkbar()']()
 endfunction
 
-" EFFECTS:  Closes the currently open markbar(s), if they are open. If none
+" EFFECTS:  Close the currently open markbar(s), if they are open. If none
 "           are open, open a markbar for the active buffer.
 function! markbar#ui#ToggleMarkbar() abort
     call g:markbar_buffers['toggleMarkbar()']()
 endfunction
 
 " EFFECTS:  If any markbars are open,
-"           - Closes any open markbars,
-"           - Opens an updated markbar for the current active buffer.
+"           - Close any open markbars,
+"           - Open an updated markbar for the current active buffer.
 function! markbar#ui#RefreshMarkbar() abort
     if g:markbar_buffers['markbarIsOpenCurrentTab()']()
         let l:cur_winnr = winnr()
