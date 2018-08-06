@@ -21,6 +21,8 @@ function! markbar#MarkbarBuffers#new() abort
         \ function('markbar#MarkbarBuffers#getActiveBuffer', [l:new])
     let l:new['getBufferCache()'] =
         \ function('markbar#MarkbarBuffers#getBufferCache', [l:new])
+    let l:new['getMarkData()'] =
+        \ function('markbar#MarkbarBuffers#getMarkData', [l:new])
     let l:new['markbarIsOpenCurrentTab()'] =
         \ function('markbar#MarkbarBuffers#markbarIsOpenCurrentTab', [l:new])
     let l:new['openMarkbar()'] =
@@ -159,7 +161,7 @@ endfunction
 function! markbar#MarkbarBuffers#getMarkbarContents(self, buffer_no, marks) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     if a:buffer_no ==# markbar#constants#GLOBAL_MARKS()
-        throw '(markbar#MarkbarBuffers.vim) Bad argument value: ' . a:buffer_no
+        throw '(markbar#MarkbarBuffers) Bad argument value: ' . a:buffer_no
     endif
     let l:marks   = a:self['_buffer_caches'][a:buffer_no]['_marks_dict']
     let l:globals = a:self['_buffer_caches'][markbar#constants#GLOBAL_MARKS()]['_marks_dict']
@@ -248,6 +250,32 @@ function! markbar#MarkbarBuffers#getActiveBufferMarkbar(self) abort
     let l:active_buffer       = a:self['_active_buffer_stack']['top()']()
     let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
     return l:active_buffer_cache['_markbar_buffer_no']
+endfunction
+
+" RETURNS:  (MarkData)      The MarkData object corresponding to the given
+"                           mark character.
+" DETAILS:  - If the requested mark is a local mark, then the MarkbarBuffers
+"           object will search the BufferCache for the currently active
+"           buffer.
+"           - If the requested mark is a global (file or numbered) mark, then
+"           the MarkbarBuffers object will search the global BufferCache.
+"           - If the requested mark cannot be found, throw an exception.
+function! markbar#MarkbarBuffers#getMarkData(self, mark_char) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    let l:is_global = markbar#helpers#IsGlobalMark(a:mark_char)
+    let l:mark_buffer =
+            \ l:is_global ?
+                \ markbar#constants#GLOBAL_MARKS()
+                \ :
+                \ a:self['getActiveBuffer()']()
+    let l:marks_dict =
+        \ a:self['getBufferCache()'](l:mark_buffer)['_marks_dict']
+    if !has_key(l:marks_dict, a:mark_char)
+        throw '(markbar#MarkbarBuffers) Could not find mark ' . a:mark_char
+            \ . ' for buffer ' . l:mark_buffer
+    endif
+    let l:mark = l:marks_dict[a:mark_char]
+    return l:mark
 endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if a markbar is open in the current tab,
