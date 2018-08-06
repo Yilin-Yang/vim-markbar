@@ -27,7 +27,7 @@ Execute (Test Local Alphabetic Mark):
   while i <# len(test_chars)
     let g:local_alph['_data'][0] = test_chars[i]
     AssertEqual 'local 1 2', 
-      \ markbar#ui#getDefaultName(g:local_alph), 
+      \ markbar#ui#GetDefaultName(g:local_alph),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -38,7 +38,7 @@ Execute (Test Local Non-Alphabetic Mark):
   while i <# len(test_chars)
     let g:local_punc['_data'][0] = test_chars[i]
     AssertEqual 'local 3 4', 
-      \ markbar#ui#getDefaultName(g:local_punc), 
+      \ markbar#ui#GetDefaultName(g:local_punc),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -49,7 +49,7 @@ Execute (Test File Mark):
   while i <# len(test_chars)
     let g:file_mark['_data'][0] = test_chars[i]
     AssertEqual 'file 1 2', 
-      \ markbar#ui#getDefaultName(g:file_mark), 
+      \ markbar#ui#GetDefaultName(g:file_mark),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -60,7 +60,7 @@ Execute (Test Numbered Mark):
   while i <# len(test_chars)
     let g:numeric_mark['_data'][0] = test_chars[i]
     AssertEqual 'numbered 3 4', 
-      \ markbar#ui#getDefaultName(g:numeric_mark), 
+      \ markbar#ui#GetDefaultName(g:numeric_mark),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -89,4 +89,4 @@ Execute (Test Custom Function References):
   let g:local_alph['_context'] = ['boo']
 
   " TODO: more modular helpers#ParentFilename implementation
-  AssertEqual 'a 1 2 [Vader-workbench] boo arg', markbar#ui#getDefaultName(g:local_alph)
+  AssertEqual 'a 1 2 [Vader-workbench] boo arg', markbar#ui#GetDefaultName(g:local_alph)

@@ -12,7 +12,7 @@ function! markbar#ui#MarkHeading(mark) abort
     let l:suffix = ' '
     let l:user_given_name = a:mark['getName()']()
     if empty(l:user_given_name)
-        let l:suffix .= markbar#ui#getDefaultName(a:mark)
+        let l:suffix .= markbar#ui#GetDefaultName(a:mark)
     else
         let l:suffix .= l:user_given_name
     endif
@@ -22,7 +22,7 @@ endfunction
 " RETURNS:  (v:t_string)    The 'default name' for the given mark, as
 "                           determined by the global mark name format strings.
 " PARAM:    mark    (MarkData)  The mark for which to produce a name.
-function! markbar#ui#getDefaultName(mark) abort
+function! markbar#ui#GetDefaultName(mark) abort
     call markbar#MarkData#AssertIsMarkData(a:mark)
     let l:mark_char = a:mark['getMark()']()
     if !markbar#helpers#IsGlobalMark(l:mark_char)
