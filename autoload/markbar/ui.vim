@@ -44,15 +44,16 @@ function! markbar#ui#getDefaultName(mark) abort
         \ 'col':   a:mark['getColumnNo()'],
         \ 'fname': function('markbar#helpers#ParentFilename', [l:mark_char])
     \ }
-    for l:arg in l:format_arg
+
+    for l:Arg in l:format_arg " capital 'Arg' to handle funcrefs
         let l:cmd .= ', '
-        if has_key(l:arg_to_val, l:arg)
-            let l:cmd .=  string(l:arg_to_val[l:arg]())
-        elseif type(l:arg) == v:t_func
-            let l:cmd .=  l:arg()
+        if type(l:Arg) == v:t_func
+            let l:cmd .= string(l:Arg(markbar#BasicMarkData#new(a:mark)))
+        elseif has_key(l:arg_to_val, l:Arg)
+            let l:cmd .= string(l:arg_to_val[l:Arg]())
         else
             throw '(markbar#ui#getDefaultName) Unrecognized format argument: '
-                \ . l:arg
+                \ . l:Arg
         endif
     endfor
     let l:cmd .= ')'

@@ -83,7 +83,11 @@ function! markbar#helpers#BufferNo(mark) abort
     if len(a:mark) !=# 1
         throw '(markbar#helpers#BufferNo) Invalid mark: ' . a:mark
     endif
-    return getpos("'" . a:mark)[0]
+    let l:mark_pos = getpos("'" . a:mark)
+    if l:mark_pos ==# [0, 0, 0, 0]
+        throw '(markbar#helpers#BufferNo) Mark not found: ' . a:mark
+    endif
+    return l:mark_pos[0]
 endfunction
 
 " RETURNS:  (v:t_string)    The name of the file in which the requested mark
@@ -94,7 +98,7 @@ endfunction
 function! markbar#helpers#ParentFilename(mark) abort
     let l:buf_no = markbar#helpers#BufferNo(a:mark)
     if !l:buf_no
-        throw '(markbar#helpers#ParentFilename) Mark not found: ' . a:mark
+        let l:buf_no = bufnr('%')
     endif
     return bufname(l:buf_no)
 endfunction

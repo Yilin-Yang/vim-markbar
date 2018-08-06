@@ -1,4 +1,4 @@
-Execute (Make 'Synthetic' MarkData Objects):
+Execute (Make 'Synthetic' MarkData Objects, Set Marks):
   let g:local_alph = markbar#MarkData#fromMarkString(
     \ 'a 1 2 foo'
   \ )
@@ -65,4 +65,28 @@ Execute (Test Numbered Mark):
     let i += 1
   endwhile
 
+Execute (Test Custom Function References):
+  function! Foo(string, markdata)
+    return      a:markdata['mark']
+      \ . ' ' . a:markdata['line']
+      \ . ' ' . a:markdata['column']
+      \ . ' ' . a:markdata['filename']
+      \ . ' ' . a:markdata['context'][0]
+      \ . ' ' . a:string
+  endfunction
 
+  " so that helpers#ParentFilename returns an actual value
+  " TODO: more modular ParentFilename implementation
+  execute 'normal! :edit! foo.txt\<cr>'
+  execute '1mark a'
+
+  let g:markbar_mark_name_format_string = '%s'
+  let g:markbar_mark_name_arguments     = [ function('Foo', ['arg']) ]
+
+  let g:local_alph = markbar#MarkData#fromMarkString(
+    \ 'a 1 2 foo'
+  \ )
+  let g:local_alph['_context'] = ['boo']
+
+  " TODO: more modular helpers#ParentFilename implementation
+  AssertEqual 'a 1 2 [Vader-workbench] boo arg', markbar#ui#getDefaultName(g:local_alph)
