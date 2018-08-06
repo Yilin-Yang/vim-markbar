@@ -268,6 +268,48 @@ function! markbar#settings#NumLinesContext() abort
     return g:markbar_num_lines_context
 endfunction
 
+" RETURNS:  (v:t_string)    The keymapping used to 'jump to mark from markbar'
+"                           when the markbar is open.
+function! markbar#settings#JumpToMarkMapping() abort
+    if !exists('g:markbar_jump_to_mark_mapping')
+        let g:markbar_jump_to_mark_mapping = '<cr>'
+    endif
+    call s:AssertType(
+        \ g:markbar_jump_to_mark_mapping,
+        \ v:t_string,
+        \ 'g:markbar_jump_to_mark_mapping'
+    \ )
+    return g:markbar_jump_to_mark_mapping
+endfunction
+
+" RETURNS:  (v:t_string)    The keymapping used to rename a mark in the
+"                           markbar.
+function! markbar#settings#RenameMarkMapping() abort
+    if !exists('g:markbar_rename_mark_mapping')
+        let g:markbar_rename_mark_mapping = 'r'
+    endif
+    call s:AssertType(
+        \ g:markbar_rename_mark_mapping,
+        \ v:t_string,
+        \ 'g:markbar_rename_mark_mapping'
+    \ )
+    return g:markbar_rename_mark_mapping
+endfunction
+
+" RETURNS:  (v:t_string)    The keymapping used to reset a mark's name
+"                           in the markbar.
+function! markbar#settings#ResetMarkMapping() abort
+    if !exists('g:markbar_reset_mark_mapping')
+        let g:markbar_reset_mark_mapping = 'c'
+    endif
+    call s:AssertType(
+        \ g:markbar_reset_mark_mapping,
+        \ v:t_string,
+        \ 'g:markbar_reset_mark_mapping'
+    \ )
+    return g:markbar_reset_mark_mapping
+endfunction
+
 " RETURNS:  (v:t_bool)      `v:true` if the 'jump to mark from markbar'
 "                           mapping should go to the exact line *and column*
 "                           of the mark, or `v:false` if it should go to the
@@ -282,6 +324,20 @@ function! markbar#settings#JumpToExactPosition() abort
         \ 'g:markbar_jump_to_exact_position'
     \ )
     return g:markbar_jump_to_exact_position
+endfunction
+
+" RETURNS:  (v:t_string)    The `:h command-completion` options used when
+"                           renaming a mark.
+function! markbar#settings#RenameMarkCompletion() abort
+    if !exists('g:markbar_rename_mark_completion')
+        let g:markbar_rename_mark_completion = 'file_in_path'
+    endif
+    call s:AssertType(
+        \ g:markbar_rename_mark_completion,
+        \ v:t_string,
+        \ 'g:markbar_rename_mark_completion'
+    \ )
+    return g:markbar_rename_mark_completion
 endfunction
 
 

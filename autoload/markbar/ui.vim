@@ -92,7 +92,29 @@ endfunction
 "           tag.
 function! markbar#ui#SetGoToMark() abort
     call s:CheckBadBufferType()
-    noremap <silent> <buffer> <cr> :call <SID>GoToMark()<cr>
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#JumpToMarkMapping()
+        \ . ' :call <SID>GoToMark()<cr>'
+endfunction
+
+" REQUIRES: A markbar buffer is active and focused.
+" EFFECTS:  Sets a buffer-local mapping that prompts the user to rename the
+"           selected mark.
+function! markbar#ui#SetRenameMark() abort
+    call s:CheckBadBufferType()
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#RenameMarkMapping()
+        \ . ' :call markbar#ui#RenameMark()<cr>'
+endfunction
+
+" REQUIRES: A markbar buffer is active and focused.
+" EFFECTS:  Sets a buffer-local mapping that resets the name of the current
+"           mark back to its default.
+function! markbar#ui#SetResetMark() abort
+    call s:CheckBadBufferType()
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#ResetMarkMapping()
+        \ . ' :call markbar#ui#ResetMarkName()<cr>'
 endfunction
 
 " EFFECTS:  Sets buffer-local markbar settings for the current buffer.
@@ -102,13 +124,15 @@ function! markbar#ui#SetMarkbarSettings() abort
     setlocal winfixwidth winfixheight cursorline
     setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
     setlocal nowrap nospell
-    execute 'silent! file ' . markbar#settings#MarkbarBufferName()
+    execute 'keepalt silent! file! ' . markbar#settings#MarkbarBufferName()
     setlocal filetype=markbar syntax=markbar
 
     let b:is_markbar = 1
     let w:is_markbar = 1
 
     call markbar#ui#SetGoToMark()
+    call markbar#ui#SetRenameMark()
+    call markbar#ui#SetResetMark()
 endfunction
 
 " EFFECTS:  - Opens an appropriately sized vertical split for a markbar.
@@ -167,4 +191,35 @@ function! markbar#ui#RefreshMarkbar() abort
         call markbar#ui#OpenMarkbar()
         execute l:cur_winnr . 'wincmd w'
     endif
+endfunction
+
+function! markbar#ui#RenameMark() abort
+    let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
+    if !len(l:selected_mark) | return | endif
+    let l:mark = g:markbar_buffers['getMarkData()'](l:selected_mark)
+
+    call inputsave()
+    let l:new_name = input('New name for mark [''' . l:selected_mark . ']: ',
+        \ l:mark['getName()'](),
+        \ markbar#settings#RenameMarkCompletion()
+    \ )
+    call inputrestore()
+
+    call l:mark['setName()'](l:new_name)
+
+    let l:cur_pos = getcurpos()
+    call markbar#ui#RefreshMarkbar()
+    call setpos('.', l:cur_pos)
+endfunction
+
+function! markbar#ui#ResetMarkName() abort
+    let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
+    if !len(l:selected_mark) | return | endif
+    let l:mark = g:markbar_buffers['getMarkData()'](l:selected_mark)
+
+    call l:mark['setName()']('')
+
+    let l:cur_pos = getcurpos()
+    call markbar#ui#RefreshMarkbar()
+    call setpos('.', l:cur_pos)
 endfunction
