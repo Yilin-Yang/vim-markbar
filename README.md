@@ -37,6 +37,7 @@ And then run `:PlugInstall`.
 With [Vundle,](https://github.com/VundleVim/Vundle.vim)
 
 ```vim
+# .vimrc
 call vundle#begin()
 " ...
 Plugin 'Yilin-Yang/vim-markbar'
@@ -49,7 +50,7 @@ And then run `:PluginInstall`.
 
 With [pathogen,](https://github.com/tpope/vim-pathogen)
 
-```vim
+```bash
 cd ~/.vim/bundle
 git clone https://github.com/Yilin-Yang/vim-markbar.git
 ```
@@ -97,7 +98,6 @@ what they do), see `:help markbar`.
 
 ### Common Options
 
-|--------------------------------------------|----------|-------------------------------------|
 | Setting Name                               | Type     | Default Value                       |
 |:-------------------------------------------|:--------:|:------------------------------------|
 | `g:markbar_marks_to_display`               | `string` | `'abc...xyzABC...XYZ012...789'`     |
@@ -123,14 +123,12 @@ what they do), see `:help markbar`.
 | `g:markbar_file_mark_arguments`            | `list  ` | `['fname', 'line', 'col']`          |
 | `g:markbar_numbered_mark_format_string`    | `string` | `g:markbar_file_mark_format_string` |
 | `g:markbar_numbered_mark_arguments`        | `list  ` | `g:markbar_file_mark_arguments`     |
-|--------------------------------------------|----------|-------------------------------------|
 
 ### Highlight Groups
 vim-markbar defines its own syntax file that it uses inside markbar buffers.
 This syntax file defines the following highlight groups, which you can
 customize to your liking.
 
-|---------------------------------|-------------------------|---------------------------------------|
 | Highlight Group                 | Default Value (Linkage) | Description                           |
 |:--------------------------------|:-----------------------:|:--------------------------------------|
 |`markbarComment`                 | `Comment`               | Lines that start with `"`.            |
@@ -139,18 +137,9 @@ customize to your liking.
 |`markbarSectionSpecialLocalMark` | `Type`                  | The quote and symbol in, e.g. `['^]`. |
 |`markbarSectionNumberedMark`     | `Special`               | The quote and number in, e.g. `['5]`. |
 |`markbarSectionUppercaseMark`    | `Underlined`            | The quote and letter in, e.g. `['A]`. |
-|---------------------------------|-------------------------|---------------------------------------|
-|`markbarSectionName`             | `Title`                 | The text following the colon in,      |
-|                                 |                         | e.g. `['A]:    Section Name Here`     |
-|---------------------------------|-------------------------|---------------------------------------|
-|`markbarContext`                 | `NormalNC`              | The lines below the section headings, |
-|                                 |                         | plucked from around the mark's actual |
-|                                 |                         | location.                             |
-|---------------------------------|-------------------------|---------------------------------------|
-|`markbarContextEndOfBuffer`      | `EndOfBuffer`           | The `~` character that appears when a |
-|                                 |                         | mark's context is cut off by the top  |
-|                                 |                         | or bottom of its parent file.         |
-|---------------------------------|-------------------------|---------------------------------------|
+|`markbarSectionName`             | `Title`                 | The text following the colon in, e.g. `['A]:    Section Name Here`
+|`markbarContext`                 | `NormalNC`              | The lines below the section headings, plucked from around the mark's actual location.
+|`markbarContextEndOfBuffer`      | `EndOfBuffer`           | The `~` character that appears when a mark's context is cut off by the top  or bottom of its parent file.
 
 These can be customized by linking them to other preexisting highlight groups
 (as is done by default), or by explicitly defining a colorscheme for the
