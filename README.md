@@ -106,35 +106,7 @@ let g:markbar_reset_mark_mapping = '<BS>'
 Customization
 --------------------------------------------------------------------------------
 For full documentation on options (what they are, their default values, and
-what they do), see `:help markbar`.
-
-### Common Options
-
-| Setting Name                               | Type     | Default Value                       |
-|:-------------------------------------------|:--------:|:------------------------------------|
-| `g:markbar_marks_to_display`               | `string` | `'abc...xyzABC...XYZ012...789'`     |
-| `g:markbar_open_vertical`                  | `bool  ` | `v:true`                            |
-| `g:markbar_width`                          | `number` | 30                                  |
-| `g:markbar_height`                         | `number` | 30                                  |
-| `g:markbar_close_after_go_to`              | `bool  ` | `v:true`                            |
-| `g:markbar_open_position`                  | `string` | `'botright'`                        |
-| `g:markbar_buffer_name`                    | `string` | `'[ Markbar ]'`                     |
-| `g:markbar_context_indent_block`           | `string` | `'    '` (four spaces)                |
-| `g:markbar_section_separation`             | `number` | `1`                                 |
-| `g:markbar_ignore_buffer_criteria`         | `dict  ` | `['unload', 'delete', 'wipe']`      |
-| `g:markbar_maximum_active_buffer_history`  | `number` | `100`                               |
-| `g:markbar_num_lines_context`              | `number` | `5`                                 |
-| `g:markbar_jump_to_mark_mapping`           | `string` | `<cr>` (Enter)                      |
-| `g:markbar_rename_mark_mapping`            | `string` | `r`                                 |
-| `g:markbar_reset_mark_mapping`             | `string` | `c`                                 |
-| `g:markbar_jump_to_exact_position`         | `bool  ` | `v:true`                            |
-| `g:markbar_rename_mark_completion`         | `string` | `file_in_path`                      |
-| `g:markbar_mark_name_format_string`        | `string` | `'l: %4d, c: %4d'`                  |
-| `g:markbar_mark_name_arguments`            | `list  ` | `['line', 'col']`                   |
-| `g:markbar_file_mark_format_string`        | `string` | `%s [l: %4d, c: %4d]`               |
-| `g:markbar_file_mark_arguments`            | `list  ` | `['fname', 'line', 'col']`          |
-| `g:markbar_numbered_mark_format_string`    | `string` | `g:markbar_file_mark_format_string` |
-| `g:markbar_numbered_mark_arguments`        | `list  ` | `g:markbar_file_mark_arguments`     |
+what they do), see `:help vim-markbar-options`.
 
 ### Highlight Groups
 vim-markbar defines its own syntax file that it uses inside markbar buffers.

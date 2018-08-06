@@ -7,10 +7,10 @@ License:    MIT
 ================================================================================
 CONTENTS                                                *vim-markbar-contents*
 
-    1. Introduction.................................*vim-markbar-introduction*
-    2. Usage........................................*vim-markbar-usage*
-    3. Options......................................*vim-markbar-options*
-    4. Highlighting.................................*vim-markbar-highlighting*
+    1. Introduction.................................|vim-markbar-introduction|
+    2. Usage........................................|vim-markbar-usage|
+    3. Options......................................|vim-markbar-options|
+    4. Highlighting.................................|vim-markbar-highlighting|
 
 ================================================================================
 INTRODUCTION                                            *vim-markbar-introduction*
