@@ -310,6 +310,20 @@ function! markbar#settings#ResetMarkMapping() abort
     return g:markbar_reset_mark_mapping
 endfunction
 
+" RETURNS:  (v:t_string)    The keymapping used to delete the currently
+"                           mark currently selected in the markbar.
+function! markbar#settings#DeleteMarkMapping() abort
+    if !exists('g:markbar_delete_mark_mapping')
+        let g:markbar_delete_mark_mapping = 'd'
+    endif
+    call s:AssertType(
+        \ g:markbar_delete_mark_mapping,
+        \ v:t_string,
+        \ 'g:markbar_delete_mark_mapping'
+    \ )
+    return g:markbar_delete_mark_mapping
+endfunction
+
 " RETURNS:  (v:t_bool)      `v:true` if the 'jump to mark from markbar'
 "                           mapping should go to the exact line *and column*
 "                           of the mark, or `v:false` if it should go to the

@@ -123,6 +123,16 @@ function! markbar#ui#SetResetMark() abort
         \ . ' :call markbar#ui#ResetMarkName()<cr>'
 endfunction
 
+" REQUIRES: A markbar buffer is active and focused.
+" EFFECTS:  Set a buffer-local mapping that deletes the currently
+"           selected mark.
+function! markbar#ui#SetDeleteMark() abort
+    call s:CheckBadBufferType()
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#DeleteMarkMapping()
+        \ . ' :call markbar#ui#DeleteMark()<cr>'
+endfunction
+
 " EFFECTS:  Set buffer-local markbar settings for the current buffer.
 function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
@@ -141,6 +151,7 @@ function! markbar#ui#SetMarkbarSettings() abort
     call markbar#ui#SetGoToMark()
     call markbar#ui#SetRenameMark()
     call markbar#ui#SetResetMark()
+    call markbar#ui#SetDeleteMark()
 endfunction
 
 " EFFECTS:  Set an autocommand to print the current mark heading, or disable
@@ -233,7 +244,7 @@ function! markbar#ui#RenameMark() abort
     call l:mark['setName()'](l:new_name)
 
     let l:cur_pos = getcurpos()
-    call markbar#ui#RefreshMarkbar()
+    call markbar#ui#OpenMarkbar()
     call setpos('.', l:cur_pos)
 endfunction
 
@@ -245,6 +256,22 @@ function! markbar#ui#ResetMarkName() abort
     call l:mark['setName()']('')
 
     let l:cur_pos = getcurpos()
-    call markbar#ui#RefreshMarkbar()
+    call markbar#ui#OpenMarkbar()
+    call setpos('.', l:cur_pos)
+endfunction
+
+function! markbar#ui#DeleteMark() abort
+    let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
+    if !len(l:selected_mark) | return | endif
+
+    let l:cur_pos = getcurpos()
+    if !markbar#helpers#IsGlobalMark(l:selected_mark)
+        let l:active_buffer = g:markbar_buffers['getActiveBuffer()']()
+        execute bufwinnr(l:active_buffer) . 'wincmd w'
+    endif
+
+    execute 'delmarks ' . l:selected_mark
+
+    call markbar#ui#OpenMarkbar()
     call setpos('.', l:cur_pos)
 endfunction
