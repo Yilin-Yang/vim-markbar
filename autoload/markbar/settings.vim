@@ -55,7 +55,7 @@ endfunction
 " RETURNS:  (v:t_number)    The width of an opened vertical markbar, in columns.
 function! markbar#settings#MarkbarWidth() abort
     if !exists('g:markbar_width')
-        let g:markbar_width = 30
+        let g:markbar_width = 35
     endif
     call s:AssertType(
         \ g:markbar_width,
