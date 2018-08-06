@@ -25,17 +25,17 @@ Then:
   " let num_windows = len(tabpagebuflist())
   AssertEqual buf_workbench, g:markbar_buffers['getActiveBuffer()']()
 Expect:
-  ['A]:    10lines.txt
+  ['A]: 10lines.txt
       ~
       first line
       second line
 
-  ['B]:    10lines.txt
+  ['B]: 10lines.txt
       fourth line
       fifth line
       sixth line
 
-  ['C]:    10lines.txt
+  ['C]: 10lines.txt
       ninth line
       tenth line
       ~
@@ -58,17 +58,17 @@ Expect:
 Do (Re-Open Closed Markbar (E499 Check)):
   :call markbar#ui#OpenMarkbar()\<cr>
 Expect:
-  ['A]:    10lines.txt
+  ['A]: 10lines.txt
       ~
       first line
       second line
 
-  ['B]:    10lines.txt
+  ['B]: 10lines.txt
       fourth line
       fifth line
       sixth line
 
-  ['C]:    10lines.txt
+  ['C]: 10lines.txt
       ninth line
       tenth line
       ~
@@ -79,17 +79,17 @@ Then:
   " TODO: find a way to check for 'didn't create a new split'
   " AssertEqual num_windows, len(tabpagebuflist())
 Expect:
-  ['A]:    10lines.txt
+  ['A]: 10lines.txt
       ~
       first line
       second line
 
-  ['B]:    10lines.txt
+  ['B]: 10lines.txt
       fourth line
       fifth line
       sixth line
 
-  ['C]:    10lines.txt
+  ['C]: 10lines.txt
       ninth line
       tenth line
       ~
@@ -130,16 +130,16 @@ Expect:
 "   mA
 "   :tabprev\<cr>
 " Expect:
-"   ['A]:    30lines.txt
+"   ['A]: 30lines.txt
 "       first line
 "       second line
 
-"   ['B]:    10lines.txt
+"   ['B]: 10lines.txt
 "       fourth line
 "       fifth line
 "       sixth line
 
-"   ['C]:    10lines.txt
+"   ['C]: 10lines.txt
 "       ninth line
 "       tenth line
 "  
