@@ -29,24 +29,30 @@ endfunction
 "                           mark (i.e. a file mark, or a ShaDa numerical mark),
 "                           and `false` otherwise.
 function! markbar#helpers#IsGlobalMark(mark) abort
-    if len(a:mark) !=# 1 | return v:false | endif
-    let l:idx = match('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', a:mark)
+    if len(a:mark) !=# 1
+        throw '(markbar#helpers#IsGlobalMark) Invalid mark char: ' . a:mark
+    endif
+    let l:idx = match('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '\V' . a:mark)
     return l:idx !=# -1
 endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to an
 "                           uppercase file mark.
 function! markbar#helpers#IsUppercaseMark(mark) abort
-    if len(a:mark) !=# 1 | return v:false | endif
-    let l:idx = match('ABCDEFGHIJKLMNOPQRSTUVWXYZ', a:mark)
+    if len(a:mark) !=# 1
+        throw '(markbar#helpers#IsUppercaseMark) Invalid mark char: ' . a:mark
+    endif
+    let l:idx = match('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\V' . a:mark)
     return l:idx !=# -1
 endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a
 "                           numbered mark.
 function! markbar#helpers#IsNumberedMark(mark) abort
-    if len(a:mark) !=# 1 | return v:false | endif
-    let l:idx = match('0123456789', a:mark)
+    if len(a:mark) !=# 1
+        throw '(markbar#helpers#IsNumberedMark) Invalid mark char: ' . a:mark
+    endif
+    let l:idx = match('0123456789', '\V' . a:mark)
     return l:idx !=# -1
 endfunction
 
@@ -83,6 +89,8 @@ endfunction
 " RETURNS:  (v:t_string)    The name of the file in which the requested mark
 "                           can be found. May be an empty string, if the given
 "                           mark exists in a scratch buffer.
+" PARAM:    mark    (v:t_string)    The single character identifying the mark,
+"                                   not including the leading single quote.
 function! markbar#helpers#ParentFilename(mark) abort
     let l:buf_no = markbar#helpers#BufferNo(a:mark)
     if !l:buf_no
