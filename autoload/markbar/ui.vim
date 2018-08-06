@@ -122,7 +122,9 @@ function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
 
     setlocal winfixwidth winfixheight cursorline
+    setlocal foldcolumn=0 signcolumn=no
     setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
+    setlocal norelativenumber nonumber
     setlocal nowrap nospell
     execute 'keepalt silent! file! ' . markbar#settings#MarkbarBufferName()
     setlocal filetype=markbar syntax=markbar
