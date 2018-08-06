@@ -86,6 +86,9 @@ function! markbar#helpers#BufferNo(mark) abort
     let l:mark_pos = getpos("'" . a:mark)
     if l:mark_pos ==# [0, 0, 0, 0]
         throw '(markbar#helpers#BufferNo) Mark not found: ' . a:mark
+    elseif l:mark_pos[0] ==# 0
+        " current buffer
+        return bufnr('%')
     endif
     return l:mark_pos[0]
 endfunction
@@ -97,9 +100,6 @@ endfunction
 "                                   not including the leading single quote.
 function! markbar#helpers#ParentFilename(mark) abort
     let l:buf_no = markbar#helpers#BufferNo(a:mark)
-    if !l:buf_no
-        let l:buf_no = bufnr('%')
-    endif
     return bufname(l:buf_no)
 endfunction
 
