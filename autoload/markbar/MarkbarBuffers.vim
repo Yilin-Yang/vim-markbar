@@ -205,7 +205,8 @@ function! markbar#MarkbarBuffers#populateWithMarkbar(
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     let l:buffer_cache = a:self['getBufferCache()'](a:for_buffer_no)
     call a:self['updateCurrentAndGlobal()']()
-    let l:contents = a:self['getMarkbarContents()'](
+    let l:contents  = markbar#ui#GetHelptext(g:markbar_show_verbose_help)
+    let l:contents += a:self['getMarkbarContents()'](
         \ a:for_buffer_no,
         \ markbar#settings#MarksToDisplay()
     \ )

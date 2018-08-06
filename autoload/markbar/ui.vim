@@ -61,6 +61,31 @@ function! markbar#ui#GetDefaultName(mark) abort
     return l:name
 endfunction
 
+" RETURNS:  (v:t_list)      Lines of helptext to display at the top of the
+"                           markbar.
+function! markbar#ui#GetHelptext(display_verbose) abort
+    if (a:display_verbose)
+        return [
+            \ '" vim-markbar Keymappings',
+            \ '" -----------------------',
+            \ '" Press ? to close help' ,
+            \ '" -----------------------',
+            \ '" With the cursor over a mark or its context,',
+            \ '" ' . markbar#settings#JumpToMarkMapping()
+                \  . ': jump to mark',
+            \ '" ' . markbar#settings#RenameMarkMapping()
+                \  . ': rename mark',
+            \ '" ' . markbar#settings#ResetMarkMapping()
+                \  . ": reset mark's name",
+            \ '" ' . markbar#settings#DeleteMarkMapping()
+                \  . ': delete mark',
+            \ '" -----------------------',
+        \ ]
+    else
+        return [ '" Press ? for help' ]
+    endif
+endfunction
+
 " REQUIRES: User has focused a markbar buffer/window.
 " RETURNS:  (v:t_number)    The line number of the 'currently selected' mark.
 function! markbar#ui#GetCurrentMarkHeadingLine() abort
@@ -133,6 +158,17 @@ function! markbar#ui#SetDeleteMark() abort
         \ . ' :call markbar#ui#DeleteMark()<cr>'
 endfunction
 
+" REQUIRES: A markbar buffer is active and focused.
+" EFFECTS:  Set a buffer-local mapping that toggles visibility of
+"           vim-markbar's quick help.
+function! markbar#ui#SetToggleHelp() abort
+    call s:CheckBadBufferType()
+    " unlike other mappings, this one is hardcoded
+    execute 'noremap <silent> <buffer> ? '
+        \ . ':let g:markbar_show_verbose_help = !g:markbar_show_verbose_help<cr>'
+        \ . ':call markbar#ui#OpenMarkbar()<cr>'
+endfunction
+
 " EFFECTS:  Set buffer-local markbar settings for the current buffer.
 function! markbar#ui#SetMarkbarSettings() abort
     " TODO: user-configurable buffer settings?
@@ -152,6 +188,7 @@ function! markbar#ui#SetMarkbarSettings() abort
     call markbar#ui#SetRenameMark()
     call markbar#ui#SetResetMark()
     call markbar#ui#SetDeleteMark()
+    call markbar#ui#SetToggleHelp() " at end, to prevent overriding
 endfunction
 
 " EFFECTS:  Set an autocommand to print the current mark heading, or disable
@@ -274,4 +311,7 @@ function! markbar#ui#DeleteMark() abort
 
     call markbar#ui#OpenMarkbar()
     call setpos('.', l:cur_pos)
+endfunction
+
+function! markbar#ui#ToggleHelpVisibility() abort
 endfunction

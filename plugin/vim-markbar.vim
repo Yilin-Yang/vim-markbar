@@ -6,6 +6,10 @@ let g:vim_markbar_autoloaded = 1
 " BRIEF:    The entire vim-markbar state, not including user settings.
 let g:markbar_buffers = markbar#MarkbarBuffers#new()
 
+" BRIEF:    Whether or not to display the verbose quick-help at the top of the
+"           markbar.
+let g:markbar_show_verbose_help = v:false
+
 noremap <silent> <Plug>OpenMarkbar      :call markbar#ui#OpenMarkbar()<cr>
 noremap <silent> <Plug>CloseMarkbar     :call markbar#ui#CloseMarkbar()<cr>
 noremap <silent> <Plug>ToggleMarkbar    :call markbar#ui#ToggleMarkbar()<cr>

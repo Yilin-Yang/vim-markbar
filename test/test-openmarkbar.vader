@@ -25,6 +25,7 @@ Then:
   " let num_windows = len(tabpagebuflist())
   AssertEqual buf_workbench, g:markbar_buffers['getActiveBuffer()']()
 Expect:
+  " Press ? for help
   ['A]: 10lines.txt
       ~
       first line
@@ -58,6 +59,7 @@ Expect:
 Do (Re-Open Closed Markbar (E499 Check)):
   :call markbar#ui#OpenMarkbar()\<cr>
 Expect:
+  " Press ? for help
   ['A]: 10lines.txt
       ~
       first line
@@ -79,6 +81,7 @@ Then:
   " TODO: find a way to check for 'didn't create a new split'
   " AssertEqual num_windows, len(tabpagebuflist())
 Expect:
+  " Press ? for help
   ['A]: 10lines.txt
       ~
       first line
