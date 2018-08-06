@@ -47,6 +47,16 @@ function! markbar#BufferCache#updateCache(self, marks_output) abort
             " drop this markdata
         endtry
     endwhile
+
+    " copy over existing mark names
+    let l:old_dict = a:self['_marks_dict']
+    for l:mark in keys(l:old_dict)
+        if !has_key(l:new_marks_dict, l:mark) | continue | endif
+        call l:new_marks_dict[l:mark]['setName()'](
+            \ l:old_dict[l:mark]['getName()']()
+        \ )
+    endfor
+
     let a:self['_marks_dict'] = l:new_marks_dict
 endfunction
 
