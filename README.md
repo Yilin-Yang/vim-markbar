@@ -18,6 +18,18 @@ Features
 - **Assign names** to your marks, directly or automatically!
 - **Heavily customizable!** See below for details.
 
+Requirements
+--------------------------------------------------------------------------------
+vim-markbar requires either:
+- **vim 8.1**, at least up through [patch 8.1.0039.](https://github.com/vim/vim/commit/d79a26219d7161e9211fd144f0e874aa5f6d251e)
+- **neovim 0.1.6** or newer.
+
+neovim 0.1.6 was released in November of 2016, so if you use neovim at all,
+you're almost certainly fine. As of the time of writing, vim 8.1 is new _enough_
+that it isn't readily available through the default apt repositories for
+Ubuntu 16.04. You may need to install it by [adding an apt repository,](https://launchpad.net/~jonathonf/+archive/ubuntu/vim)
+or simply compile it from [source.](https://github.com/vim/vim)
+
 Installation
 --------------------------------------------------------------------------------
 With [vim-plug,](https://github.com/junegunn/vim-plug)
@@ -107,7 +119,7 @@ what they do), see `:help markbar`.
 | `g:markbar_close_after_go_to`              | `bool  ` | `v:true`                            |
 | `g:markbar_open_position`                  | `string` | `'botright'`                        |
 | `g:markbar_buffer_name`                    | `string` | `'[ Markbar ]'`                     |
-| `g:markbar_context_indent_block`           | `string` | `    ` (four spaces)                |
+| `g:markbar_context_indent_block`           | `string` | `'    '` (four spaces)                |
 | `g:markbar_section_separation`             | `number` | `1`                                 |
 | `g:markbar_ignore_buffer_criteria`         | `dict  ` | `['unload', 'delete', 'wipe']`      |
 | `g:markbar_maximum_active_buffer_history`  | `number` | `100`                               |

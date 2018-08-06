@@ -1,0 +1,358 @@
+*vim-markbar.txt* Open a sidebar showing your marks and their contexts
+
+Author:     Yilin Yang <yiliny@umich.edu>
+License:    MIT
+
+*vim-markbar*
+================================================================================
+CONTENTS                                                *vim-markbar-contents*
+
+    1. Introduction.................................*vim-markbar-introduction*
+    2. Usage........................................*vim-markbar-usage*
+    3. Options......................................*vim-markbar-options*
+    4. Highlighting.................................*vim-markbar-highlighting*
+
+================================================================================
+INTRODUCTION                                            *vim-markbar-introduction*
+
+vim's marks act as lightning-fast bookmarks, and are handy for rapid navigation:
+setting them and jumping to them each take only two keystrokes. But since
+marks are only identified by a single letter, number, or other symbol, it can
+be hard to use more than a few at a time.
+
+You can refresh your memory using the built-in `:marks` command, but the menu
+this spawns is purely informational and also a bit sparse. vim-markbar serves
+as a fancier extension of the `:marks` menu.
+
+================================================================================
+USAGE                                                   *vim-markbar-usage*
+
+                                                    *vim-markbar-setting-marks*
+If you're using this plugin, you probably already know how to set marks. If
+you don't, or if you'd like a refresher, see `:help mark-motions` for more
+details.
+
+                                                    *vim-markbar-open-markbar*
+This section assumes default keymappings. All of these are provided for you
+except for the mappings to open or close the markbar itself. I recommend
+the following: >
+    map <Leader>m <Plug>ToggleMarkbar
+<
+This mapping can open the markbar and close the markbar, if it is already
+open. (These functions also available as two distinct mappings if you want to
+map them separately: see below.) If you haven't rebound your leader key, this
+mapping is functionally equivalent to `<Backslash>m`.
+
+Your cursor moves to the markbar once it's open. You can move the cursor using
+the standard navigation keys (`j` and `k`, or the arrow keys.)
+
+When you move the cursor, the markbar will echo the "currently selected" mark
+at the bottom-left of the screen.
+
+                                                    *vim-markbar-jump-to-mark*
+Jump to the selected mark by hitting `<Enter>`. By default, this closes the
+markbar, opens the selected mark's file in the current buffer, and moves the
+cursor to the line and column at which the mark was set.
+
+                                                    *vim-markbar-rename-mark*
+Rename the selected mark by hitting `r`. This allows you to give a new name to
+this mark. If the mark is "global" (i.e. an uppercase letter or a number),
+this name will stay the same as you edit different files. If the mark is
+"local" (i.e. a lowercase letter or a punctuation mark), the name will be
+"local" to only the current buffer.
+
+                                                    *vim-markbar-reset-mark*
+Clear the name of the selected mark by hitting `c`. This resets the mark's
+name to its default name, which typically includes basic information about the
+mark, including its line number, parent file, and so on.
+
+                                                    *vim-markbar-delete-mark*
+Delete the mark entirely by hitting `d`.
+
+Note that this deletion may not always "stick," especially with
+non-alphanumeric marks (which have special meanings and are set automatically
+by vim) and with numeric marks (which technically aren't meant to be
+manipulable by the user).  If this bothers you, you can remove the mark from
+|g:markbar_marks_to_display|, or try to delete the mark explicitly using
+`delmarks` (see `:help delmarks`).
+
+
+================================================================================
+OPTIONS                                                 *vim-markbar-options*
+
+vim-markbar is meant to be customizable to suit its users' needs. A list of
+its configurable options is provided below.
+
+*g:markbar_marks_to_display*                             |(v:t_string)|
+    `Default Value:` `'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'`
+
+    The marks to display in the markbar, listed in order. The mark
+    corresponding to the leftmost character (`'a`, in the example above) is
+    listed first in the markbar, if it is set.
+
+    Marks not listed in the string above are not listed in the markbar.
+
+*g:markbar_open_vertical*                                |(v:t_bool)|
+    `Default Value:` `v:true`
+
+    Whether to open the markbar as a vertical split (i.e. as a "sidebar"). If
+    set to `v:false`, the markbar will open horizontally along the bottom or
+    top of the screen.
+
+*g:markbar_width*                                        |(v:t_number)|
+    `Default Value:` `35`
+
+    The width of a vertical markbar, in columns of text.
+
+*g:markbar_height*                                       |(v:t_number)|
+    `Default Value:` `30`
+
+    The height of a horizontal markbar, in lines of text.
+
+*g:markbar_close_after_go_to*                            |(v:t_bool)|
+    `Default Value:` `v:true`
+
+    Whether to close the markbar after using it to jump to a mark.
+
+*g:markbar_open_position*                                |(v:t_string)|
+    `Default Value:` `'botright'`
+
+    The position at which to open the markbar. Potential values include:
+    - `leftabove` (or `aboveleft`)
+    - `rightbelow` (or `belowright`)
+    - `topleft`
+    - `botright`
+
+    These are literal vimscript commands for opening splits. For further
+    details, see `:help botright` (and so on).
+
+*g:markbar_buffer_name*                                  |(v:t_string)|
+    `Default Value:` `'[ Markbar ]'`
+
+    The "filename" of the markbar, as displayed in the statusline.
+
+*g:markbar_context_indent_block*                |(v:t_string)| OR |(v:t_number)|
+    `Default Value: '    ' (four spaces)`
+
+    The text block used to indent lines of context.
+
+    This may be either a literal string, or a non-negative integer. If set to
+    an integer, vim-markbar will "construct" an indentation block out of
+    |g:markbar_context_indent_block| spaces.
+
+    Note that a zero-width |g:markbar_context_indent_block| is inadvisable, as
+    vim-markbar's syntax highlighting expects that context lines will be
+    preceded with leading whitespace. This shouldn't break vim-markbar's
+    functionality, however.
+
+    To silence warnings related to zero-width indentation blocks, set
+    |g:markbar_context_indent_block_NOWARN| to |v:true|.
+
+*g:markbar_section_separation*                           |(v:t_number)|
+    `Default Value:` `1`
+
+    The number of blank lines used to separate "blocks" of marks and context
+    from each other.
+
+    Note that using zero lines of separation is inadvisable, as vim-markbar's
+    syntax highlighting expects that mark/context "blocks" will terminate with
+    a blank line.
+
+    To silence warnings related to this option, set
+    |g:markbar_section_separation_NOWARN| to |v:true|.
+
+*g:markbar_ignore_buffer_criteria*                       |(v:t_dict)|
+    `Default Value:` `['unload', 'delete', 'wipe']`
+
+    To avoid wasting CPU cycles attempting to cache marks set in "scratch"
+    buffers, vim-markbar will ignore buffers whose 'bufhidden' values can be
+    found in this list.
+
+    Potential values include:
+        `['unload', 'delete', 'wipe', 'hide', '<empty>']`
+
+    Where `'<empty>'` corresponds to a 'bufhidden' value that is the
+    zero-length null-string `(i.e. ''`).
+
+*g:markbar_maximum_active_buffer_history*                |(v:t_number)|
+    `Default Value:` `100`
+
+    vim-markbar stores the most recently used "real" (i.e. non-ignored)
+    buffer in a history. This option sets the maximum number of entries that
+    can be held in this history.
+
+    There's probably no real reason to change this option.
+
+*g:markbar_num_lines_context*                            |(v:t_number)|
+    `Default Value:` `5`
+
+    The number of lines of context that vim-markbar should grab "around" each
+    mark.
+
+*g:markbar_jump_to_mark_mapping*                         |(v:t_string)|
+    `Default Value:` `<cr>`
+
+    The mapping used to jump to a mark from an active markbar.
+
+*g:markbar_rename_mark_mapping*                          |(v:t_string)|
+    `Default Value:` `r`
+
+    The mapping used to rename a mark from an active markbar.
+
+*g:markbar_reset_mark_mapping*                           |(v:t_string)|
+    `Default Value:` `c`
+
+    The mapping used to clear the name of a mark from an active markbar.
+
+*g:markbar_jump_to_exact_position*                       |(v:t_bool)|
+    `Default Value:` `v:true`
+
+    Whether to jump to the line and column number of a mark from the markbar.
+
+    When |v:true|, this is functionally equivalent to jumping to a mark using
+    the backtick character. See `:help mark-motions` for details.
+
+*g:markbar_rename_mark_completion*                       |(v:t_string)|
+    `Default Value:` `file_in_path`
+
+    The command completions used when renaming a mark.
+
+    See `:help command-completion` for further details.
+
+*g:markbar_mark_name_format_string*                      |(v:t_string)|
+    `Default Value:` `'l: %4d, c: %4d'`
+
+    The format string used when setting "default names" for a local mark.
+
+    See `:help printf` for further details.
+
+*g:markbar_mark_name_arguments*                          |(v:t_list)|
+    `Default Value:` `['line', 'col']`
+
+    The values with which to populate |g:markbar_mark_name_format_string|.
+
+    Potential values include:
+    - `'line'`: the line number of the mark
+    - `'col'`: the column number of the mark
+    - `'fname'`: the parent filename of the mark
+    - function reference: see below.
+
+                                                *vim-markbar-custom-mark-names*
+                                                *vim-markbar-function-references*
+                                                *vim-markbar-funcref*
+    Rather than being limited to the values above, you can also specify a
+    function reference with which to populate a mark's name. This offers
+    significantly more freedom at the cost of added complexity.
+
+    If given a function reference when default-naming a mark, vim-markbar will
+    call the function with one argument. This argument is a dictionary
+    containing the following key-value pairs:
+    - `'mark'`
+      - A |v:t_string| of length 1; the character that represents the mark.
+    - `'line'`
+      - The line number of the mark, as a |v:t_number|.
+    - `'column'`
+      - The column number of the mark, as a |v:t_number|.
+    - `'filename'`
+      - The filename of the mark, as a |v:t_string|. As of the time of
+        writing, this is given as an absolute path (i.e. specified from the
+        root of the filesystem).
+    - `'context'`
+      - The context in which the mark appears. Each line of context is given
+        as a |v:t_string| in a |v:t_list|. If the user requests 3 lines of
+        context (i.e. |g:markbar_num_lines_context| equals 3), the
+        zero-indexed string in this list will be the line above the mark, the
+        one-indexed string will be the line of the mark, and so on.
+    - `'TYPE'`
+      - A |v:t_string| with the hardcoded value `'BasicMarkData'`. This is a
+        quirk of the "vimscript class" idiom that I use in this plugin, which
+        you can safely ignore.
+
+    This dictionary is fully mutable and can be modified without side effects.
+
+    As an example, one can replicate the default naming behavior of
+    vim-markbar given above by using a function reference in the following
+    way: >
+        function! LineAndCol(mark_data) abort
+            return printf('l: %4d, c: %4d', mark_data['line'], mark_data['column'])
+        endfunction
+
+        " ...
+
+        let g:markbar_mark_name_format_string = '%s'
+        let g:markbar_mark_name_arguments = [ function('LineAndCol') ]
+<
+    See `:help function()` for more details.
+
+*g:markbar_file_mark_format_string*                      |(v:t_string)|
+    `Default Value:` `%s [l: %4d, c: %4d]`
+
+*g:markbar_file_mark_arguments*                          |(v:t_list)|
+    `Default Value:` `['fname', 'line', 'col']`
+
+*g:markbar_numbered_mark_format_string*                  |(v:t_string)|
+    `Default Value:` `g:markbar_file_mark_format_string`
+
+*g:markbar_numbered_mark_arguments*                      |(v:t_list)|
+    `Default Value:` `g:markbar_file_mark_arguments`
+
+
+================================================================================
+HIGHLIGHTING                                            *vim-markbar-highlighting*
+
+vim-markbar uses custom syntax highlighting in opened markbars. The markbar
+syntax file defines the following highlight groups:
+
+
+|markbarComment|                            `Default Value (Linkage): ` 'Comment'
+
+    Lines that start with `"`.
+
+|markbarSectionBrackets|                    `Default Value (Linkage): ` 'Type'
+
+    The square brackets in, e.g. `['A]`.
+
+|markbarSectionLowercaseMark|               `Default Value (Linkage): ` 'Type'
+
+    The quote and letter in, e.g. `['a]`.
+
+|markbarSectionSpecialLocalMark|            `Default Value (Linkage): ` 'Type'
+
+    The quote and symbol in, e.g. `['^]`.
+
+|markbarSectionNumberedMark|            `    Default Value (Linkage): ` 'Special'
+
+    The quote and number in, e.g. `['5]`.
+
+|markbarSectionUppercaseMark|               `Default Value (Linkage): ` 'Underlined'
+
+    The quote and letter in, e.g. `['A]`.
+
+|markbarSectionName|                        `Default Value (Linkage):` 'Title'
+
+    The text following the colon in, e.g. '['A]:    Section Name Here'
+
+|markbarContext|                            `Default Value (Linkage):` 'NormalNC'
+
+    The lines below the section headings, plucked from around the mark's
+    actual location.
+
+|markbarContextEndOfBuffer|                 `Default Value (Linkage):` 'EndOfBuffer'
+
+    The '~' character that appears when a mark's context is cut off by the top
+    or bottom of its parent file.
+
+These can be customized by linking them to other preexisting highlight groups
+(as is done by default), or by explicitly defining a colorscheme for the
+highlight group to use.  >
+
+    " 'reusing' an existing highlight group
+    hi link markbarContext String
+
+    " explicitly defining which colors to use, see `:h highlight-args` for details
+    hi markbarSectionNumberedMark cterm=bold ctermfg=green gui=bold guifg=green
+<
+
+
+================================================================================
+ vim:textwidth=80:filetype=help
