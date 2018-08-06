@@ -62,16 +62,22 @@ function! markbar#ui#getDefaultName(mark) abort
 endfunction
 
 " REQUIRES: User has focused a markbar buffer/window.
-" RETURNS:  (v:t_string)    The 'currently selected' mark, or an empty string
-"                           if no mark is selected.
-function! markbar#ui#GetCurrentMarkHeading() abort
+" RETURNS:  (v:t_number)    The line number of the 'currently selected' mark.
+function! markbar#ui#GetCurrentMarkHeadingLine() abort
     call s:CheckBadBufferType()
-    let l:cur_heading = search(
+    let l:cur_heading_no = search(
         \ '^\[''.\]',
         \ 'bnc',
         \ 1
     \ )
-    return getline(l:cur_heading)[2]
+    return l:cur_heading_no
+endfunction
+
+" REQUIRES: User has focused a markbar buffer/window.
+" RETURNS:  (v:t_string)    The 'currently selected' mark, or an empty string
+"                           if no mark is selected.
+function! markbar#ui#GetCurrentMarkHeading() abort
+    return getline(markbar#ui#GetCurrentMarkHeadingLine())[2]
 endfunction
 
 function! s:GoToMark() abort
@@ -137,6 +143,22 @@ function! markbar#ui#SetMarkbarSettings() abort
     call markbar#ui#SetResetMark()
 endfunction
 
+" EFFECTS:  Set an autocommand to print the current mark heading, or disable
+"           the same if the current buffer is not a markbar buffer.
+function! markbar#ui#SetEchoHeaderAutocmds() abort
+    if getbufvar(bufnr('%'), 'is_markbar')
+        augroup vim_markbar_echo_header
+            au!
+            autocmd CursorHold,CursorMoved *
+                \ echo getline(markbar#ui#GetCurrentMarkHeadingLine())
+        augroup end
+    else
+        augroup vim_markbar_echo_header
+            au!
+        augroup end
+    endif
+endfunction
+
 " EFFECTS:  - Open an appropriately sized vertical split for a markbar.
 "           - Set appropriate markbar settings, if a new buffer was created.
 " PARAM:    markbar     (v:t_number)    The buffer number to be opened in the
@@ -154,9 +176,9 @@ function! markbar#ui#OpenMarkbarSplit(...) abort
     let l:command = empty(a:markbar) ? 'new ' : 'split #' . a:markbar
 
     try
-        execute 'keepalt ' . l:position . l:orientation . l:size . l:command
+        execute 'keepalt silent ' . l:position . l:orientation . l:size . l:command
     catch /E499/
-        execute 'keepalt ' . l:position . l:orientation . l:size
+        execute 'keepalt silent ' . l:position . l:orientation . l:size
             \ . 'split | buffer! ' . a:markbar
     endtry
     if empty(a:markbar)
@@ -188,6 +210,7 @@ endfunction
 "           - Close any open markbars,
 "           - Open an updated markbar for the current active buffer.
 function! markbar#ui#RefreshMarkbar() abort
+    if !markbar#helpers#IsRealBuffer(bufnr('%')) | return | endif
     if g:markbar_buffers['markbarIsOpenCurrentTab()']()
         let l:cur_winnr = winnr()
         call markbar#ui#OpenMarkbar()
