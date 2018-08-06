@@ -73,6 +73,17 @@ Then:
   AssertEqual ['D', '40', '0'],   global_marks['D']['_data']
   AssertEqual ['E', '50', '0'],   global_marks['E']['_data']
 
+Execute (BufferCache: Test Name Preservation Across Cache Updates):
+  execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
+  let local_mark = g:markbar_buffers['getMarkData()']('c')
+  call local_mark['setName()']('foo')
+  let global_mark = g:markbar_buffers['getMarkData()']('E')
+  call global_mark['setName()']('goo')
+
+  call g:markbar_buffers['updateCurrentAndGlobal()']()
+Then:
+  AssertEqual 'foo', local_mark['getName()']()
+  AssertEqual 'goo', global_mark['getName()']()
 
 Execute (MarkbarBuffers: Fetch Contexts for Onscreen Buffer):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
