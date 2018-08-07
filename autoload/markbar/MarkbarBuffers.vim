@@ -226,7 +226,9 @@ function! markbar#MarkbarBuffers#getMarkbarBuffer(self) abort
     if !bufexists(a:self['_markbar_buffer'])
         let l:bufname = markbar#settings#MarkbarBufferName()
         execute 'badd ' . l:bufname
-        let l:bufnr = bufnr(l:bufname)
+        let l:bufnr = bufnr(
+            \ escape(l:bufname, '~*.$[]')
+        \ )
         let a:self['_markbar_buffer'] = l:bufnr
         call markbar#ui#SetMarkbarBufferSettings(l:bufnr)
     endif
