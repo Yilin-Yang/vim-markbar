@@ -8,8 +8,9 @@ buffer, as well as the contexts in which those marks appear.
 Features
 --------------------------------------------------------------------------------
 
-<!-- ### Demo -->
-<!-- TODO -->
+### Demo
+![markbar](https://user-images.githubusercontent.com/23268616/43757140-d683233c-99e5-11e8-9fd1-edb8eb867be2.gif)
+[(asciinema Link)](https://asciinema.org/a/0r01UbKPcPpTeIfBp1SDmLnYW)
 
 ### List
 
@@ -86,9 +87,10 @@ and won't work with the functions given above.
 
 You can manipulate marks in the markbar by moving your cursor over the mark or
 its context and then activating a keymapping. By default, you **jump to marks**
-using `<Enter>`, **rename marks** using `r`, and **clear the name of a mark**
-using `c`. These bindings only activate while you have a markbar window
-focused, so they shouldn't conflict with your other mappings.
+using `<Enter>`, **rename marks** using `r`, **clear the name of a mark** using
+`c`, and **delete marks entirely** using `d`. These bindings only activate while
+you have a markbar window focused, so they shouldn't conflict with your other
+mappings.
 
 A few examples of how to remap these bindings are given below:
 
@@ -105,8 +107,37 @@ let g:markbar_reset_mark_mapping = '<BS>'
 
 Customization
 --------------------------------------------------------------------------------
-For full documentation on options (what they are, their default values, and
-what they do), see `:help vim-markbar-options`.
+
+### Common Options
+These are a few of the options that you're most likely to change. For full
+documentation on options (what they are, their default values, and what they
+do), see `:help vim-markbar-options`.
+
+```vim
+" for example
+" only display alphabetic marks a-i and A-I
+let g:markbar_marks_to_display = 'abcdefghiABCDEFGHI'
+
+" width of a vertical split markbar
+let g:markbar_width = 30
+
+" indentation for lines of context
+let g:markbar_context_indent_block = '  '
+
+" number of lines of context to retrieve per mark
+let g:markbar_num_lines_context = 3
+
+" markbar-local mappings
+"let g:markbar_jump_to_mark_mapping=
+"let g:markbar_rename_mark_mapping=
+"let g:markbar_reset_mark_mapping=
+"let g:markbar_delete_mark_mapping=
+
+" open/close markbar mappings
+"map <Leader>m  <Plug>ToggleMarkbar
+"map <Leader>mo <Plug>OpenMarkbar
+"map <Leader>mc <Plug>CloseMarkbar
+```
 
 ### Highlight Groups
 vim-markbar defines its own syntax file that it uses inside markbar buffers.
