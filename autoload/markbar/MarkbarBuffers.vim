@@ -21,6 +21,8 @@ function! markbar#MarkbarBuffers#new() abort
         \ function('markbar#MarkbarBuffers#getActiveBuffer', [l:new])
     let l:new['getBufferCache()'] =
         \ function('markbar#MarkbarBuffers#getBufferCache', [l:new])
+    let l:new['getOpenMarkbars()'] =
+        \ function('markbar#MarkbarBuffers#getOpenMarkbars', [l:new])
     let l:new['getMarkData()'] =
         \ function('markbar#MarkbarBuffers#getMarkData', [l:new])
     let l:new['markbarIsOpenCurrentTab()'] =
@@ -112,15 +114,12 @@ endfunction
 "                           `v:false` otherwise.
 function! markbar#MarkbarBuffers#closeMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
-    let l:tab_buffers = tabpagebuflist()
-    let l:closed_windows = v:false
-    for l:bufnr in l:tab_buffers
-        if getbufvar(l:bufnr, 'is_markbar')
-            execute bufwinnr(l:bufnr) . 'close'
-            let l:closed_windows = v:true
-        endif
+    let l:markbar_buffers = a:self['getOpenMarkbars()']()
+    if empty(l:markbar_buffers) | return v:false | endif
+    for l:markbar in l:markbar_buffers
+        execute bufwinnr(l:markbar) . 'close'
     endfor
-    return l:closed_windows
+    return v:true
 endfunction
 
 " EFFECTS:  Close the currently open markbar, if one is open. If no markbar
@@ -277,6 +276,20 @@ function! markbar#MarkbarBuffers#getMarkData(self, mark_char) abort
     endif
     let l:mark = l:marks_dict[a:mark_char]
     return l:mark
+endfunction
+
+" RETURNS:  (v:t_list)      A list of buffer numbers corresponding to all
+"                           markbar buffers open in the current tab.
+function! markbar#MarkbarBuffers#getOpenMarkbars(self) abort
+    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
+    let l:tab_buffers = tabpagebuflist()
+    let l:markbar_buffers = []
+    for l:bufnr in l:tab_buffers
+        if getbufvar(l:bufnr, 'is_markbar')
+            let l:markbar_buffers += [l:bufnr]
+        endif
+    endfor
+    return l:markbar_buffers
 endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if a markbar is open in the current tab,
