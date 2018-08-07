@@ -146,3 +146,28 @@ Expect:
 "       ninth line
 "       tenth line
 "  
+" Do (Get Default Mark Name):
+"   :edit! 10lines.txt\<cr>
+"   :call markbar#ui#OpenMarkbar()\<cr>
+"   /['B\<cr>
+" Then:
+"   let g:default_header = getline('.')
+
+" Do (Go To Mark):
+"   \<cr>
+" Then:
+"   AssertEqual 'fifth line', getline('.')
+
+" Do (Rename Mark):
+"   :call markbar#ui#OpenMarkbar()\<cr>
+"   /['B\<cr>
+"   r
+"   Covfefe the Strong\<cr>
+" Then:
+"   let mark_b = g:markbar_buffers['getMarkData()']('B')
+"   AssertEqual 'Covfefe the Strong', mark_b['getName()']()
+
+" Do (Reset Mark Name):
+"   c
+" Then:
+"   AssertEqual '', mark_b['getName()']()
