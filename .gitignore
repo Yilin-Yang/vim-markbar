@@ -4,3 +4,4 @@ Session.vim
 *.swo
 *.swp
 *temp
+doc/tags

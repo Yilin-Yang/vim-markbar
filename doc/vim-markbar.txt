@@ -204,6 +204,12 @@ its configurable options is provided below.
 
     The mapping used to clear the name of a mark from an active markbar.
 
+*g:markbar_delete_mark_mapping*                          |(v:t_string)|
+    `Default Value:` `d`
+
+    The mapping used to delete a mark entirely. May not "stick" if the mark to
+    be deleted is special (e.g. is a numbered mark).
+
 *g:markbar_jump_to_exact_position*                       |(v:t_bool)|
     `Default Value:` `v:true`
 
