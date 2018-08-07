@@ -12,6 +12,7 @@ function! markbar#MarkbarBuffers#new() abort
                 \ function('markbar#helpers#IsRealBuffer'),
                 \ markbar#settings#MaximumActiveBufferHistory()
             \ ),
+        \ '_markbar_buffer': -1
     \ }
     let l:new['closeMarkbar()'] =
         \ function('markbar#MarkbarBuffers#closeMarkbar', [l:new])
@@ -25,6 +26,8 @@ function! markbar#MarkbarBuffers#new() abort
         \ function('markbar#MarkbarBuffers#getOpenMarkbars', [l:new])
     let l:new['getMarkData()'] =
         \ function('markbar#MarkbarBuffers#getMarkData', [l:new])
+    let l:new['getMarkbarBuffer()'] =
+        \ function('markbar#MarkbarBuffers#getMarkbarBuffer', [l:new])
     let l:new['markbarIsOpenCurrentTab()'] =
         \ function('markbar#MarkbarBuffers#markbarIsOpenCurrentTab', [l:new])
     let l:new['openMarkbar()'] =
@@ -33,8 +36,6 @@ function! markbar#MarkbarBuffers#new() abort
         \ function('markbar#MarkbarBuffers#populateWithMarkbar', [l:new])
     let l:new['pushNewBuffer()'] =
         \ function('markbar#MarkbarBuffers#pushNewBuffer', [l:new])
-    let l:new['spawnNewMarkbarBuffer()'] =
-        \ function('markbar#MarkbarBuffers#spawnNewMarkbarBuffer', [l:new])
     let l:new['toggleMarkbar()'] =
         \ function('markbar#MarkbarBuffers#toggleMarkbar', [l:new])
     let l:new['updateCurrentAndGlobal()'] =
@@ -82,29 +83,22 @@ endfunction
 function! markbar#MarkbarBuffers#openMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
 
-    call a:self['closeMarkbar()']()
     call a:self['updateCurrentAndGlobal()']()
 
     let l:active_buffer       = a:self['_active_buffer_stack']['top()']()
     let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
 
-    let l:markbar_buffer = l:active_buffer_cache['_markbar_buffer_no']
-    if l:markbar_buffer <# 0
-        " no existing markbar buffer
-        let l:active_buffer_cache['_markbar_buffer_no'] =
-            \ a:self['spawnNewMarkbarBuffer()']()
-        let l:markbar_buffer = l:active_buffer_cache['_markbar_buffer_no']
+    let l:markbar_buffer = a:self['getMarkbarBuffer()']()
+
+    let l:markbar_window = bufwinnr(l:markbar_buffer)
+    if l:markbar_window ==# -1
+        call markbar#ui#OpenMarkbarSplit(a:self['_markbar_buffer'])
     else
-        " existing markbar buffer
-        let l:markbar_window = bufwinnr(l:markbar_buffer)
-        if l:markbar_window ==# -1
-            call markbar#ui#OpenMarkbarSplit(l:active_buffer_cache['_markbar_buffer_no'])
-        else
-            " switch to existing markbar window
-            execute l:markbar_window . 'wincmd w'
-        endif
+        " switch to existing markbar window
+        execute l:markbar_window . 'wincmd w'
     endif
 
+    call markbar#ui#SetMarkbarWindowSettings(l:markbar_buffer)
     call a:self['populateWithMarkbar()'](l:active_buffer, l:markbar_buffer)
 endfunction
 
@@ -128,24 +122,6 @@ function! markbar#MarkbarBuffers#toggleMarkbar(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
     if   a:self['closeMarkbar()']() | return | endif
     call a:self['openMarkbar()']()
-endfunction
-
-" EFFECTS:  - Create a new markbar buffer for the currently active buffer.
-"           - Open this new markbar buffer in a split.
-" RETURNS:  (v:t_number)    The buffer number of the new buffer.
-function! markbar#MarkbarBuffers#spawnNewMarkbarBuffer(self) abort
-    call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
-    " TODO: handle exception for no active buffer
-    let l:active_buffer = a:self['_active_buffer_stack']['top()']()
-    let l:buffer_cache  = a:self['_buffer_caches'][l:active_buffer]
-    if l:buffer_cache['_markbar_buffer_no'] ># 0
-        throw '(markbar#MarkbarBuffers) Active buffer already has a markbar buffer: '
-            \ . string(l:buffer_cache)
-    endif
-
-    let l:markbar = markbar#ui#OpenMarkbarSplit()
-    let l:buffer_cache['_markbar_buffer_no'] = l:markbar
-    return l:markbar
 endfunction
 
 " REQUIRES: - `a:buffer_no` is not a markbar buffer.
@@ -242,14 +218,19 @@ function! markbar#MarkbarBuffers#getActiveBuffer(self) abort
     return a:self['_active_buffer_stack']['top()']()
 endfunction
 
-" RETURNS:  (v:t_number)    The buffer number of the active buffer's
-"                           markbar, or a negative number if it doesn't have
-"                           one.
-function! markbar#MarkbarBuffers#getActiveBufferMarkbar(self) abort
+" RETURNS: (v:t_number)     The buffer number of the 'markbar buffer.'
+" EFFECTS:  Creates a markbar buffer for the MarkbarBuffers object if one does
+"           not yet exist.
+function! markbar#MarkbarBuffers#getMarkbarBuffer(self) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
-    let l:active_buffer       = a:self['_active_buffer_stack']['top()']()
-    let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
-    return l:active_buffer_cache['_markbar_buffer_no']
+    if !bufexists(a:self['_markbar_buffer'])
+        let l:bufname = markbar#settings#MarkbarBufferName()
+        execute 'badd ' . l:bufname
+        let l:bufnr = bufnr(l:bufname)
+        let a:self['_markbar_buffer'] = l:bufnr
+        call markbar#ui#SetMarkbarBufferSettings(l:bufnr)
+    endif
+    return a:self['_markbar_buffer']
 endfunction
 
 " RETURNS:  (MarkData)      The MarkData object corresponding to the given

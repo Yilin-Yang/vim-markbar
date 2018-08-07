@@ -169,20 +169,50 @@ function! markbar#ui#SetToggleHelp() abort
         \ . ':call markbar#ui#OpenMarkbar()<cr>'
 endfunction
 
-" EFFECTS:  Set buffer-local markbar settings for the current buffer.
-function! markbar#ui#SetMarkbarSettings() abort
+" EFFECTS:  Set window-local settings for the given buffer.
+function! markbar#ui#SetMarkbarWindowSettings(buffer_expr) abort
+    if !bufexists(a:buffer_expr)
+        throw '(markbar#ui#SetMarkbarWindowSettings) Buffer does not exist: ' . a:buffer_expr
+    endif
+    let l:winnr = bufwinnr(a:buffer_expr)
+    if l:winnr ==# -1
+        throw '(markbar#ui#SetMarkbarWindowSettings) Window does not exist for: ' . a:buffer_expr
+    endif
+
+    call setwinvar(l:winnr,    '&winfixwidth',         1)
+    call setwinvar(l:winnr,   '&winfixheight',         1)
+    call setwinvar(l:winnr,     '&cursorline',         1)
+    call setwinvar(l:winnr,     '&foldcolumn',         0)
+    call setwinvar(l:winnr,     '&signcolumn',      'no')
+    call setwinvar(l:winnr, '&relativenumber',         0)
+    call setwinvar(l:winnr,         '&number',         0)
+    call setwinvar(l:winnr,           '&wrap',         0)
+    call setwinvar(l:winnr,          '&spell',         0)
+
+    call setwinvar(l:winnr,      'is_markbar',         1)
+
+endfunction
+
+" EFFECTS:  Set buffer-local settings for the given buffer.
+function! markbar#ui#SetMarkbarBufferSettings(buffer_expr) abort
+    if !bufexists(a:buffer_expr)
+        throw '(markbar#ui#SetMarkbarBufferSettings) Buffer does not exist: ' . a:buffer_expr
+    endif
+
+    call setbufvar(a:buffer_expr,      '&buflisted',         0)
+    call setbufvar(a:buffer_expr,        '&buftype',  'nofile')
+    call setbufvar(a:buffer_expr,      '&bufhidden',    'hide')
+    call setbufvar(a:buffer_expr,       '&swapfile',         0)
+    call setbufvar(a:buffer_expr,       '&filetype', 'markbar')
+    call setbufvar(a:buffer_expr,         '&syntax', 'markbar')
+
+    call setbufvar(a:buffer_expr,      'is_markbar',         1)
+
+endfunction
+
+" EFFECTS:  Set buffer-local markbar mappings for the current buffer.
+function! markbar#ui#SetMarkbarMappings() abort
     " TODO: user-configurable buffer settings?
-
-    setlocal winfixwidth winfixheight cursorline
-    setlocal foldcolumn=0 signcolumn=no
-    setlocal nobuflisted buftype=nofile bufhidden=hide noswapfile
-    setlocal norelativenumber nonumber
-    setlocal nowrap nospell
-    execute 'keepalt silent! file! ' . markbar#settings#MarkbarBufferName()
-    setlocal filetype=markbar syntax=markbar
-
-    let b:is_markbar = 1
-    let w:is_markbar = 1
 
     call markbar#ui#SetGoToMark()
     call markbar#ui#SetRenameMark()
@@ -229,8 +259,10 @@ function! markbar#ui#OpenMarkbarSplit(...) abort
         execute 'keepalt silent ' . l:position . l:orientation . l:size
             \ . 'split | buffer! ' . a:markbar
     endtry
+
+    call markbar#ui#SetMarkbarMappings()
+
     if empty(a:markbar)
-        call markbar#ui#SetMarkbarSettings()
         return bufnr('%')
     endif
 

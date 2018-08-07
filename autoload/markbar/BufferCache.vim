@@ -8,7 +8,6 @@ function! markbar#BufferCache#new(...) abort
         \ 'TYPE': 'BufferCache',
         \ '_marks_dict': {},
         \ '_buffer_no': a:buffer_no,
-        \ '_markbar_buffer_no': -1
     \ }
     let l:new['isGlobal()']       = function('markbar#BufferCache#isGlobal',       [l:new])
     let l:new['updateCache()']    = function('markbar#BufferCache#updateCache',    [l:new])
