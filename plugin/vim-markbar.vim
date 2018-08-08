@@ -4,7 +4,7 @@ endif
 let g:vim_markbar_autoloaded = 1
 
 " BRIEF:    The entire vim-markbar state, not including user settings.
-let g:markbar_buffers = markbar#MarkbarBuffers#new()
+let g:markbar_buffers = markbar#MarkbarState#new()
 
 " BRIEF:    Whether or not to display the verbose quick-help at the top of the
 "           markbar.
