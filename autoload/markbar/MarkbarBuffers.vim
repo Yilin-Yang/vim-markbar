@@ -85,11 +85,7 @@ function! markbar#MarkbarBuffers#openMarkbar(self) abort
 
     call a:self['updateCurrentAndGlobal()']()
 
-    let l:active_buffer       = a:self['_active_buffer_stack']['top()']()
-    let l:active_buffer_cache = a:self['_buffer_caches'][l:active_buffer]
-
     let l:markbar_buffer = a:self['getMarkbarBuffer()']()
-
     let l:markbar_window = bufwinnr(l:markbar_buffer)
     if l:markbar_window ==# -1
         call markbar#ui#OpenMarkbarSplit(a:self['_markbar_buffer'])
@@ -97,8 +93,9 @@ function! markbar#MarkbarBuffers#openMarkbar(self) abort
         " switch to existing markbar window
         execute l:markbar_window . 'wincmd w'
     endif
-
     call markbar#ui#SetMarkbarWindowSettings(l:markbar_buffer)
+
+    let l:active_buffer = a:self['_active_buffer_stack']['top()']()
     call a:self['populateWithMarkbar()'](l:active_buffer, l:markbar_buffer)
 endfunction
 
@@ -190,9 +187,8 @@ endfunction
 
 " EFFECTS:  Push the given buffer number onto the active buffer
 "           ConditionalStack.
-function! markbar#MarkbarBuffers#pushNewBuffer(self) abort
+function! markbar#MarkbarBuffers#pushNewBuffer(self, buffer_no) abort
     call markbar#MarkbarBuffers#AssertIsMarkbarBuffers(a:self)
-    let a:buffer_no = expand('<abuf>') + 0
     call a:self['_active_buffer_stack']['push()'](a:buffer_no)
 endfunction
 
