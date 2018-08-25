@@ -128,16 +128,59 @@ let g:markbar_context_indent_block = '  '
 let g:markbar_num_lines_context = 3
 
 " markbar-local mappings
-"let g:markbar_jump_to_mark_mapping=
-"let g:markbar_rename_mark_mapping=
-"let g:markbar_reset_mark_mapping=
-"let g:markbar_delete_mark_mapping=
+"let g:markbar_jump_to_mark_mapping = 'G'
+"let g:markbar_rename_mark_mapping  = '<F2>'
+"let g:markbar_reset_mark_mapping   = 'r'
+"let g:markbar_delete_mark_mapping  = '<Del>'
 
 " open/close markbar mappings
 "map <Leader>m  <Plug>ToggleMarkbar
 "map <Leader>mo <Plug>OpenMarkbar
 "map <Leader>mc <Plug>CloseMarkbar
 ```
+
+### Default Mark Name Customization
+Marks that have not been explicitly named by the user will show "default" names
+in the markbar. By default, this consists of basic information about the mark,
+e.g. the file in which it resides, its line number, and its column number. If
+you'd like, you can customize how vim-markbar constructs these default names.
+
+The default name for a file mark is controlled by the options:
+```vim
+let g:markbar_file_mark_format_string = '%s [l: %4d, c: %4d]'
+let g:markbar_file_mark_arguments = ['fname', 'line', 'col']
+```
+
+Which will produce a default name that looks like:
+```vim
+['A]: test/30lines.txt [l:   10, c:    0]
+"     ^ 'fname'              ^ 'line'  ^ 'col'
+```
+
+You might decide to swap the line and column number, and also display them more
+compactly, like so:
+
+```vim
+['A]: test/30lines.txt (0, 10)
+"                 'col' ^  ^ 'line'
+```
+
+You can achieve this by setting the following options:
+```vim
+let g:markbar_file_mark_format_string = '%s (%d, %d)'
+let g:markbar_file_mark_arguments = ['fname', 'col', 'line'] " note the swapped 'col' and 'line'
+```
+
+See `:help printf` and `:help g:markbar_mark_name_format_string` for more details.
+
+#### Naming Marks with User-Provided Functions
+If you would like additional flexibility, you can provide vim-markbar with a
+reference to a "mark naming" function that you've written yourself. vim-markbar
+will call this function when "default naming" marks, providing information
+about the mark as arguments and taking a string (the name of the mark) as a
+return value.
+
+See `:help vim-markbar-function-references` for more details.
 
 ### Highlight Groups
 vim-markbar defines its own syntax file that it uses inside markbar buffers.
