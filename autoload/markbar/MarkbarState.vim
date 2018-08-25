@@ -1,8 +1,9 @@
 " EFFECTS:  Default-initialize a MarkbarState object.
 " DETAILS:  MarkbarState stores cached information on buffers, as well as
-"           those buffers' markbar buffers. It provides an interface for
-"           updating those caches, refreshing markbar buffers, and opening
-"           markbar buffers in response to user commands.
+"           the 'shared' buffer that appears when a user actually opens the
+"           markbar. It provides an interface for updating those caches,
+"           refreshing markbar buffers, and opening markbar buffers in
+"           response to user commands.
 function! markbar#MarkbarState#new() abort
     let l:new = {
         \ 'TYPE': 'MarkbarState',

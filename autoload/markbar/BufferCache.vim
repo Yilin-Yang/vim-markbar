@@ -1,6 +1,5 @@
 " EFFECTS:  Default-initialize a BufferCache object.
-" DETAILS:  BufferCache stores marks, contexts, and (potentially) a markbar
-"           buffer for a particular buffer.
+" DETAILS:  BufferCache stores marks and contexts for a particular buffer.
 " PARAM:    buffer_no   (v:t_number)
 function! markbar#BufferCache#new(...) abort
     let a:buffer_no = get(a:, 1, -1)

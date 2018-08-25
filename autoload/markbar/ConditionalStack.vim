@@ -72,8 +72,8 @@ function! markbar#ConditionalStack#top(self) abort
     let l:top = l:stack[-1]
 
     if len(l:stack) > a:self['_max_size']
-        call markbar#ConditionalStack#clean(a:self)
-        call markbar#ConditionalStack#shrink(a:self)
+        call a:self['clean()']()
+        call a:self['shrink()']()
     endif
 
     return l:top
