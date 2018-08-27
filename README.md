@@ -36,7 +36,7 @@ Installation
 With [vim-plug,](https://github.com/junegunn/vim-plug)
 
 ```vim
-# .vimrc
+" .vimrc
 call plug#begin('~/.vim/bundle')
 " ...
 Plug 'Yilin-Yang/vim-markbar'
@@ -50,7 +50,7 @@ And then run `:PlugInstall`.
 With [Vundle,](https://github.com/VundleVim/Vundle.vim)
 
 ```vim
-# .vimrc
+" .vimrc
 call vundle#begin()
 " ...
 Plugin 'Yilin-Yang/vim-markbar'
