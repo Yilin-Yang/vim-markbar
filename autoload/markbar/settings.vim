@@ -194,12 +194,6 @@ function! markbar#settings#MarkbarSectionSeparator() abort
             \ . g:markbar_section_separation
     endif
 
-    if !exists('g:markbar_section_separation_NOWARN') && !g:markbar_section_separation
-        echoerr '(vim-markbar) WARNING: A zero-line section separation will break '
-            \ . 'markbar syntax highlighting. (Set g:markbar_section_separation_NOWARN '
-            \ . 'to 1 to silence this warning.)'
-    endif
-
     let l:separator = []
     let l:i = 0
     while l:i <# g:markbar_section_separation

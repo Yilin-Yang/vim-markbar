@@ -154,13 +154,6 @@ its configurable options is provided below.
     The number of blank lines used to separate "blocks" of marks and context
     from each other.
 
-    Note that using zero lines of separation is inadvisable, as vim-markbar's
-    syntax highlighting expects that mark/context "blocks" will terminate with
-    a blank line.
-
-    To silence warnings related to this option, set
-    |g:markbar_section_separation_NOWARN| to |v:true|.
-
 *g:markbar_ignore_buffer_criteria*                       |(v:t_dict)|
     `Default Value:` `['unload', 'delete', 'wipe']`
 

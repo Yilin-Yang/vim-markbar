@@ -35,7 +35,7 @@ syn cluster markbarSectionHeaderElements
 "-------------------------------------------------------------------------------
 
 syn region markbarContext
-    \ start="^\s" end="^$"
+    \ start="^\s" end="^\["me=s-1
     \ fold keepend contains=@markbarContextElements
 
 syn match markbarContextEndOfBuffer /\M~/ contained
