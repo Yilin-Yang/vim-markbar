@@ -93,7 +93,6 @@ By default, you:
 - **Jump to marks** using `<Enter>`,
 - **Move the cursor to the next mark in the markbar** using `n`,
 - **Move the cursor to the previous mark in the markbar** using `N`,
-- **Jump to marks** using `<Enter>`,
 - **Rename marks** using `r`,
 - **Clear the name of a mark** using `c`,
 - **Delete marks entirely** using `d`.
