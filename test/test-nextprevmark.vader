@@ -1,0 +1,71 @@
+Given (Fake Markbar Buffer):
+  " Press ? for help
+  ['A]: test-openmarkbar.vader [l:    1, c:    0]
+      ~
+      ~
+      Include: clear-marks.vader
+      
+      Execute (Set Settings):
+  ['B]: 30lines.txt [l:   20, c:    0]
+      eighteenth line
+      nineteenth line
+      twentieth line
+      twenty-first line
+      twenty-second line
+  ['C]: 50lines.txt [l:   30, c:    0]
+      twenty-eighth line
+      twenty-ninth line
+      thirtieth line
+      thirty-first line
+      thirty-second line
+  ['D]: 50lines.txt [l:   40, c:    0]
+      thirty-eighth line
+      thirty-ninth line
+      fortieth line
+      forty-first line
+      forty-second line
+  ['E]: 50lines.txt [l:   50, c:    0]
+      forty-eighth line
+      forty-ninth line
+      fiftieth line
+      ~
+      ~
+  
+
+Execute (Get Current Mark, None Selected):
+  normal! gg
+  AssertEqual '', markbar#ui#GetCurrentMarkHeading()
+
+Execute (Get Next Mark):
+  normal! gg
+  AssertEqual 2, markbar#ui#GetNextMarkHeadingLine()
+
+Execute (Get Current Mark, Cursor Over Section Header):
+  normal! 2G
+  AssertEqual 2,   markbar#ui#GetCurrentMarkHeadingLine()
+  AssertEqual 'A', markbar#ui#GetCurrentMarkHeading()
+
+Execute (Get Next Mark, From Section Header):
+  normal! 2G
+  AssertEqual 8, markbar#ui#GetNextMarkHeadingLine()
+
+Execute (Get Current Mark, From Mark Context):
+  normal! 10G
+  AssertEqual 8,  markbar#ui#GetCurrentMarkHeadingLine()
+  AssertEqual 'B', markbar#ui#GetCurrentMarkHeading()
+
+Execute (Get Next Mark, From Mark Context):
+  normal! 10G
+  AssertEqual 14, markbar#ui#GetNextMarkHeadingLine()
+
+Execute (Get Previous Mark, From Bottom of File):
+  normal! G
+  AssertEqual 26, markbar#ui#GetPreviousMarkHeadingLine()
+
+Execute (Get Previous Mark, From Mark Context):
+  normal! 21G
+  AssertEqual 20, markbar#ui#GetPreviousMarkHeadingLine()
+
+Execute (Get Previous Mark, From Section Header):
+  normal! 14G
+  AssertEqual 8, markbar#ui#GetPreviousMarkHeadingLine()

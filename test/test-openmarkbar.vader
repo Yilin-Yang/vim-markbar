@@ -183,3 +183,21 @@ Then:
 
   " check column number
   AssertEqual 6, cur_pos[2]
+
+Do (Iterate Through Marks with Next):
+  :call markbar#ui#OpenMarkbar()\<cr>
+  ggnnn
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 12, cur_pos[1]
+
+Do (Iterate Through Marks with Previous):
+  :call markbar#ui#OpenMarkbar()\<cr>
+  GNNN
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]

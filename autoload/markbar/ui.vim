@@ -73,6 +73,10 @@ function! markbar#ui#GetHelptext(display_verbose) abort
             \ '" With the cursor over a mark or its context,',
             \ '" ' . markbar#settings#JumpToMarkMapping()
                 \  . ': jump to mark',
+            \ '" ' . markbar#settings#NextMarkMapping()
+                \  . ': move cursor to next mark',
+            \ '" ' . markbar#settings#PreviousMarkMapping()
+                \  . ': move cursor to previous mark',
             \ '" ' . markbar#settings#RenameMarkMapping()
                 \  . ': rename mark',
             \ '" ' . markbar#settings#ResetMarkMapping()
@@ -86,19 +90,38 @@ function! markbar#ui#GetHelptext(display_verbose) abort
     endif
 endfunction
 
-" REQUIRES: User has focused a markbar buffer/window.
+" RETURNS:  (v:t_number)    The line number of the mark heading below the
+"                           'currently selected' mark.
+function! markbar#ui#GetPreviousMarkHeadingLine() abort
+    let l:cur_heading_no = search(
+        \ markbar#constants#MARK_HEADING_SEARCH_PATTERN(),
+        \ 'bn',
+        \ 0
+    \ )
+    return l:cur_heading_no
+endfunction
+
 " RETURNS:  (v:t_number)    The line number of the 'currently selected' mark.
 function! markbar#ui#GetCurrentMarkHeadingLine() abort
-    call s:CheckBadBufferType()
     let l:cur_heading_no = search(
-        \ '^\[''.\]',
+        \ markbar#constants#MARK_HEADING_SEARCH_PATTERN(),
         \ 'bnc',
         \ 1
     \ )
     return l:cur_heading_no
 endfunction
 
-" REQUIRES: User has focused a markbar buffer/window.
+" RETURNS:  (v:t_number)    The line number of the mark heading below the
+"                           'currently selected' mark.
+function! markbar#ui#GetNextMarkHeadingLine() abort
+    let l:cur_heading_no = search(
+        \ markbar#constants#MARK_HEADING_SEARCH_PATTERN(),
+        \ 'n',
+        \ 0
+    \ )
+    return l:cur_heading_no
+endfunction
+
 " RETURNS:  (v:t_string)    The 'currently selected' mark, or an empty string
 "                           if no mark is selected.
 function! markbar#ui#GetCurrentMarkHeading() abort
@@ -116,6 +139,20 @@ function! s:GoToMark() abort
     if markbar#settings#CloseAfterGoTo()
         call markbar#ui#CloseMarkbar()
     endif
+endfunction
+
+" EFFECTS:  Moves the cursor to the requested line.
+" PARAM:    line    (v:t_number)    The target line number.
+function! s:GoToLine(line, ...) abort
+    execute 'silent normal! ' . a:line . 'G'
+endfunction
+
+function! s:GoToNextMark() abort
+    call s:GoToLine(markbar#ui#GetNextMarkHeadingLine())
+endfunction
+
+function! s:GoToPreviousMark() abort
+    call s:GoToLine(markbar#ui#GetPreviousMarkHeadingLine())
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.
@@ -156,6 +193,26 @@ function! markbar#ui#SetDeleteMark() abort
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#DeleteMarkMapping()
         \ . ' :call markbar#ui#DeleteMark()<cr>'
+endfunction
+
+" REQUIRES: A markbar buffer is active and focused.
+" EFFECTS:  Set a buffer-local mapping that skips the cursor to the mark
+"           section heading below the mark currently selected.
+function! markbar#ui#SetNextMark() abort
+    call s:CheckBadBufferType()
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#NextMarkMapping()
+        \ . ' :call <SID>GoToNextMark()<cr>'
+endfunction
+
+" REQUIRES: A markbar buffer is active and focused.
+" EFFECTS:  Set a buffer-local mapping that skips the cursor to the mark
+"           section heading above the mark currently selected.
+function! markbar#ui#SetPreviousMark() abort
+    call s:CheckBadBufferType()
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#PreviousMarkMapping()
+        \ . ' :call <SID>GoToPreviousMark()<cr>'
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.
@@ -218,6 +275,8 @@ function! markbar#ui#SetMarkbarMappings() abort
     call markbar#ui#SetRenameMark()
     call markbar#ui#SetResetMark()
     call markbar#ui#SetDeleteMark()
+    call markbar#ui#SetNextMark()
+    call markbar#ui#SetPreviousMark()
     call markbar#ui#SetToggleHelp() " at end, to prevent overriding
 endfunction
 
@@ -343,7 +402,4 @@ function! markbar#ui#DeleteMark() abort
 
     call markbar#ui#OpenMarkbar()
     call setpos('.', l:cur_pos)
-endfunction
-
-function! markbar#ui#ToggleHelpVisibility() abort
 endfunction

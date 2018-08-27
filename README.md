@@ -82,15 +82,27 @@ map <Leader>mc <Plug>CloseMarkbar
 
 These examples use the [leader key,](https://stackoverflow.com/questions/1764263/what-is-the-leader-in-a-vimrc-file)
 but you can use any mapping that you prefer. **Note the use of `map` instead of
-`noremap`:** `noremap` mappings, by definition, cannot trigger other mappings
+`noremap`:** by definition, `noremap` mappings cannot trigger other mappings
 and won't work with the functions given above.
 
 You can manipulate marks in the markbar by moving your cursor over the mark or
-its context and then activating a keymapping. By default, you **jump to marks**
-using `<Enter>`, **rename marks** using `r`, **clear the name of a mark** using
-`c`, and **delete marks entirely** using `d`. These bindings only activate while
-you have a markbar window focused, so they shouldn't conflict with your other
-mappings.
+its context and then activating a keymapping.
+
+By default, you:
+
+- **Jump to marks** using `<Enter>`,
+- **Move the cursor to the next mark in the markbar** using `n`,
+- **Move the cursor to the previous mark in the markbar** using `N`,
+- **Jump to marks** using `<Enter>`,
+- **Rename marks** using `r`,
+- **Clear the name of a mark** using `c`,
+- **Delete marks entirely** using `d`.
+
+These bindings only activate while you have a markbar window focused, so they
+shouldn't conflict with your other mappings. Note that the mappings for moving
+between marks in the markbar do shadow vim's "repeat last search" mappings: if
+you plan to frequently `/` or `?` from inside the markbar, you may wish to
+change this behavior.
 
 A few examples of how to remap these bindings are given below:
 
@@ -128,10 +140,12 @@ let g:markbar_context_indent_block = '  '
 let g:markbar_num_lines_context = 3
 
 " markbar-local mappings
-"let g:markbar_jump_to_mark_mapping = 'G'
-"let g:markbar_rename_mark_mapping  = '<F2>'
-"let g:markbar_reset_mark_mapping   = 'r'
-"let g:markbar_delete_mark_mapping  = '<Del>'
+"let g:markbar_jump_to_mark_mapping  = 'G'
+"let g:markbar_next_mark_mapping     = '/'
+"let g:markbar_previous_mark_mapping = '?'
+"let g:markbar_rename_mark_mapping   = '<F2>'
+"let g:markbar_reset_mark_mapping    = 'r'
+"let g:markbar_delete_mark_mapping   = '<Del>'
 
 " open/close markbar mappings
 "map <Leader>m  <Plug>ToggleMarkbar

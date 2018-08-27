@@ -203,6 +203,17 @@ its configurable options is provided below.
     The mapping used to delete a mark entirely. May not "stick" if the mark to
     be deleted is special (e.g. is a numbered mark).
 
+*g:markbar_next_mark_mapping*                            |(v:t_string)|
+    `Default Value:` `n`
+
+    The mapping used to move the cursor to the next mark listed in the markbar.
+
+*g:markbar_previous_mark_mapping*                        |(v:t_string)|
+    `Default Value:` `N`
+
+    The mapping used to move the cursor to the previous mark listed in the
+    markbar.
+
 *g:markbar_jump_to_exact_position*                       |(v:t_bool)|
     `Default Value:` `v:true`
 

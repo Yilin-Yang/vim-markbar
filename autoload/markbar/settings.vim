@@ -318,6 +318,34 @@ function! markbar#settings#DeleteMarkMapping() abort
     return g:markbar_delete_mark_mapping
 endfunction
 
+" RETURNS:  (v:t_string)    The keymapping used to skip the cursor to the next
+"                           mark 'section' in the markbar.
+function! markbar#settings#NextMarkMapping() abort
+    if !exists('g:markbar_next_mark_mapping')
+        let g:markbar_next_mark_mapping = 'n'
+    endif
+    call s:AssertType(
+        \ g:markbar_next_mark_mapping,
+        \ v:t_string,
+        \ 'g:markbar_next_mark_mapping'
+    \ )
+    return g:markbar_next_mark_mapping
+endfunction
+
+" RETURNS:  (v:t_string)    The keymapping used to skip the cursor to the
+"                           previous mark 'section' in the markbar.
+function! markbar#settings#PreviousMarkMapping() abort
+    if !exists('g:markbar_previous_mark_mapping')
+        let g:markbar_previous_mark_mapping = 'N'
+    endif
+    call s:AssertType(
+        \ g:markbar_previous_mark_mapping,
+        \ v:t_string,
+        \ 'g:markbar_previous_mark_mapping'
+    \ )
+    return g:markbar_previous_mark_mapping
+endfunction
+
 " RETURNS:  (v:t_bool)      `v:true` if the 'jump to mark from markbar'
 "                           mapping should go to the exact line *and column*
 "                           of the mark, or `v:false` if it should go to the
