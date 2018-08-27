@@ -12,3 +12,5 @@ filetype plugin indent on
 syntax enable
 set autoread
 set hidden
+
+map <Leader>m <Plug>ToggleMarkbar
