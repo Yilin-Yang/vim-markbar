@@ -28,6 +28,8 @@ endfunction
 " RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a global
 "                           mark (i.e. a file mark, or a ShaDa numerical mark),
 "                           and `false` otherwise.
+" PARAM:    mark    (v:t_string)    The single character identifying the mark,
+"                                   not including the leading single quote.
 function! markbar#helpers#IsGlobalMark(mark) abort
     if len(a:mark) !=# 1
         throw '(markbar#helpers#IsGlobalMark) Invalid mark char: ' . a:mark
@@ -43,6 +45,8 @@ endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to an
 "                           uppercase file mark.
+" PARAM:    mark    (v:t_string)    The single character identifying the mark,
+"                                   not including the leading single quote.
 function! markbar#helpers#IsUppercaseMark(mark) abort
     if len(a:mark) !=# 1
         throw '(markbar#helpers#IsUppercaseMark) Invalid mark char: ' . a:mark
@@ -58,6 +62,8 @@ endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a
 "                           numbered mark.
+" PARAM:    mark    (v:t_string)    The single character identifying the mark,
+"                                   not including the leading single quote.
 function! markbar#helpers#IsNumberedMark(mark) abort
     if len(a:mark) !=# 1
         throw '(markbar#helpers#IsNumberedMark) Invalid mark char: ' . a:mark
