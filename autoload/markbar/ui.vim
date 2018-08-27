@@ -256,7 +256,8 @@ function! markbar#ui#SetMarkbarBufferSettings(buffer_expr) abort
         throw '(markbar#ui#SetMarkbarBufferSettings) Buffer does not exist: ' . a:buffer_expr
     endif
 
-    call setbufvar(a:buffer_expr,      '&buflisted',         0)
+    " has no effect?
+    " call setbufvar(a:buffer_expr,      '&buflisted',         0)
     call setbufvar(a:buffer_expr,        '&buftype',  'nofile')
     call setbufvar(a:buffer_expr,      '&bufhidden',    'hide')
     call setbufvar(a:buffer_expr,       '&swapfile',         0)

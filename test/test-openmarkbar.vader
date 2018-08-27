@@ -24,6 +24,13 @@ Then:
   call markbar#ui#OpenMarkbar()
   " let num_windows = len(tabpagebuflist())
   AssertEqual buf_workbench, g:markbar_buffers['getActiveBuffer()']()
+  AssertEqual 0, &buflisted
+  AssertEqual 'nofile', &buftype
+  AssertEqual 'hide', &bufhidden
+  AssertEqual 0, &swapfile
+  AssertEqual 'markbar', &filetype
+  AssertEqual 'markbar', &syntax
+  AssertEqual 1, b:is_markbar
 Expect:
   " Press ? for help
   ['A]: 10lines.txt

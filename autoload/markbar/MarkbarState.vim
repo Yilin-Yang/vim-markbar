@@ -90,6 +90,7 @@ function! markbar#MarkbarState#openMarkbar(self) abort
     let l:markbar_window = bufwinnr(l:markbar_buffer)
     if l:markbar_window ==# -1
         call markbar#ui#OpenMarkbarSplit(a:self['_markbar_buffer'])
+        call setbufvar(l:markbar_buffer, '&buflisted', 0)
     else
         " switch to existing markbar window
         execute l:markbar_window . 'wincmd w'
