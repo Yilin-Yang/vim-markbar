@@ -32,7 +32,12 @@ function! markbar#helpers#IsGlobalMark(mark) abort
     if len(a:mark) !=# 1
         throw '(markbar#helpers#IsGlobalMark) Invalid mark char: ' . a:mark
     endif
+
+    let l:old_ignore_case = &ignorecase
+    set noignorecase
     let l:idx = match('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '\V' . a:mark)
+    let &ignorecase = l:old_ignore_case
+
     return l:idx !=# -1
 endfunction
 
@@ -42,7 +47,12 @@ function! markbar#helpers#IsUppercaseMark(mark) abort
     if len(a:mark) !=# 1
         throw '(markbar#helpers#IsUppercaseMark) Invalid mark char: ' . a:mark
     endif
+
+    let l:old_ignore_case = &ignorecase
+    set noignorecase
     let l:idx = match('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\V' . a:mark)
+    let &ignorecase = l:old_ignore_case
+
     return l:idx !=# -1
 endfunction
 
