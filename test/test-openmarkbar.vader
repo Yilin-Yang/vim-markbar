@@ -17,7 +17,7 @@ Expect:
 
 Do (Set Marks, Open Markbar):
   :edit! 10lines.txt\<cr>
-  1GmA5GmB10GmC
+  1G5lmA5GmB10GmC
 Then:
   let g:markbar_num_lines_context = 3
   let buf_workbench = bufnr('%')
@@ -171,3 +171,15 @@ Expect:
 "   c
 " Then:
 "   AssertEqual '', mark_b['getName()']()
+Do (Go To Mark):
+  :call markbar#ui#OpenMarkbar()\<cr>
+  2G\<cr>
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 6, cur_pos[2]
