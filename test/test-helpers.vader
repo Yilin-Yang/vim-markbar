@@ -1,0 +1,62 @@
+Execute (Is[...]Mark: Lowercase Letter):
+  Assert !markbar#helpers#IsGlobalMark   ('a')
+  Assert !markbar#helpers#IsUppercaseMark('a')
+  Assert !markbar#helpers#IsNumberedMark ('a')
+
+Execute (Is[...]Mark: Uppercase Letter):
+  Assert  markbar#helpers#IsGlobalMark   ('A')
+  Assert  markbar#helpers#IsUppercaseMark('A')
+  Assert !markbar#helpers#IsNumberedMark ('A')
+
+Execute (Is[...]Mark: Number):
+  Assert  markbar#helpers#IsGlobalMark   ('1')
+  Assert !markbar#helpers#IsUppercaseMark('1')
+  Assert  markbar#helpers#IsNumberedMark ('1')
+
+Execute (Is[...]Mark: Lowercase Letter, ignorecase):
+  set ignorecase
+  Assert !markbar#helpers#IsGlobalMark   ('a')
+  Assert !markbar#helpers#IsUppercaseMark('a')
+  Assert !markbar#helpers#IsNumberedMark ('a')
+  AssertEqual 1, &ignorecase
+  set noignorecase
+
+Execute (Is[...]Mark: Uppercase Letter, ignorecase):
+  set ignorecase
+  Assert  markbar#helpers#IsGlobalMark   ('A')
+  Assert  markbar#helpers#IsUppercaseMark('A')
+  Assert !markbar#helpers#IsNumberedMark ('A')
+  AssertEqual 1, &ignorecase
+  set noignorecase
+
+Execute (Is[...]Mark: Number, ignorecase):
+  set ignorecase
+  Assert  markbar#helpers#IsGlobalMark   ('1')
+  Assert !markbar#helpers#IsUppercaseMark('1')
+  Assert  markbar#helpers#IsNumberedMark ('1')
+  AssertEqual 1, &ignorecase
+  set noignorecase
+
+Execute (Is[...]Mark: Lowercase Letter, nomagic):
+  set nomagic
+  Assert !markbar#helpers#IsGlobalMark   ('a')
+  Assert !markbar#helpers#IsUppercaseMark('a')
+  Assert !markbar#helpers#IsNumberedMark ('a')
+  AssertEqual 0, &magic
+  set magic
+
+Execute (Is[...]Mark: Uppercase Letter, nomagic):
+  set nomagic
+  Assert  markbar#helpers#IsGlobalMark   ('A')
+  Assert  markbar#helpers#IsUppercaseMark('A')
+  Assert !markbar#helpers#IsNumberedMark ('A')
+  AssertEqual 0, &magic
+  set magic
+
+Execute (Is[...]Mark: Number, nomagic):
+  set nomagic
+  Assert  markbar#helpers#IsGlobalMark   ('1')
+  Assert !markbar#helpers#IsUppercaseMark('1')
+  Assert  markbar#helpers#IsNumberedMark ('1')
+  AssertEqual 0, &magic
+  set magic
