@@ -88,7 +88,7 @@ endfunction
 " BRIEF:    Close any markbars open for the active buffer in the current tab.
 " RETURNS:  (v:t_bool)      `v:true` if a markbar was actually closed,
 "                           `v:false` otherwise.
-function! markbar#MarkbarView#closeMarkbarWindow() abort dict
+function! markbar#MarkbarView#closeMarkbar() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:markbar_buffers = l:self.getOpenMarkbars()
     if empty(l:markbar_buffers) | return v:false | endif

@@ -31,37 +31,205 @@ Execute (Test Open Window):
 
 Execute (Test Open Window, Switch Out, Already Open):
   let g:markbar_view = markbar#MarkbarView#new()
+  let g:cur_window = winnr()
+  call g:markbar_view.openMarkbar()
+  let g:correct_num_windows = len(tabpagebuflist())
+  execute g:cur_window . 'wincmd w'
+  call g:markbar_view.openMarkbar()
+Then:
+  AssertEqual g:correct_num_windows, len(tabpagebuflist())
+  Assert b:is_markbar
 
 Execute (Test Close Window):
   let g:markbar_view = markbar#MarkbarView#new()
+  let g:correct_num_windows = len(tabpagebuflist())
+  call g:markbar_view.openMarkbar()
+  call g:markbar_view.closeMarkbar()
+Then:
+  AssertEqual g:correct_num_windows, len(tabpagebuflist())
+  Assert !exists('b:is_markbar')
 
 Execute (Test Close Window, None Open):
   let g:markbar_view = markbar#MarkbarView#new()
+  let g:correct_num_windows = len(tabpagebuflist())
+  call g:markbar_view.closeMarkbar()
+Then:
+  AssertEqual g:correct_num_windows, len(tabpagebuflist())
+  Assert !exists('b:is_markbar')
 
 Execute (Test Toggle Window, None Open):
   let g:markbar_view = markbar#MarkbarView#new()
+  call g:markbar_view.toggleMarkbar()
+Then:
+  Assert b:is_markbar
 
 Execute (Test Toggle Window, Already Open):
   let g:markbar_view = markbar#MarkbarView#new()
+  let g:correct_num_windows = len(tabpagebuflist())
+  call g:markbar_view.openMarkbar()
+  call g:markbar_view.toggleMarkbar()
+Then:
+  AssertEqual g:correct_num_windows, len(tabpagebuflist())
+  Assert !exists('b:is_markbar')
 
 Execute (Test markbarIsOpenCurrentTab, True):
   let g:markbar_view = markbar#MarkbarView#new()
+  call g:markbar_view.openMarkbar()
+Then:
+  Assert g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test markbarIsOpenCurrentTab, Different Tab):
   let g:markbar_view = markbar#MarkbarView#new()
+  call g:markbar_view.openMarkbar()
+  tabnew
+Then:
+  Assert !g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test markbarIsOpenCurrentTab, None Open):
   let g:markbar_view = markbar#MarkbarView#new()
+  call g:markbar_view.openMarkbar()
+  call g:markbar_view.closeMarkbar()
+Then:
+  Assert !g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test getMarkbarWindow, No Markbar Buffer):
   let g:markbar_view = markbar#MarkbarView#new()
+  let g:winnr = markbar_view.getMarkbarWindow()
+Then:
+  AssertEqual -1, g:winnr
 
 Execute (Test getMarkbarWindow, Markbar Exists But Not Open):
   let g:markbar_view = markbar#MarkbarView#new()
+  call g:markbar_view.openMarkbar()
+  call g:markbar_view.closeMarkbar()
+  let g:winnr = markbar_view.getMarkbarWindow()
+Then:
+  AssertEqual -1, g:winnr
 
 Execute (Test getMarkbarWindow, Markbar Exists In Different Tab):
   let g:markbar_view = markbar#MarkbarView#new()
+  call g:markbar_view.openMarkbar()
+  tabnew
+  let g:winnr = markbar_view.getMarkbarWindow()
+Then:
+  AssertEqual -1, g:winnr
 
 Execute (Test getMarkbarWindow, Markbar Exists in Current Tab):
   let g:markbar_view = markbar#MarkbarView#new()
+  let g:old_winnr = winnr()
+  call g:markbar_view.openMarkbar()
+  execute g:old_winnr . 'wincmd w'
+  let g:winnr = markbar_view.getMarkbarWindow()
+Then:
+  execute g:winnr . 'wincmd w'
+  Assert b:is_markbar
 
+" NOTE: uses g:markbar_view from last test case, since these functions
+"       are essentially "static" functions
+Given (Fake Markbar Buffer):
+  " Press ? for help
+  ['A]: test-openmarkbar.vader [l:    1, c:    0]
+      ~
+      ~
+      Include: clear-marks.vader
+      
+      Execute (Set Settings):
+  ['B]: 30lines.txt [l:   20, c:    0]
+      eighteenth line
+      nineteenth line
+      twentieth line
+      twenty-first line
+      twenty-second line
+  ['C]: 50lines.txt [l:   30, c:    0]
+      twenty-eighth line
+      twenty-ninth line
+      thirtieth line
+      thirty-first line
+      thirty-second line
+  ['D]: 50lines.txt [l:   40, c:    0]
+      thirty-eighth line
+      thirty-ninth line
+      fortieth line
+      forty-first line
+      forty-second line
+  ['E]: 50lines.txt [l:   50, c:    0]
+      forty-eighth line
+      forty-ninth line
+      fiftieth line
+      ~
+      ~
+  
+
+Execute (Get Current Mark, None Selected):
+  normal! gg
+  AssertEqual '', g:markbar_view._getCurrentMarkHeading()
+
+Execute (Get Next Mark):
+  normal! gg
+  AssertEqual 2, g:markbar_view._getNextMarkHeadingLine()
+
+Execute (Get Current Mark, Cursor Over Section Header):
+  normal! 2G
+  AssertEqual 2,   g:markbar_view._getCurrentMarkHeadingLine()
+  AssertEqual 'A', g:markbar_view._getCurrentMarkHeading()
+
+Execute (Get Next Mark, From Section Header):
+  normal! 2G
+  AssertEqual 8, g:markbar_view._getNextMarkHeadingLine()
+
+Execute (Get Current Mark, From Mark Context):
+  normal! 10G
+  AssertEqual 8,  g:markbar_view._getCurrentMarkHeadingLine()
+  AssertEqual 'B', g:markbar_view._getCurrentMarkHeading()
+
+Execute (Get Next Mark, From Mark Context):
+  normal! 10G
+  AssertEqual 14, g:markbar_view._getNextMarkHeadingLine()
+
+Execute (Get Previous Mark, From Bottom of File):
+  normal! G
+  AssertEqual 26, g:markbar_view._getPreviousMarkHeadingLine()
+
+Execute (Get Previous Mark, From Mark Context):
+  normal! 21G
+  AssertEqual 20, g:markbar_view._getPreviousMarkHeadingLine()
+
+Execute (Get Previous Mark, From Section Header):
+  normal! 14G
+  AssertEqual 8, g:markbar_view._getPreviousMarkHeadingLine()
+
+Execute (Set Up Cycle Keymappings):
+  nnoremap n :<C-U>call g:markbar_view._cycleToNextMark(v:count1)<cr>
+  nnoremap N :<C-U>call g:markbar_view._cycleToPreviousMark(v:count1)<cr>
+
+Do (Iterate Through Marks with Next):
+  ggnnnnn
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 26, cur_pos[1]
+
+Do (Use Count with Next):
+  gg5n
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 26, cur_pos[1]
+
+Do (Iterate Through Marks with Previous):
+  GNNNNN
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]
+
+Do (Use Count with Previous):
+  G5N
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]
