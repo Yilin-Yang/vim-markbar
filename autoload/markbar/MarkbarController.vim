@@ -1,22 +1,44 @@
-" BRIEF:    Somewhat user-facing interface for manipulating the markbar state.
-" DETAILS:  The 'controller' in Model-View-Controller. Provides functions that
-"           to be called through keymappings.
+" BRIEF:    Somewhat user-facing interface for controlling the markbar UI.
+" DETAILS:  The 'controller' in Model-View-Controller. Provides an abstract
+"           interface for 'generating' markbars that can be manipulated
+"           through implementation-defined keymappings.
 
 " BRIEF:    Construct a MarkbarController object.
-function! markbar#MarkbarController#new() abort
-    " TODO: make model, pass model into view
+" PARAM:    model   (markbar#MarkbarModel)  Reference to the current markbar
+"                                           state.
+" PARAM:    view    (markbar#MarkbarView)   Reference to an object controlling
+"                                           the appearance of the markbar UI.
+function! markbar#MarkbarController#new(model, view) abort
+    call markbar#MarkbarModel#AssertIsMarkbarModel(a:model)
+    call markbar#MarkbarView#AssertIsMarkbarView(a:view)
     let l:new = {
-        \ '_markbar_model': markbar#MarkbarModel#new(),
-        \ '_markbar_view':
-            \ markbar#MarkbarView#new(
-                \ l:new['_markbar_model']
+        \ 'TYPE': 'MarkbarController',
+        \ 'DYNAMIC_TYPE': '',
+        \ '_markbar_model': a:model,
+        \ '_markbar_view': a:view,
+        \ 'openMarkbar':
+            \ function('markbar#MarkbarController#__noImplementation', ['openMarkbar']),
+        \ 'closeMarkbar':
+            \ function('markbar#MarkbarController#__noImplementation', ['closeMarkbar']),
+        \ 'toggleMarkbar':
+            \ function('markbar#MarkbarController#__noImplementation', ['toggleMarkbar']),
+        \ '_getHelpText':
+            \ function(
+                \ 'markbar#MarkbarController#__noImplementation',
+                \ ['_getHelpText']
+            \ ),
+        \ '_getMarkHeading':
+            \ function('markbar#MarkbarController#_getMarkHeading'),
+        \ '_getDefaultMarkName':
+            \ function('markbar#MarkbarController#_getDefaultMarkName'),
+        \ '_getMarkbarContents':
+            \ function(
+                \ 'markbar#MarkbarController#__noImplementation',
+                \ ['_getMarkbarContents']
             \ ),
     \ }
 
-    " TODO: implement with MarkbarFactory
-
-    let l:new['openStandardMarkbar'] = function('markbar#MarkbarController#openStandardMarkbar')
-    let l:new['openCompactMarkbar']  = function('markbar#MarkbarController#openCompactMarkbar')
+    return l:new
 endfunction
 
 function! markbar#MarkbarController#AssertIsMarkbarController(object) abort
@@ -25,12 +47,13 @@ function! markbar#MarkbarController#AssertIsMarkbarController(object) abort
     endif
 endfunction
 
-function! markbar#MarkbarController#openStandardMarkbar() abort dict
-    call markbar#MarkbarController#AssertIsMarkbarController(self)
-    " TODO
+function! markbar#MarkbarController#__noImplementation(func_name) abort dict
+    call markbar#MarkbarController#AssertIsMarkbarController(l:self)
+    throw '(markbar#MarkbarController) Invoked pure virtual function ' . a:func_name
 endfunction
 
-function! markbar#MarkbarController#openCompactMarkbar() abort dict
-    call markbar#MarkbarController#AssertIsMarkbarController(self)
-    " TODO
+function! markbar#MarkbarController#_getMarkHeading() abort dict
+endfunction
+
+function! markbar#MarkbarController#_getDefaultMarkName() abort dict
 endfunction
