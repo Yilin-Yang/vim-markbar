@@ -10,13 +10,13 @@ endfunction
 function! markbar#ui#MarkHeading(mark) abort
     call markbar#MarkData#AssertIsMarkData(a:mark)
     let l:suffix = ' '
-    let l:user_given_name = a:mark['getName()']()
+    let l:user_given_name = a:mark.getName()
     if empty(l:user_given_name)
         let l:suffix .= markbar#ui#GetDefaultName(a:mark)
     else
         let l:suffix .= l:user_given_name
     endif
-    return "['" . a:mark['getMark()']() . ']:' . l:suffix
+    return "['" . a:mark.getMark() . ']:' . l:suffix
 endfunction
 
 " RETURNS:  (v:t_string)    The 'default name' for the given mark, as
@@ -24,7 +24,7 @@ endfunction
 " PARAM:    mark    (MarkData)  The mark for which to produce a name.
 function! markbar#ui#GetDefaultName(mark) abort
     call markbar#MarkData#AssertIsMarkData(a:mark)
-    let l:mark_char = a:mark['getMark()']()
+    let l:mark_char = a:mark.getMark()
     if !markbar#helpers#IsGlobalMark(l:mark_char)
         let l:format_str = markbar#settings#MarkNameFormatString()
         let l:format_arg = markbar#settings#MarkNameArguments()
@@ -39,18 +39,18 @@ function! markbar#ui#GetDefaultName(mark) abort
     if empty(l:format_str) | return l:name | endif
 
     let l:cmd = 'let l:name = printf(''' . l:format_str . "'"
-    let l:arg_to_val = {
-        \ 'line':  a:mark['getLineNo()'],
-        \ 'col':   a:mark['getColumnNo()'],
-        \ 'fname': function('markbar#helpers#ParentFilename', [l:mark_char])
-    \ }
 
     for l:Arg in l:format_arg " capital 'Arg' to handle funcrefs
         let l:cmd .= ', '
         if type(l:Arg) == v:t_func
             let l:cmd .= string(l:Arg(markbar#BasicMarkData#new(a:mark)))
-        elseif has_key(l:arg_to_val, l:Arg)
-            let l:cmd .= string(l:arg_to_val[l:Arg]())
+        elseif l:Arg ==# 'line'
+            let l:cmd .= a:mark.getLineNo()
+        elseif l:Arg ==# 'col'
+            let l:cmd .= a:mark.getColumnNo()
+        elseif l:Arg ==# 'fname'
+            " *include quotes* when concatenating onto l:cmd
+            let l:cmd .= string(markbar#helpers#ParentFilename(l:mark_char))
         else
             throw '(markbar#ui#getDefaultName) Unrecognized format argument: '
                 \ . l:Arg
@@ -331,19 +331,19 @@ endfunction
 
 " EFFECTS:  Open a markbar for the currently active buffer.
 function! markbar#ui#OpenMarkbar() abort
-    call g:markbar_buffers['openMarkbar()']()
+    call g:markbar_buffers.openMarkbar()
 endfunction
 
 " EFFECTS:  Close the markbar for the currently active buffer, if a markbar
 "           is open.
 function! markbar#ui#CloseMarkbar() abort
-    return g:markbar_buffers['closeMarkbar()']()
+    return g:markbar_buffers.closeMarkbar()
 endfunction
 
 " EFFECTS:  Close the currently open markbar(s), if they are open. If none
 "           are open, open a markbar for the active buffer.
 function! markbar#ui#ToggleMarkbar() abort
-    call g:markbar_buffers['toggleMarkbar()']()
+    call g:markbar_buffers.toggleMarkbar()
 endfunction
 
 " EFFECTS:  If any markbars are open,
@@ -351,7 +351,7 @@ endfunction
 "           - Open an updated markbar for the current active buffer.
 function! markbar#ui#RefreshMarkbar() abort
     if !markbar#helpers#IsRealBuffer(bufnr('%')) | return | endif
-    if g:markbar_buffers['markbarIsOpenCurrentTab()']()
+    if g:markbar_buffers.markbarIsOpenCurrentTab()
         let l:cur_winnr = winnr()
         call markbar#ui#OpenMarkbar()
         execute l:cur_winnr . 'wincmd w'
@@ -361,16 +361,16 @@ endfunction
 function! markbar#ui#RenameMark() abort
     let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
     if !len(l:selected_mark) | return | endif
-    let l:mark = g:markbar_buffers['getMarkData()'](l:selected_mark)
+    let l:mark = g:markbar_buffers.getMarkData(l:selected_mark)
 
     call inputsave()
     let l:new_name = input('New name for mark [''' . l:selected_mark . ']: ',
-        \ l:mark['getName()'](),
+        \ l:mark.getName(),
         \ markbar#settings#RenameMarkCompletion()
     \ )
     call inputrestore()
 
-    call l:mark['setName()'](l:new_name)
+    call l:mark.setName(l:new_name)
 
     let l:cur_pos = getcurpos()
     call markbar#ui#OpenMarkbar()
@@ -380,9 +380,9 @@ endfunction
 function! markbar#ui#ResetMarkName() abort
     let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
     if !len(l:selected_mark) | return | endif
-    let l:mark = g:markbar_buffers['getMarkData()'](l:selected_mark)
+    let l:mark = g:markbar_buffers.getMarkData(l:selected_mark)
 
-    call l:mark['setName()']('')
+    call l:mark.setName('')
 
     let l:cur_pos = getcurpos()
     call markbar#ui#OpenMarkbar()
@@ -395,7 +395,7 @@ function! markbar#ui#DeleteMark() abort
 
     let l:cur_pos = getcurpos()
     if !markbar#helpers#IsGlobalMark(l:selected_mark)
-        let l:active_buffer = g:markbar_buffers['getActiveBuffer()']()
+        let l:active_buffer = g:markbar_buffers.getActiveBuffer()
         execute bufwinnr(l:active_buffer) . 'wincmd w'
     endif
 

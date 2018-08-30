@@ -15,34 +15,34 @@ function! markbar#MarkbarState#new() abort
             \ ),
         \ '_markbar_buffer': -1
     \ }
-    let l:new['closeMarkbar()'] =
-        \ function('markbar#MarkbarState#closeMarkbar', [l:new])
-    let l:new['evictBufferCache()'] =
-        \ function('markbar#MarkbarState#evictBufferCache', [l:new])
-    let l:new['getActiveBuffer()'] =
-        \ function('markbar#MarkbarState#getActiveBuffer', [l:new])
-    let l:new['getBufferCache()'] =
-        \ function('markbar#MarkbarState#getBufferCache', [l:new])
-    let l:new['getOpenMarkbars()'] =
-        \ function('markbar#MarkbarState#getOpenMarkbars', [l:new])
-    let l:new['getMarkData()'] =
-        \ function('markbar#MarkbarState#getMarkData', [l:new])
-    let l:new['getMarkbarBuffer()'] =
-        \ function('markbar#MarkbarState#getMarkbarBuffer', [l:new])
-    let l:new['markbarIsOpenCurrentTab()'] =
-        \ function('markbar#MarkbarState#markbarIsOpenCurrentTab', [l:new])
-    let l:new['openMarkbar()'] =
-        \ function('markbar#MarkbarState#openMarkbar', [l:new])
-    let l:new['populateWithMarkbar()'] =
-        \ function('markbar#MarkbarState#populateWithMarkbar', [l:new])
-    let l:new['pushNewBuffer()'] =
-        \ function('markbar#MarkbarState#pushNewBuffer', [l:new])
-    let l:new['toggleMarkbar()'] =
-        \ function('markbar#MarkbarState#toggleMarkbar', [l:new])
-    let l:new['updateCurrentAndGlobal()'] =
-        \ function('markbar#MarkbarState#updateCurrentAndGlobal', [l:new])
-    let l:new['getMarkbarContents()'] =
-        \ function('markbar#MarkbarState#getMarkbarContents', [l:new])
+    let l:new['closeMarkbar'] =
+        \ function('markbar#MarkbarState#closeMarkbar')
+    let l:new['evictBufferCache'] =
+        \ function('markbar#MarkbarState#evictBufferCache')
+    let l:new['getActiveBuffer'] =
+        \ function('markbar#MarkbarState#getActiveBuffer')
+    let l:new['getBufferCache'] =
+        \ function('markbar#MarkbarState#getBufferCache')
+    let l:new['getOpenMarkbars'] =
+        \ function('markbar#MarkbarState#getOpenMarkbars')
+    let l:new['getMarkData'] =
+        \ function('markbar#MarkbarState#getMarkData')
+    let l:new['getMarkbarBuffer'] =
+        \ function('markbar#MarkbarState#getMarkbarBuffer')
+    let l:new['markbarIsOpenCurrentTab'] =
+        \ function('markbar#MarkbarState#markbarIsOpenCurrentTab')
+    let l:new['openMarkbar'] =
+        \ function('markbar#MarkbarState#openMarkbar')
+    let l:new['populateWithMarkbar'] =
+        \ function('markbar#MarkbarState#populateWithMarkbar')
+    let l:new['pushNewBuffer'] =
+        \ function('markbar#MarkbarState#pushNewBuffer')
+    let l:new['toggleMarkbar'] =
+        \ function('markbar#MarkbarState#toggleMarkbar')
+    let l:new['updateCurrentAndGlobal'] =
+        \ function('markbar#MarkbarState#updateCurrentAndGlobal')
+    let l:new['getMarkbarContents'] =
+        \ function('markbar#MarkbarState#getMarkbarContents')
 
     return l:new
 endfunction
@@ -56,40 +56,40 @@ endfunction
 " EFFECTS:  - Add a new BufferCache for the requested buffer, if one does not
 "           yet exist.
 " RETURNS:  (markbar#BufferCache)   The buffer cache for the requested buffer.
-function! markbar#MarkbarState#getBufferCache(self, buffer_no)
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    if !has_key(a:self['_buffer_caches'], a:buffer_no)
-        let a:self['_buffer_caches'][a:buffer_no] =
+function! markbar#MarkbarState#getBufferCache(buffer_no) abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    if !has_key(self['_buffer_caches'], a:buffer_no)
+        let self['_buffer_caches'][a:buffer_no] =
             \ markbar#BufferCache#new(a:buffer_no)
     endif
-    return a:self['_buffer_caches'][a:buffer_no]
+    return self['_buffer_caches'][a:buffer_no]
 endfunction
 
 " EFFECTS:  - Update the BufferCache for the currently focused buffer.
 "           - Update the BufferCache for global marks (filemarks, etc.)
-function! markbar#MarkbarState#updateCurrentAndGlobal(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    let l:cur_buffer_cache    = a:self['getBufferCache()'](bufnr('%'))
-    let l:global_buffer_cache = a:self['getBufferCache()'](markbar#constants#GLOBAL_MARKS())
-    call    l:cur_buffer_cache['updateCache()'](markbar#helpers#GetLocalMarks())
-    call l:global_buffer_cache['updateCache()'](markbar#helpers#GetGlobalMarks())
-    call    l:cur_buffer_cache['updateContexts()'](markbar#settings#NumLinesContext())
-    call l:global_buffer_cache['updateContexts()'](markbar#settings#NumLinesContext())
+function! markbar#MarkbarState#updateCurrentAndGlobal() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    let l:cur_buffer_cache    = self.getBufferCache(bufnr('%'))
+    let l:global_buffer_cache = self.getBufferCache(markbar#constants#GLOBAL_MARKS())
+    call    l:cur_buffer_cache.updateCache(markbar#helpers#GetLocalMarks())
+    call l:global_buffer_cache.updateCache(markbar#helpers#GetGlobalMarks())
+    call    l:cur_buffer_cache.updateContexts(markbar#settings#NumLinesContext())
+    call l:global_buffer_cache.updateContexts(markbar#settings#NumLinesContext())
 endfunction
 
 " EFFECTS:  - Close any existing markbars.
 "           - Create a markbar buffer for the currently active buffer if one
 "           does not yet exist.
 "           - Open this markbar buffer in a sidebar.
-function! markbar#MarkbarState#openMarkbar(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
+function! markbar#MarkbarState#openMarkbar() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
 
-    call a:self['updateCurrentAndGlobal()']()
+    call self.updateCurrentAndGlobal()
 
-    let l:markbar_buffer = a:self['getMarkbarBuffer()']()
+    let l:markbar_buffer = self.getMarkbarBuffer()
     let l:markbar_window = bufwinnr(l:markbar_buffer)
     if l:markbar_window ==# -1
-        call markbar#ui#OpenMarkbarSplit(a:self['_markbar_buffer'])
+        call markbar#ui#OpenMarkbarSplit(self['_markbar_buffer'])
         call setbufvar(l:markbar_buffer, '&buflisted', 0)
     else
         " switch to existing markbar window
@@ -97,17 +97,17 @@ function! markbar#MarkbarState#openMarkbar(self) abort
     endif
     call markbar#ui#SetMarkbarWindowSettings(l:markbar_buffer)
 
-    let l:active_buffer = a:self['_active_buffer_stack']['top()']()
-    call a:self['populateWithMarkbar()'](l:active_buffer, l:markbar_buffer)
+    let l:active_buffer = self['_active_buffer_stack'].top()
+    call self.populateWithMarkbar(l:active_buffer, l:markbar_buffer)
 endfunction
 
 " EFFECTS:  Close the markbar that is open in the current tab page, if one
 "           exists. Else, does nothing.
 " RETURNS:  (v:t_bool)      `v:true` if a markbar was actually closed,
 "                           `v:false` otherwise.
-function! markbar#MarkbarState#closeMarkbar(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    let l:markbar_buffers = a:self['getOpenMarkbars()']()
+function! markbar#MarkbarState#closeMarkbar() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    let l:markbar_buffers = self.getOpenMarkbars()
     if empty(l:markbar_buffers) | return v:false | endif
     for l:markbar in l:markbar_buffers
         execute bufwinnr(l:markbar) . 'close'
@@ -117,10 +117,10 @@ endfunction
 
 " EFFECTS:  Close the currently open markbar, if one is open. If no markbar
 "           is open, open a markbar for the active buffer.
-function! markbar#MarkbarState#toggleMarkbar(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    if   a:self['closeMarkbar()']() | return | endif
-    call a:self['openMarkbar()']()
+function! markbar#MarkbarState#toggleMarkbar() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    if   self.closeMarkbar() | return | endif
+    call self.openMarkbar()
 endfunction
 
 " REQUIRES: - `a:buffer_no` is not a markbar buffer.
@@ -132,13 +132,13 @@ endfunction
 "                                   display, in order from left to right (i.e.
 "                                   first character is the mark that should
 "                                   appear at the top of the markbar.)
-function! markbar#MarkbarState#getMarkbarContents(self, buffer_no, marks) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
+function! markbar#MarkbarState#getMarkbarContents(buffer_no, marks) abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
     if a:buffer_no ==# markbar#constants#GLOBAL_MARKS()
         throw '(markbar#MarkbarState) Bad argument value: ' . a:buffer_no
     endif
-    let l:marks   = a:self['_buffer_caches'][a:buffer_no]['_marks_dict']
-    let l:globals = a:self['_buffer_caches'][markbar#constants#GLOBAL_MARKS()]['_marks_dict']
+    let l:marks   = self['_buffer_caches'][a:buffer_no]['_marks_dict']
+    let l:globals = self['_buffer_caches'][markbar#constants#GLOBAL_MARKS()]['_marks_dict']
 
     let l:lines = [] " to return
     let l:section_separator = markbar#settings#MarkbarSectionSeparator()
@@ -172,15 +172,14 @@ endfunction
 " EFFECTS:  *Replace* the given buffer with the marks and contexts of the
 "           given buffer.
 function! markbar#MarkbarState#populateWithMarkbar(
-    \ self,
     \ for_buffer_no,
     \ into_buffer_expr
-\ ) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    let l:buffer_cache = a:self['getBufferCache()'](a:for_buffer_no)
-    call a:self['updateCurrentAndGlobal()']()
+\ ) abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    let l:buffer_cache = self.getBufferCache(a:for_buffer_no)
+    call self.updateCurrentAndGlobal()
     let l:contents  = markbar#ui#GetHelptext(g:markbar_show_verbose_help)
-    let l:contents += a:self['getMarkbarContents()'](
+    let l:contents += self.getMarkbarContents(
         \ a:for_buffer_no,
         \ markbar#settings#MarksToDisplay()
     \ )
@@ -189,48 +188,48 @@ endfunction
 
 " EFFECTS:  Push the given buffer number onto the active buffer
 "           ConditionalStack.
-function! markbar#MarkbarState#pushNewBuffer(self, buffer_no) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    call a:self['_active_buffer_stack']['push()'](a:buffer_no)
+function! markbar#MarkbarState#pushNewBuffer(buffer_no) abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    call self['_active_buffer_stack'].push(a:buffer_no)
 endfunction
 
 " EFFECTS:  Assign a name to the given mark.
 " PARAM:    mark    (v:t_string)    The symbol corresponding to the target
 "                                   mark. If the mark is local, it is assumed
 "                                   to belong to the active buffer.
-function! markbar#MarkbarState#nameMark(self, mark, name) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
+function! markbar#MarkbarState#nameMark(mark, name) abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
     if markbar#helpers#IsGlobalMark(a:mark)
         let l:buffer_cache =
-            \ a:self['getBufferCache()'](markbar#constants#GLOBAL_MARKS())
+            \ self.getBufferCache(markbar#constants#GLOBAL_MARKS())
     else
-        let l:buffer_cache = a:self['getActiveBuffer()']()
+        let l:buffer_cache = self.getActiveBuffer()
     endif
     let l:mark_data = l:buffer_cache['_marks_dict'][a:mark]
-    call l:mark_data['setName()'](a:name)
+    call l:mark_data.setName(a:name)
 endfunction
 
 " RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.
-function! markbar#MarkbarState#getActiveBuffer(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    return a:self['_active_buffer_stack']['top()']()
+function! markbar#MarkbarState#getActiveBuffer() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    return self['_active_buffer_stack'].top()
 endfunction
 
 " RETURNS: (v:t_number)     The buffer number of the 'markbar buffer.'
 " EFFECTS:  Creates a markbar buffer for the MarkbarState object if one does
 "           not yet exist.
-function! markbar#MarkbarState#getMarkbarBuffer(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    if !bufexists(a:self['_markbar_buffer'])
+function! markbar#MarkbarState#getMarkbarBuffer() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    if !bufexists(self['_markbar_buffer'])
         let l:bufname = markbar#settings#MarkbarBufferName()
         execute 'badd ' . l:bufname
         let l:bufnr = bufnr(
             \ escape(l:bufname, '~*.$[]')
         \ )
-        let a:self['_markbar_buffer'] = l:bufnr
+        let self['_markbar_buffer'] = l:bufnr
         call markbar#ui#SetMarkbarBufferSettings(l:bufnr)
     endif
-    return a:self['_markbar_buffer']
+    return self['_markbar_buffer']
 endfunction
 
 " RETURNS:  (MarkData)      The MarkData object corresponding to the given
@@ -241,16 +240,16 @@ endfunction
 "           - If the requested mark is a global (file or numbered) mark, then
 "           the MarkbarState object will search the global BufferCache.
 "           - If the requested mark cannot be found, throw an exception.
-function! markbar#MarkbarState#getMarkData(self, mark_char) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
+function! markbar#MarkbarState#getMarkData(mark_char) abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
     let l:is_global = markbar#helpers#IsGlobalMark(a:mark_char)
     let l:mark_buffer =
             \ l:is_global ?
                 \ markbar#constants#GLOBAL_MARKS()
                 \ :
-                \ a:self['getActiveBuffer()']()
+                \ self.getActiveBuffer()
     let l:marks_dict =
-        \ a:self['getBufferCache()'](l:mark_buffer)['_marks_dict']
+        \ self.getBufferCache(l:mark_buffer)['_marks_dict']
     if !has_key(l:marks_dict, a:mark_char)
         throw '(markbar#MarkbarState) Could not find mark ' . a:mark_char
             \ . ' for buffer ' . l:mark_buffer
@@ -261,8 +260,8 @@ endfunction
 
 " RETURNS:  (v:t_list)      A list of buffer numbers corresponding to all
 "                           markbar buffers open in the current tab.
-function! markbar#MarkbarState#getOpenMarkbars(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
+function! markbar#MarkbarState#getOpenMarkbars() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
     let l:tab_buffers = tabpagebuflist()
     let l:markbar_buffers = []
     for l:bufnr in l:tab_buffers
@@ -275,8 +274,8 @@ endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if a markbar is open in the current tab,
 "                           `v:false` otherwise.
-function! markbar#MarkbarState#markbarIsOpenCurrentTab(self) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
+function! markbar#MarkbarState#markbarIsOpenCurrentTab() abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
     let l:tab_buffers = tabpagebuflist()
     for l:bufnr in l:tab_buffers
         if getbufvar(l:bufnr, 'is_markbar')
@@ -288,11 +287,11 @@ endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if a cache was successfully removed,
 "                           `v:false` otherwise.
-function! markbar#MarkbarState#evictBufferCache(self, buffer_no) abort
-    call markbar#MarkbarState#AssertIsMarkbarState(a:self)
-    if !has_key(a:self['_buffer_caches'], a:buffer_no)
+function! markbar#MarkbarState#evictBufferCache(buffer_no) abort dict
+    call markbar#MarkbarState#AssertIsMarkbarState(self)
+    if !has_key(self['_buffer_caches'], a:buffer_no)
         return v:false
     endif
-    call remove(a:self['_buffer_caches'], a:buffer_no)
+    call remove(self['_buffer_caches'], a:buffer_no)
     return v:true
 endfunction

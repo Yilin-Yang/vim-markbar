@@ -18,9 +18,9 @@ function! markbar#BasicMarkData#new(...) abort
     if a:0
         let a:orig_mark_data = get(a:, 1, v:false)
         call markbar#MarkData#AssertIsMarkData(a:orig_mark_data)
-        let l:new['mark']     = a:orig_mark_data['getMark()']()
-        let l:new['line']     = a:orig_mark_data['getLineNo()']()
-        let l:new['column']   = a:orig_mark_data['getColumnNo()']()
+        let l:new['mark']     = a:orig_mark_data.getMark()
+        let l:new['line']     = a:orig_mark_data.getLineNo()
+        let l:new['column']   = a:orig_mark_data.getColumnNo()
         let l:new['filename'] = markbar#helpers#ParentFilename(l:new['mark'])
         let l:new['context']  = deepcopy(a:orig_mark_data['_context'])
     endif

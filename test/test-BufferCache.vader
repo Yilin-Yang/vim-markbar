@@ -4,12 +4,12 @@ Include: load-test-files.vader
 Execute (BufferCache: isGlobal Test, True):
   let temp_cache = markbar#BufferCache#new(markbar#constants#GLOBAL_MARKS())
 Then:
-  Assert temp_cache['isGlobal()']()
+  Assert temp_cache.isGlobal()
 
 Execute (BufferCache: isGlobal Test, False):
   let temp_cache = markbar#BufferCache#new(bufnr('%'))
 Then:
-  Assert !temp_cache['isGlobal()']()
+  Assert !temp_cache.isGlobal()
 
 Execute (BufferCache: Populate Local Cache):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
@@ -19,7 +19,7 @@ Execute (BufferCache: Populate Local Cache):
   execute '35mark d'
   execute '45mark e'
   let cache_50lines = markbar#BufferCache#new(bufnr('%'))
-  call cache_50lines['updateCache()'](markbar#helpers#GetLocalMarks())
+  call cache_50lines.updateCache(markbar#helpers#GetLocalMarks())
 Then:
   let g:bufno_50lines = bufnr('%')
   let buffer_marks = cache_50lines['_marks_dict']
@@ -36,7 +36,7 @@ Execute (BufferCache: Populate Global Cache):
   execute '40mark D'
   execute '50mark E'
   let global_cache = markbar#BufferCache#new(markbar#constants#GLOBAL_MARKS())
-  call global_cache['updateCache()'](markbar#helpers#GetGlobalMarks())
+  call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 Then:
   " check globals
   let buffer_marks = global_cache['_marks_dict']
@@ -57,8 +57,8 @@ Execute (BufferCache: Add More Global Marks; Add Local Marks):
   execute '20mark a'
 
   let cache_30lines = markbar#BufferCache#new(bufnr('%'))
-  call cache_30lines['updateCache()'](markbar#helpers#GetLocalMarks())
-  call global_cache['updateCache()'](markbar#helpers#GetGlobalMarks())
+  call cache_30lines.updateCache(markbar#helpers#GetLocalMarks())
+  call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 
 Then:
   let buffer_marks = cache_30lines['_marks_dict']
@@ -86,7 +86,7 @@ Then:
 
 Execute (BufferCache: Fetch Contexts for Onscreen Buffer):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
-  call cache_50lines['updateContexts()'](3)
+  call cache_50lines.updateContexts(3)
 Then:
   " Only check 'indicator' values, for brevity. If these are fine, and if the
   " `test-fetchlines.vader` tests pass, assume that context fetching itself is
@@ -111,14 +111,14 @@ Then:
 Execute (BufferCache: Delete Mark, Update Local Contexts, 30lines.txt):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'delmarks a'
-  call cache_30lines['updateCache()'](markbar#helpers#GetLocalMarks())
+  call cache_30lines.updateCache(markbar#helpers#GetLocalMarks())
 Then:
   Assert !has_key(cache_30lines['_marks_dict'], 'a')
 
 Execute (BufferCache: Update Globals in Offscreen, Unloaded Buffer):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'bunload ' . g:bufno_50lines
-  call global_cache['updateContexts()'](3)
+  call global_cache.updateContexts(3)
 Then:
   let global_marks = global_cache['_marks_dict']
   " even after unloading the buffer, the plugin should still be able to fetch

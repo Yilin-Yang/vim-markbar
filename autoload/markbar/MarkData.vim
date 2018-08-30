@@ -9,12 +9,12 @@ function! markbar#MarkData#new() abort
         \ '_context': [],
         \ '_name': ''
     \ }
-    let l:new['getColumnNo()'] = function('markbar#MarkData#getColumnNo', [l:new])
-    let l:new['getLineNo()']   = function('markbar#MarkData#getLineNo',   [l:new])
-    let l:new['getMark()']     = function('markbar#MarkData#getMark',     [l:new])
-    let l:new['getName()']     = function('markbar#MarkData#getName',     [l:new])
-    let l:new['isGlobal()']    = function('markbar#MarkData#isGlobal',    [l:new])
-    let l:new['setName()']     = function('markbar#MarkData#setName',     [l:new])
+    let l:new['getColumnNo'] = function('markbar#MarkData#getColumnNo')
+    let l:new['getLineNo']   = function('markbar#MarkData#getLineNo')
+    let l:new['getMark']     = function('markbar#MarkData#getMark')
+    let l:new['getName']     = function('markbar#MarkData#getName')
+    let l:new['isGlobal']    = function('markbar#MarkData#isGlobal')
+    let l:new['setName']     = function('markbar#MarkData#setName')
     return l:new
 endfunction
 
@@ -50,34 +50,32 @@ function! markbar#MarkData#AssertIsMarkData(object) abort
     endif
 endfunction
 
-function! markbar#MarkData#getMark(self) abort
-    call markbar#MarkData#AssertIsMarkData(a:self)
-    return a:self['_data'][0]
+function! markbar#MarkData#getMark() abort dict
+    call markbar#MarkData#AssertIsMarkData(self)
+    return self['_data'][0]
 endfunction
 
-function! markbar#MarkData#getLineNo(self) abort
-    call markbar#MarkData#AssertIsMarkData(a:self)
-    return a:self['_data'][1]
+function! markbar#MarkData#getLineNo() abort dict
+    call markbar#MarkData#AssertIsMarkData(self)
+    return self['_data'][1]
 endfunction
 
-function! markbar#MarkData#getColumnNo(self) abort
-    call markbar#MarkData#AssertIsMarkData(a:self)
-    return a:self['_data'][2]
+function! markbar#MarkData#getColumnNo() abort dict
+    call markbar#MarkData#AssertIsMarkData(self)
+    return self['_data'][2]
 endfunction
 
-function! markbar#MarkData#getName(self) abort
-    call markbar#MarkData#AssertIsMarkData(a:self)
-    return a:self['_name']
+function! markbar#MarkData#getName() abort dict
+    call markbar#MarkData#AssertIsMarkData(self)
+    return self['_name']
 endfunction
 
-function! markbar#MarkData#isGlobal(self) abort
-    call markbar#MarkData#AssertIsMarkData(a:self)
-    return markbar#helpers#IsGlobalMark(
-        \ markbar#MarkData#getMark(a:self)
-    \ )
+function! markbar#MarkData#isGlobal() abort dict
+    call markbar#MarkData#AssertIsMarkData(self)
+    return markbar#helpers#IsGlobalMark( self.getMark() )
 endfunction
 
-function! markbar#MarkData#setName(self, new_name) abort
-    call markbar#MarkData#AssertIsMarkData(a:self)
-    let a:self['_name'] = a:new_name
+function! markbar#MarkData#setName(new_name) abort dict
+    call markbar#MarkData#AssertIsMarkData(self)
+    let self['_name'] = a:new_name
 endfunction

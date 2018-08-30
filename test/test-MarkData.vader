@@ -160,10 +160,10 @@ Execute (MarkData: Local Mark):
   let result = markbar#MarkData#fromMarkString(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
-  AssertEqual 'a',  result['getMark()']()
-  AssertEqual '97', result['getLineNo()']()
-  AssertEqual '0',  result['getColumnNo()']()
-  Assert           !result['isGlobal()']()
+  AssertEqual 'a',  result.getMark()
+  AssertEqual '97', result.getLineNo()
+  AssertEqual '0',  result.getColumnNo()
+  Assert           !result.isGlobal()
 
 Execute (MarkData: Non-Alphabetic Mark):
   let markstring = "
@@ -172,10 +172,10 @@ Execute (MarkData: Non-Alphabetic Mark):
   let result = markbar#MarkData#fromMarkString(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
-  AssertEqual '[', result['getMark()']()
-  AssertEqual '1', result['getLineNo()']()
-  AssertEqual '0', result['getColumnNo()']()
-  Assert          !result['isGlobal()']()
+  AssertEqual '[', result.getMark()
+  AssertEqual '1', result.getLineNo()
+  AssertEqual '0', result.getColumnNo()
+  Assert          !result.isGlobal()
 
 Execute (MarkData: Global File Mark):
   let markstring = "
@@ -184,10 +184,10 @@ Execute (MarkData: Global File Mark):
   let result = markbar#MarkData#fromMarkString(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
-  AssertEqual 'D',  result['getMark()']()
-  AssertEqual '64', result['getLineNo()']()
-  AssertEqual '31', result['getColumnNo()']()
-  Assert            result['isGlobal()']()
+  AssertEqual 'D',  result.getMark()
+  AssertEqual '64', result.getLineNo()
+  AssertEqual '31', result.getColumnNo()
+  Assert            result.isGlobal()
 
 Execute (MarkData: ShaDa Numeric Mark):
   let markstring = "
@@ -196,10 +196,10 @@ Execute (MarkData: ShaDa Numeric Mark):
   let result = markbar#MarkData#fromMarkString(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
-  AssertEqual '8',  result['getMark()']()
-  AssertEqual '19', result['getLineNo()']()
-  AssertEqual '5',  result['getColumnNo()']()
-  Assert            result['isGlobal()']()
+  AssertEqual '8',  result.getMark()
+  AssertEqual '19', result.getLineNo()
+  AssertEqual '5',  result.getColumnNo()
+  Assert            result.isGlobal()
 
 Execute (MarkData: Error Check, Invalid Markstring):
   let markstring = "

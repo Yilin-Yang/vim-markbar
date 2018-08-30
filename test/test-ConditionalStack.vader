@@ -19,73 +19,73 @@ Execute (Declare Validity Function, Helper Function):
 
 Execute (ConditionalStack: Test Push, Succeed):
   let stack = NewStack()
-  let success = stack['push()'](2)
+  let success = stack.push(2)
 Then:
   Assert success
-  AssertEqual 1, stack['size()']()
+  AssertEqual 1, stack.size()
 
 Execute (ConditionalStack: Test Push, Fail):
   let stack = NewStack()
-  let success = stack['push()'](1)
+  let success = stack.push(1)
 Then:
   Assert !success
-  AssertEqual 0, stack['size()']()
+  AssertEqual 0, stack.size()
 
 Execute (ConditionalStack: Test Push, Small Series):
   let stack = NewStack()
-  call stack['push()'](2)
-  call stack['push()'](3)
-  call stack['push()'](2)
+  call stack.push(2)
+  call stack.push(3)
+  call stack.push(2)
 Then:
-  AssertEqual 2, stack['size()']()
+  AssertEqual 2, stack.size()
 
 Execute (ConditionalStack: Test Push, Shrink):
   let stack = NewStack()
-  call stack['push()'](2)
-  call stack['push()'](2)
-  call stack['push()'](2)
-  call stack['push()'](2)
-  call stack['push()'](2)
+  call stack.push(2)
+  call stack.push(2)
+  call stack.push(2)
+  call stack.push(2)
+  call stack.push(2)
 Then:
-  AssertEqual 3, stack['size()']()
+  AssertEqual 3, stack.size()
 
 Execute (ConditionalStack: Test Push, Pop Invalid, Top):
   let stack = NewStackComplex()
-  call stack['push()']([1, 1, 1])
-  call stack['push()']([2, 2, 1])
-  call stack['push()']([1])
-  call stack['push()']([1])
+  call stack.push([1, 1, 1])
+  call stack.push([2, 2, 1])
+  call stack.push([1])
+  call stack.push([1])
 Then:
-  AssertEqual 4, stack['size()']()
-  AssertEqual [2], stack['top()']()
-  AssertEqual 2, stack['size()']()
+  AssertEqual 4, stack.size()
+  AssertEqual [2], stack.top()
+  AssertEqual 2, stack.size()
 
 Execute (ConditionalStack: Test Clean):
   let stack = NewStackComplex()
-  call stack['push()']([1])
-  call stack['push()']([1, 1, 1])
-  call stack['push()']([2, 2, 1, 1])
-  call stack['push()']([1])
+  call stack.push([1])
+  call stack.push([1, 1, 1])
+  call stack.push([2, 2, 1, 1])
+  call stack.push([1])
 Then:
-  AssertEqual 4, stack['size()']()
-  call stack['clean()']()
-  AssertEqual 2, stack['size()']()
-  AssertEqual [2], stack['top()']()
+  AssertEqual 4, stack.size()
+  call stack.clean()
+  AssertEqual 2, stack.size()
+  AssertEqual [2], stack.top()
 
 Execute (ConditionalStack: Test Extended Push):
   let stack = NewStackComplex()
-  call stack['push()']([1])
-  call stack['push()']([1, 1, 1, 1, 1])
-  call stack['push()']([2, 2, 1, 1, 1])
-  call stack['push()']([1])
-  call stack['push()']([1])
-  call stack['push()']([4, 2, 1])
-  call stack['push()']([1])
-  call stack['push()']([3, 2, 1])
-  call stack['push()']([1])
-  call stack['push()']([1])
-  call stack['push()']([2, 2, 1])
+  call stack.push([1])
+  call stack.push([1, 1, 1, 1, 1])
+  call stack.push([2, 2, 1, 1, 1])
+  call stack.push([1])
+  call stack.push([1])
+  call stack.push([4, 2, 1])
+  call stack.push([1])
+  call stack.push([3, 2, 1])
+  call stack.push([1])
+  call stack.push([1])
+  call stack.push([2, 2, 1])
 Then:
-  AssertEqual 3, stack['size()']()
-  AssertEqual [2], stack['top()']()
+  AssertEqual 3, stack.size()
+  AssertEqual [2], stack.top()
   AssertEqual [[], [], [2]], stack['_data']
