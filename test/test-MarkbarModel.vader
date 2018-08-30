@@ -3,7 +3,7 @@ Include: load-test-files.vader
 
 Execute (MarkbarModel: Global Settings):
   let g:markbar_num_lines_context = 3
-  call markbar#MarkbarModel#initialize()
+  let g:markbar_model = markbar#MarkbarModel#get()
 
 Execute (MarkbarModel: Populate Local Cache):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"

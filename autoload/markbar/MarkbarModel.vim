@@ -11,7 +11,7 @@
 " BRIEF:    Construct a MarkbarModel object, with associated autocmds.
 " DETAILS:  Orphans any preexisting MarkbarModel objects (i.e. they will no
 "           longer be updated by autocmds.)
-function! markbar#MarkbarModel#initialize() abort
+function! markbar#MarkbarModel#get() abort
     if exists('g:markbar_model')
         try
             call markbar#MarkbarModel#AssertIsMarkbarModel(g:markbar_model)
