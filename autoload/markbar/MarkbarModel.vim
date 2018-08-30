@@ -3,10 +3,26 @@
 "           for each of the user's open buffers, and automatically updates
 "           them using autocmds. Provides an interface for retrieving
 "           information about the current model state.
+"
+"           MarkbarModel is a singleton. Successive calls to `new` will return
+"           a reference to the MarkbarModel already constructed (if one
+"           exists).
 
-" BRIEF:    Construct a MarkbarModel object.
-function! markbar#MarkbarModel#new() abort
-    let l:new = {
+" BRIEF:    Construct a MarkbarModel object, with associated autocmds.
+" DETAILS:  Orphans any preexisting MarkbarModel objects (i.e. they will no
+"           longer be updated by autocmds.)
+function! markbar#MarkbarModel#initialize() abort
+    if exists('g:markbar_model')
+        try
+            call markbar#MarkbarModel#AssertIsMarkbarModel(g:markbar_model)
+            " there exists a preexisting markbar_model
+            return g:markbar_model
+        catch
+            " invalid object, okay to overwrite
+        endtry
+    endif
+
+    let g:markbar_model = {
         \ 'TYPE': 'MarkbarModel',
         \ '_buffer_caches': {},
         \ '_active_buffer_stack':
@@ -14,27 +30,28 @@ function! markbar#MarkbarModel#new() abort
                 \ function('markbar#helpers#IsRealBuffer'),
                 \ markbar#settings#MaximumActiveBufferHistory()
             \ ),
+        \ 'getActiveBuffer':
+            \ function('markbar#MarkbarModel#getActiveBuffer'),
+        \ 'pushNewBuffer':
+            \ function('markbar#MarkbarModel#pushNewBuffer'),
+        \ 'getMarkData':
+            \ function('markbar#MarkbarModel#getMarkData'),
+        \ 'getBufferCache':
+            \ function('markbar#MarkbarModel#getBufferCache'),
+        \ 'evictBufferCache':
+            \ function('markbar#MarkbarModel#evictBufferCache'),
+        \ 'updateCurrentAndGlobal':
+            \ function('markbar#MarkbarModel#updateCurrentAndGlobal'),
     \ }
-    let l:new['getActiveBuffer'] =
-        \ function('markbar#MarkbarModel#getActiveBuffer')
-    let l:new['pushNewBuffer'] =
-        \ function('markbar#MarkbarModel#pushNewBuffer')
-    let l:new['getMarkData'] =
-        \ function('markbar#MarkbarModel#getMarkData')
-    let l:new['getBufferCache'] =
-        \ function('markbar#MarkbarModel#getBufferCache')
-    let l:new['evictBufferCache'] =
-        \ function('markbar#MarkbarModel#evictBufferCache')
-    let l:new['updateCurrentAndGlobal'] =
-        \ function('markbar#MarkbarModel#updateCurrentAndGlobal')
 
-    " TODO: variable lifetime an issue here?
-    " TODO: put in augroup? limit to exactly one MarkbarModel?
-    autocmd BufEnter * call l:new.pushNewBuffer(expand('<abuf>') + 0)
-    autocmd BufDelete,BufWipeout *
-        \ call l:new.evictBufferCache(expand('<abuf>') + 0)
+    augroup markbar_model_update
+        au!
+        autocmd BufEnter * call g:markbar_model.pushNewBuffer(expand('<abuf>') + 0)
+        autocmd BufDelete,BufWipeout *
+            \ call g:markbar_model.evictBufferCache(expand('<abuf>') + 0)
+    augroup end
 
-    return l:new
+    return g:markbar_model
 endfunction
 
 function! markbar#MarkbarModel#AssertIsMarkbarModel(object) abort
@@ -45,15 +62,15 @@ endfunction
 
 " RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.
 function! markbar#MarkbarModel#getActiveBuffer() abort dict
-    call markbar#MarkbarModel#AssertIsMarkbarModel(self)
-    return self['_active_buffer_stack'].top()
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    return l:self['_active_buffer_stack'].top()
 endfunction
 
 " EFFECTS:  Push the given buffer number onto the active buffer
 "           ConditionalStack.
 function! markbar#MarkbarModel#pushNewBuffer(buffer_no) abort dict
-    call markbar#MarkbarModel#AssertIsMarkbarModel(self)
-    call self['_active_buffer_stack'].push(a:buffer_no)
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    call l:self['_active_buffer_stack'].push(a:buffer_no)
 endfunction
 
 " RETURNS:  (markbar#MarkData)  The MarkData object corresponding to the given
@@ -65,15 +82,15 @@ endfunction
 "           the MarkbarModel object will search the global BufferCache.
 "           - If the requested mark cannot be found, throw an exception.
 function! markbar#MarkbarModel#getMarkData(mark_char) abort dict
-    call markbar#MarkbarModel#AssertIsMarkbarModel(self)
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
     let l:is_global = markbar#helpers#IsGlobalMark(a:mark_char)
     let l:mark_buffer =
             \ l:is_global ?
                 \ markbar#constants#GLOBAL_MARKS()
                 \ :
-                \ self.getActiveBuffer()
+                \ l:self.getActiveBuffer()
     let l:marks_dict =
-        \ self.getBufferCache(l:mark_buffer)['_marks_dict']
+        \ l:self.getBufferCache(l:mark_buffer)['_marks_dict']
     if !has_key(l:marks_dict, a:mark_char)
         throw '(markbar#MarkbarModel) Could not find mark ' . a:mark_char
             \ . ' for buffer ' . l:mark_buffer
@@ -86,31 +103,31 @@ endfunction
 " DETAILS:  Add a new BufferCache for the requested buffer, if one does not
 "           yet exist.
 function! markbar#MarkbarModel#getBufferCache(buffer_no) abort dict
-    call markbar#MarkbarModel#AssertIsMarkbarModel(self)
-    if !has_key(self['_buffer_caches'], a:buffer_no)
-        let self['_buffer_caches'][a:buffer_no] =
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    if !has_key(l:self['_buffer_caches'], a:buffer_no)
+        let l:self['_buffer_caches'][a:buffer_no] =
             \ markbar#BufferCache#new(a:buffer_no)
     endif
-    return self['_buffer_caches'][a:buffer_no]
+    return l:self['_buffer_caches'][a:buffer_no]
 endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if a cache was successfully removed,
 "                           `v:false` otherwise.
 function! markbar#MarkbarModel#evictBufferCache(buffer_no) abort dict
-    call markbar#MarkbarModel#AssertIsMarkbarModel(self)
-    if !has_key(self['_buffer_caches'], a:buffer_no)
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    if !has_key(l:self['_buffer_caches'], a:buffer_no)
         return v:false
     endif
-    call remove(self['_buffer_caches'], a:buffer_no)
+    call remove(l:self['_buffer_caches'], a:buffer_no)
     return v:true
 endfunction
 
 " EFFECTS:  - Update the BufferCache for the currently focused buffer.
 "           - Update the BufferCache for global marks (filemarks, etc.)
 function! markbar#MarkbarModel#updateCurrentAndGlobal() abort dict
-    call markbar#MarkbarModel#AssertIsMarkbarModel(self)
-    let l:cur_buffer_cache    = self.getBufferCache(bufnr('%'))
-    let l:global_buffer_cache = self.getBufferCache(markbar#constants#GLOBAL_MARKS())
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    let l:cur_buffer_cache    = l:self.getBufferCache(bufnr('%'))
+    let l:global_buffer_cache = l:self.getBufferCache(markbar#constants#GLOBAL_MARKS())
     call    l:cur_buffer_cache.updateCache(markbar#helpers#GetLocalMarks())
     call l:global_buffer_cache.updateCache(markbar#helpers#GetGlobalMarks())
     call    l:cur_buffer_cache.updateContexts(markbar#settings#NumLinesContext())
