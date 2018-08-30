@@ -1,0 +1,42 @@
+Execute (Test Initialize Markbar Buffer):
+  let g:markbar_view = markbar#MarkbarView#new()
+  
+Execute (Test Open Window):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test Open Window, Switch Out, Already Open):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test Close Window):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test Close Window, None Open):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test Toggle Window, None Open):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test Toggle Window, Already Open):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test markbarIsOpenCurrentTab, True):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test markbarIsOpenCurrentTab, Different Tab):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test markbarIsOpenCurrentTab, None Open):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test getMarkbarWindow, No Markbar Buffer):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test getMarkbarWindow, Markbar Exists But Not Open):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test getMarkbarWindow, Markbar Exists In Different Tab):
+  let g:markbar_view = markbar#MarkbarView#new()
+
+Execute (Test getMarkbarWindow, Markbar Exists in Current Tab):
+  let g:markbar_view = markbar#MarkbarView#new()
+
