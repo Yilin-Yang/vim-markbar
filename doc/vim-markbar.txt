@@ -44,7 +44,9 @@ map them separately: see below.) If you haven't rebound your leader key, this
 mapping is functionally equivalent to `<Backslash>m`.
 
 Your cursor moves to the markbar once it's open. You can move the cursor using
-the standard navigation keys (`j` and `k`, or the arrow keys.)
+the standard navigation keys (`j` and `k`, or the arrow keys), or cycle
+through the marks using the 'next/previous mark' mappings (|g:markbar_next_mark_mapping|).
+The 'next/previous mark' mappings also accept counts.
 
 When you move the cursor, the markbar will echo the "currently selected" mark
 at the bottom-left of the screen.

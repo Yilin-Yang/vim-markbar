@@ -147,12 +147,24 @@ function! s:GoToLine(line, ...) abort
     execute 'silent normal! ' . a:line . 'G'
 endfunction
 
-function! s:GoToNextMark() abort
-    call s:GoToLine(markbar#ui#GetNextMarkHeadingLine())
+function! s:GoToNextMark(count) abort
+    if a:count <# 0 | throw '(ui#GoToNextMark) Bad count: ' . a:count | endif
+    let l:count = a:count + 0
+    let l:i = 0
+    while l:i <# l:count
+        call s:GoToLine(markbar#ui#GetNextMarkHeadingLine())
+        let l:i += 1
+    endwhile
 endfunction
 
-function! s:GoToPreviousMark() abort
-    call s:GoToLine(markbar#ui#GetPreviousMarkHeadingLine())
+function! s:GoToPreviousMark(count) abort
+    if a:count <# 0 | throw '(ui#GoToPreviousMark) Bad count: ' . a:count | endif
+    let l:count = a:count + 0
+    let l:i = 0
+    while l:i <# l:count
+        call s:GoToLine(markbar#ui#GetPreviousMarkHeadingLine())
+        let l:i += 1
+    endwhile
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.
@@ -202,7 +214,7 @@ function! markbar#ui#SetNextMark() abort
     call s:CheckBadBufferType()
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#NextMarkMapping()
-        \ . ' :call <SID>GoToNextMark()<cr>'
+        \ . ' :<C-U>call <SID>GoToNextMark(v:count1)<cr>'
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.
@@ -212,7 +224,7 @@ function! markbar#ui#SetPreviousMark() abort
     call s:CheckBadBufferType()
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PreviousMarkMapping()
-        \ . ' :call <SID>GoToPreviousMark()<cr>'
+        \ . ' :<C-U>call <SID>GoToPreviousMark(v:count1)<cr>'
 endfunction
 
 " REQUIRES: A markbar buffer is active and focused.

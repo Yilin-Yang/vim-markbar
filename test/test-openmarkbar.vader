@@ -200,9 +200,27 @@ Then:
   " check line number
   AssertEqual 12, cur_pos[1]
 
+Do (Use Count with Next):
+  :call markbar#ui#OpenMarkbar()\<cr>
+  gg3n
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 12, cur_pos[1]
+
 Do (Iterate Through Marks with Previous):
   :call markbar#ui#OpenMarkbar()\<cr>
   GNNN
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]
+
+Do (Use Count with Previous):
+  :call markbar#ui#OpenMarkbar()\<cr>
+  G3N
 Then:
   let cur_pos = getcurpos()
 
