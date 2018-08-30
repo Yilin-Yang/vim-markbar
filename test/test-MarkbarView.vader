@@ -1,8 +1,33 @@
 Execute (Test Initialize Markbar Buffer):
   let g:markbar_view = markbar#MarkbarView#new()
+  let g:buffer = g:markbar_view.getMarkbarBuffer()
+Then:
+  Assert bufexists(g:buffer)
+  " only sets buflisted after entering the buffer
+  AssertEqual 'nofile',  getbufvar(g:buffer, '&buftype')
+  AssertEqual 'hide',    getbufvar(g:buffer, '&bufhidden')
+  AssertEqual 0,         getbufvar(g:buffer, '&swapfile')
+  AssertEqual 'markbar', getbufvar(g:buffer, '&filetype')
+  AssertEqual 'markbar', getbufvar(g:buffer, '&syntax')
+  AssertEqual 1,         getbufvar(g:buffer, 'is_markbar')
   
 Execute (Test Open Window):
   let g:markbar_view = markbar#MarkbarView#new()
+  call g:markbar_view.openMarkbar()
+  AssertEqual 0,         getbufvar(g:buffer, '&buflisted')
+
+  let g:winnr = winnr()
+
+  AssertEqual    1, getwinvar(g:winnr,    '&winfixwidth')
+  AssertEqual    1, getwinvar(g:winnr,   '&winfixheight')
+  AssertEqual    1, getwinvar(g:winnr,     '&cursorline')
+  AssertEqual    0, getwinvar(g:winnr,     '&foldcolumn')
+  AssertEqual 'no', getwinvar(g:winnr,     '&signcolumn')
+  AssertEqual    0, getwinvar(g:winnr, '&relativenumber')
+  AssertEqual    0, getwinvar(g:winnr,         '&number')
+  AssertEqual    0, getwinvar(g:winnr,           '&wrap')
+  AssertEqual    0, getwinvar(g:winnr,          '&spell')
+  AssertEqual    1, getwinvar(g:winnr,      'is_markbar')
 
 Execute (Test Open Window, Switch Out, Already Open):
   let g:markbar_view = markbar#MarkbarView#new()

@@ -5,16 +5,10 @@
 "           components.
 
 " BRIEF:    Construct a MarkbarView object.
-" PARAM:    markbar_model   (markbar#MarkbarModel)  Reference to the overall
-"                                                   vim-markbar state,
-"                                                   including caches of marks
-"                                                   for each buffer, etc.
-function! markbar#MarkbarView#new(...) abort
-    let a:markbar_model = get(a:, 1, -1)
+function! markbar#MarkbarView#new() abort
     let l:new = {
         \ 'TYPE': 'MarkbarView',
         \ '_markbar_buffer': -1,
-        \ '_markbar_model': a:markbar_model
     \ }
     " TODO: markbar buffer window id?
     let l:new['openMarkbar']                 = function('markbar#MarkbarView#openMarkbar')
@@ -47,18 +41,18 @@ endfunction
 
 " BRIEF:    Open a markbar window for the currently active buffer.
 " DETAILS:  Does nothing if a markbar is already open.
-function! markbar#MarkbarView#openMarkbarWindow() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
-    let l:markbar_buffer = self.getMarkbarBuffer()
+function! markbar#MarkbarView#openMarkbar() abort dict
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    let l:markbar_buffer = l:self.getMarkbarBuffer()
     let l:markbar_window = bufwinnr(l:markbar_buffer)
     if l:markbar_window ==# -1
-        call self._openMarkbarSplit(l:markbar_buffer)
+        call l:self._openMarkbarSplit(l:markbar_buffer)
         call setbufvar(l:markbar_buffer, '&buflisted', 0)
     else
         " switch to existing markbar window
         execute l:markbar_window . 'wincmd w'
     endif
-    call MarkbarView#_setMarkbarWindowSettings(l:markbar_buffer)
+    call self._setMarkbarWindowSettings(l:markbar_buffer)
 endfunction
 
 " BRIEF:    Open a vsplit for a markbar and set settings, if appropriate.
@@ -68,7 +62,7 @@ endfunction
 "                                       buffer will be created.
 " RETURNS:  (v:t_number)    The buffer number of the opened markbar.
 function! markbar#MarkbarView#_openMarkbarSplit(...) abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let a:markbar = get(a:, 1, '')
 
     let l:position = markbar#settings#OpenPosition() . ' '
@@ -86,7 +80,7 @@ function! markbar#MarkbarView#_openMarkbarSplit(...) abort dict
     endtry
 
     let l:new_markbar = empty(a:markbar) ? bufnr('%') : a:markbar
-    call self._setMarkbarBufferSettings(l:new_markbar)
+    call l:self._setMarkbarBufferSettings(l:new_markbar)
 
     return l:new_markbar
 endfunction
@@ -95,8 +89,8 @@ endfunction
 " RETURNS:  (v:t_bool)      `v:true` if a markbar was actually closed,
 "                           `v:false` otherwise.
 function! markbar#MarkbarView#closeMarkbarWindow() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
-    let l:markbar_buffers = self.getOpenMarkbars()
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    let l:markbar_buffers = l:self.getOpenMarkbars()
     if empty(l:markbar_buffers) | return v:false | endif
     for l:markbar in l:markbar_buffers
         execute bufwinnr(l:markbar) . 'close'
@@ -106,14 +100,14 @@ endfunction
 
 " BRIEF:    Close open markbars in the tab; or open a markbar if none are open.
 function! markbar#MarkbarView#toggleMarkbar() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
-    if   self.closeMarkbar() | return | endif
-    call self.openMarkbar()
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    if   l:self.closeMarkbar() | return | endif
+    call l:self.openMarkbar()
 endfunction
 
 " RETURNS:  (v:t_bool)  `v:true` if a markbar window is open in the current tab.
 function! markbar#MarkbarView#markbarIsOpenCurrentTab() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:tab_buffers = tabpagebuflist()
     for l:bufnr in l:tab_buffers
         if getbufvar(l:bufnr, 'is_markbar')
@@ -126,7 +120,7 @@ endfunction
 " RETURNS:  (v:t_list)      A list of buffer numbers corresponding to all
 "                           markbar buffers open in the current tab.
 function! markbar#MarkbarView#getOpenMarkbars() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:tab_buffers = tabpagebuflist()
     let l:markbar_buffers = []
     for l:bufnr in l:tab_buffers
@@ -141,17 +135,17 @@ endfunction
 " DETAILS:  Creates a markbar buffer for the MarkbarState object if one does
 "           not yet exist.
 function! markbar#MarkbarView#getMarkbarBuffer() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
-    if !bufexists(self['_markbar_buffer'])
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    if !bufexists(l:self['_markbar_buffer'])
         let l:bufname = markbar#settings#MarkbarBufferName()
         execute 'badd ' . l:bufname
         let l:bufnr = bufnr(
             \ escape(l:bufname, '~*.$[]')
         \ )
-        let self['_markbar_buffer'] = l:bufnr
-        call self._setMarkbarBufferSettings(l:bufnr)
+        let l:self['_markbar_buffer'] = l:bufnr
+        call l:self._setMarkbarBufferSettings(l:bufnr)
     endif
-    return self['_markbar_buffer']
+    return l:self['_markbar_buffer']
 endfunction
 
 " RETURNS:  (v:t_number)    The window ID of the 'markbar buffer', or -1 if
@@ -159,20 +153,20 @@ endfunction
 " DETAILS:  Creates a markbar buffer for the MarkbarState object if one does
 "           not yet exist.
 function! markbar#MarkbarView#getMarkbarWindow() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
-    let l:markbar_buffer = self.getMarkbarBuffer()
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    let l:markbar_buffer = l:self.getMarkbarBuffer()
     return bufwinnr(l:markbar_buffer)
 endfunction
 
 " BRIEF:    Moves the cursor to the given line number in the current buffer.
 " PARAM:    line    (v:t_number)    The target line number.
 function! markbar#MarkbarView#_moveCursorToLine(line) abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     execute 'silent normal! ' . a:line . 'G'
 endfunction
 
 function! markbar#MarkbarView#_goToMark() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
     if !len(l:selected_mark) | return | endif
     execute 'wincmd p'
@@ -189,13 +183,13 @@ endfunction
 " PARAM:    count   (v:t_number)    Move forward this many headings. Defaults
 "                                   to 1.
 function! markbar#MarkbarView#_cycleToNextMark(...) abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let a:count = get(a:, 1, 1)
     if a:count <=# 0 | throw '(MarkbarView#_cycleToNextMark) Bad count: ' . a:count | endif
     let l:count = a:count + 0
     let l:i = 0
     while l:i <# l:count
-        call self._moveCursorToLine(self._getNextMarkHeadingLine())
+        call l:self._moveCursorToLine(l:self._getNextMarkHeadingLine())
         let l:i += 1
     endwhile
 endfunction
@@ -203,13 +197,13 @@ endfunction
 " BRIEF:    Moves the cursor to the section heading of the previous mark.
 " PARAM:    count   (v:t_number)    Move back this many headings. Defaults to 1.
 function! markbar#MarkbarView#_cycleToPreviousMark(...) abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let a:count = get(a:, 1, 1)
     if a:count <=# 0 | throw '(MarkbarView#_cycleToPreviousMark) Bad count: ' . a:count | endif
     let l:count = a:count + 0
     let l:i = 0
     while l:i <# l:count
-        call self._moveCursorToLine(self._getPreviousMarkHeadingLine())
+        call l:self._moveCursorToLine(l:self._getPreviousMarkHeadingLine())
         let l:i += 1
     endwhile
 endfunction
@@ -217,13 +211,13 @@ endfunction
 " RETURNS:  (v:t_string)    The 'currently selected' mark, or an empty string
 "                           if no mark is selected.
 function! markbar#MarkbarView#_getCurrentMarkHeading() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
-    return getline(self._getCurrentMarkHeadingLine())[2]
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    return getline(l:self._getCurrentMarkHeadingLine())[2]
 endfunction
 
 " RETURNS:  (v:t_number)    The line number of the 'currently selected' mark.
 function! markbar#MarkbarView#_getCurrentMarkHeadingLine() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:cur_heading_no = search(
         \ markbar#constants#MARK_HEADING_SEARCH_PATTERN(),
         \ 'bnc',
@@ -235,7 +229,7 @@ endfunction
 " RETURNS:  (v:t_number)    The line number of the mark heading below the
 "                           'currently selected' mark.
 function! markbar#MarkbarView#_getNextMarkHeadingLine() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:cur_heading_no = search(
         \ markbar#constants#MARK_HEADING_SEARCH_PATTERN(),
         \ 'n',
@@ -247,7 +241,7 @@ endfunction
 " RETURNS:  (v:t_number)    The line number of the mark heading below the
 "                           'currently selected' mark.
 function! markbar#MarkbarView#_getPreviousMarkHeadingLine() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:cur_heading_no = search(
         \ markbar#constants#MARK_HEADING_SEARCH_PATTERN(),
         \ 'bn',
@@ -258,7 +252,7 @@ endfunction
 
 " BRIEF:    Set buffer-local settings for the given markbar buffer.
 function! markbar#MarkbarView#_setMarkbarBufferSettings(buffer_expr) abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     if !bufexists(a:buffer_expr)
         throw '(MarkbarView#_setMarkbarBufferSettings) Buffer does not exist: ' . a:buffer_expr
     endif
@@ -276,7 +270,7 @@ endfunction
 
 " EFFECTS:  Set window-local settings for the given markbar buffer.
 function! markbar#MarkbarView#_setMarkbarWindowSettings(buffer_expr) abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     if !bufexists(a:buffer_expr)
         throw '(MarkbarView#_setMarkbarWindowSettings) Buffer does not exist: ' . a:buffer_expr
     endif
