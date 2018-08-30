@@ -15,34 +15,44 @@ function! markbar#MarkbarState#new() abort
             \ ),
         \ '_markbar_buffer': -1
     \ }
+
+    " opening/closing markbar
     let l:new['closeMarkbar'] =
         \ function('markbar#MarkbarState#closeMarkbar')
-    let l:new['evictBufferCache'] =
-        \ function('markbar#MarkbarState#evictBufferCache')
-    let l:new['getActiveBuffer'] =
-        \ function('markbar#MarkbarState#getActiveBuffer')
-    let l:new['getBufferCache'] =
-        \ function('markbar#MarkbarState#getBufferCache')
+    let l:new['openMarkbar'] =
+        \ function('markbar#MarkbarState#openMarkbar')
+    let l:new['toggleMarkbar'] =
+        \ function('markbar#MarkbarState#toggleMarkbar')
+
+    " markbar ui observers, utility functions
+    let l:new['getMarkbarContents'] =
+        \ function('markbar#MarkbarState#getMarkbarContents')
     let l:new['getOpenMarkbars'] =
         \ function('markbar#MarkbarState#getOpenMarkbars')
+    let l:new['markbarIsOpenCurrentTab'] =
+        \ function('markbar#MarkbarState#markbarIsOpenCurrentTab')
+    let l:new['populateWithMarkbar'] =
+        \ function('markbar#MarkbarState#populateWithMarkbar')
+
+    " active buffers
+    let l:new['getActiveBuffer'] =
+        \ function('markbar#MarkbarState#getActiveBuffer')
+    let l:new['pushNewBuffer'] =
+        \ function('markbar#MarkbarState#pushNewBuffer')
+
+    " other observers
     let l:new['getMarkData'] =
         \ function('markbar#MarkbarState#getMarkData')
     let l:new['getMarkbarBuffer'] =
         \ function('markbar#MarkbarState#getMarkbarBuffer')
-    let l:new['markbarIsOpenCurrentTab'] =
-        \ function('markbar#MarkbarState#markbarIsOpenCurrentTab')
-    let l:new['openMarkbar'] =
-        \ function('markbar#MarkbarState#openMarkbar')
-    let l:new['populateWithMarkbar'] =
-        \ function('markbar#MarkbarState#populateWithMarkbar')
-    let l:new['pushNewBuffer'] =
-        \ function('markbar#MarkbarState#pushNewBuffer')
-    let l:new['toggleMarkbar'] =
-        \ function('markbar#MarkbarState#toggleMarkbar')
+
+    " buffer mark caches
+    let l:new['getBufferCache'] =
+        \ function('markbar#MarkbarState#getBufferCache')
+    let l:new['evictBufferCache'] =
+        \ function('markbar#MarkbarState#evictBufferCache')
     let l:new['updateCurrentAndGlobal'] =
         \ function('markbar#MarkbarState#updateCurrentAndGlobal')
-    let l:new['getMarkbarContents'] =
-        \ function('markbar#MarkbarState#getMarkbarContents')
 
     return l:new
 endfunction
