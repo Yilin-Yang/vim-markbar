@@ -13,7 +13,7 @@ function! markbar#MarkbarView#new(...) abort
     let a:markbar_model = get(a:, 1, -1)
     let l:new = {
         \ 'TYPE': 'MarkbarView',
-        \ '_markbar_buffer': -1
+        \ '_markbar_buffer': -1,
         \ '_markbar_model': a:markbar_model
     \ }
     " TODO: markbar buffer window id?
@@ -21,7 +21,6 @@ function! markbar#MarkbarView#new(...) abort
     let l:new['_openMarkbarSplit']           = function('markbar#MarkbarView#_openMarkbarSplit')
     let l:new['closeMarkbar']                = function('markbar#MarkbarView#closeMarkbar')
     let l:new['toggleMarkbar']               = function('markbar#MarkbarView#toggleMarkbar')
-    let l:new['refreshMarkbar']              = function('markbar#MarkbarView#refreshMarkbar')
     let l:new['markbarIsOpenCurrentTab']     = function('markbar#MarkbarView#markbarIsOpenCurrentTab')
     let l:new['getOpenMarkbars']             = function('markbar#MarkbarView#getOpenMarkbars')
     let l:new['getMarkbarBuffer']            = function('markbar#MarkbarView#getMarkbarBuffer')
@@ -112,13 +111,6 @@ function! markbar#MarkbarView#toggleMarkbar() abort dict
     call self.openMarkbar()
 endfunction
 
-" BRIEF:    If markbars are open in the current tab, update their contents.
-function! markbar#MarkbarView#refreshMarkbar() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(self)
-    " TODO
-    " use markbar model
-endfunction
-
 " RETURNS:  (v:t_bool)  `v:true` if a markbar window is open in the current tab.
 function! markbar#MarkbarView#markbarIsOpenCurrentTab() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(self)
@@ -162,11 +154,14 @@ function! markbar#MarkbarView#getMarkbarBuffer() abort dict
     return self['_markbar_buffer']
 endfunction
 
-" RETURNS:  (v:t_number)    The window ID of the 'markbar buffer.'
+" RETURNS:  (v:t_number)    The window ID of the 'markbar buffer', or -1 if
+"                           the window doesn't exist in the current tab page.
 " DETAILS:  Creates a markbar buffer for the MarkbarState object if one does
 "           not yet exist.
 function! markbar#MarkbarView#getMarkbarWindow() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(self)
+    let l:markbar_buffer = self.getMarkbarBuffer()
+    return bufwinnr(l:markbar_buffer)
 endfunction
 
 " BRIEF:    Moves the cursor to the given line number in the current buffer.
