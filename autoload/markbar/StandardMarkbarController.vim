@@ -100,11 +100,11 @@ endfunction
 
 function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
     call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
-    let s:view  = l:self['_markbar_view']
-    let s:model = l:self['_markbar_model']
+    let b:view  = l:self['_markbar_view']
+    let b:model = l:self['_markbar_model']
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#JumpToMarkMapping()
-        \ . ' :call <SID>view._goToMark()<cr>'
+        \ . ' :call b:view._goToMark()<cr>'
 
     " TODO: implement in model
     execute 'noremap <silent> <buffer> '
@@ -119,14 +119,14 @@ function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
 
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#NextMarkMapping()
-        \ . ' :<C-U>call <SID>view._cycleToNextMark(v:count1)<cr>'
+        \ . ' :<C-U>call b:view._cycleToNextMark(v:count1)<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PreviousMarkMapping()
-        \ . ' :<C-U>call <SID>view._cycleToPreviousMark(v:count1)<cr>'
+        \ . ' :<C-U>call b:view._cycleToPreviousMark(v:count1)<cr>'
 
     " unlike other mappings, this one is hardcoded
     " TODO
     execute 'noremap <silent> <buffer> ? '
         \ . ':let g:markbar_show_verbose_help = !g:markbar_show_verbose_help<cr>'
-        \ . ':call markbar#ui#OpenMarkbar()<cr>'
+        \ . ':call b:view.openMarkbar()<cr>'
 endfunction
