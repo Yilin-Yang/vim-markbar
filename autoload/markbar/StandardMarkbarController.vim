@@ -12,6 +12,9 @@ function! markbar#StandardMarkbarController#new(model, view) abort
     let l:new['_getMarkbarContents'] =
         \ function('markbar#StandardMarkbarController#_getMarkbarContents')
 
+    let l:new['_setMarkbarMappings'] =
+        \ function('markbar#StandardMarkbarController#_setMarkbarMappings')
+
 endfunction
 
 function! markbar#StandardMarkbarController#AssertIsStandardMarkbarController(object) abort
@@ -93,4 +96,37 @@ function! markbar#StandardMarkbarController#_getMarkbarContents(buffer_no, marks
     endwhile
 
     return l:lines
+endfunction
+
+function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
+    call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
+    let s:view  = l:self['_markbar_view']
+    let s:model = l:self['_markbar_model']
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#JumpToMarkMapping()
+        \ . ' :call <SID>view._goToMark()<cr>'
+
+    " TODO: implement in model
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#RenameMarkMapping()
+        \ . ' :call markbar#ui#RenameMark()<cr>'
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#ResetMarkMapping()
+        \ . ' :call markbar#ui#ResetMarkName()<cr>'
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#DeleteMarkMapping()
+        \ . ' :call markbar#ui#DeleteMark()<cr>'
+
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#NextMarkMapping()
+        \ . ' :<C-U>call <SID>view._cycleToNextMark(v:count1)<cr>'
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#PreviousMarkMapping()
+        \ . ' :<C-U>call <SID>view._cycleToPreviousMark(v:count1)<cr>'
+
+    " unlike other mappings, this one is hardcoded
+    " TODO
+    execute 'noremap <silent> <buffer> ? '
+        \ . ':let g:markbar_show_verbose_help = !g:markbar_show_verbose_help<cr>'
+        \ . ':call markbar#ui#OpenMarkbar()<cr>'
 endfunction
