@@ -5,9 +5,13 @@
 "           components.
 
 " BRIEF:    Construct a MarkbarView object.
-function! markbar#MarkbarView#new() abort
+" PARAM:    model   (markbar#MarkbarModel)  Reference to stored information
+"                                           about the markbar state.
+function! markbar#MarkbarView#new(model) abort
+    call markbar#MarkbarModel#AssertIsMarkbarModel(a:model)
     let l:new = {
         \ 'TYPE': 'MarkbarView',
+        \ '_markbar_model': a:model,
         \ '_markbar_buffer': -1,
     \ }
     " TODO: markbar buffer window id?
@@ -44,7 +48,7 @@ endfunction
 function! markbar#MarkbarView#openMarkbar() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:markbar_buffer = l:self.getMarkbarBuffer()
-    let l:markbar_window = bufwinnr(l:markbar_buffer)
+    let l:markbar_window = l:self.getMarkbarWindow()
     if l:markbar_window ==# -1
         call l:self._openMarkbarSplit(l:markbar_buffer)
         call setbufvar(l:markbar_buffer, '&buflisted', 0)
@@ -158,28 +162,33 @@ function! markbar#MarkbarView#getMarkbarWindow() abort dict
     return bufwinnr(l:markbar_buffer)
 endfunction
 
-" BRIEF:    Moves the cursor to the given line number in the current buffer.
+" BRIEF:    Move the cursor to the given line number in the current buffer.
 " PARAM:    line    (v:t_number)    The target line number.
 function! markbar#MarkbarView#_moveCursorToLine(line) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     execute 'silent normal! ' . a:line . 'G'
 endfunction
 
+" BRIEF:    Jump to the currently selected mark.
+" DETAILS:  Requires that the window containing the most recent active buffer
+"           still be open in the current tab.
 function! markbar#MarkbarView#_goToMark() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    let l:selected_mark = markbar#ui#GetCurrentMarkHeading()
+    let l:selected_mark = l:self._getCurrentMarkHeading()
     if !len(l:selected_mark) | return | endif
-    execute 'wincmd p'
+
+    let l:active_buffer = l:self['_markbar_model'].getActiveBuffer()
+    execute bufwinnr(l:active_buffer) . 'wincmd w'
     let l:jump_command = 'normal! '
-    let l:jump_command .= markbar#settings#JumpToExactPosition() ?
-        \ '`' : "'"
+    let l:jump_command .= markbar#settings#JumpToExactPosition() ? '`' : "'"
     execute l:jump_command . l:selected_mark
+
     if markbar#settings#CloseAfterGoTo()
-        call markbar#ui#CloseMarkbar()
+        call l:self.closeMarkbar()
     endif
 endfunction
 
-" BRIEF:    Moves the cursor to the section heading of the next mark.
+" BRIEF:    Move the cursor to the section heading of the next mark.
 " PARAM:    count   (v:t_number)    Move forward this many headings. Defaults
 "                                   to 1.
 function! markbar#MarkbarView#_cycleToNextMark(...) abort dict
@@ -194,7 +203,7 @@ function! markbar#MarkbarView#_cycleToNextMark(...) abort dict
     endwhile
 endfunction
 
-" BRIEF:    Moves the cursor to the section heading of the previous mark.
+" BRIEF:    Move the cursor to the section heading of the previous mark.
 " PARAM:    count   (v:t_number)    Move back this many headings. Defaults to 1.
 function! markbar#MarkbarView#_cycleToPreviousMark(...) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)

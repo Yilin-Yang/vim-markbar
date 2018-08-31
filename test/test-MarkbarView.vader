@@ -1,5 +1,8 @@
+Execute (Initialize MarkbarModel):
+  let g:markbar_model = markbar#MarkbarModel#get()
+
 Execute (Test Initialize Markbar Buffer):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   let g:buffer = g:markbar_view.getMarkbarBuffer()
 Then:
   Assert bufexists(g:buffer)
@@ -12,7 +15,7 @@ Then:
   AssertEqual 1,         getbufvar(g:buffer, 'is_markbar')
   
 Execute (Test Open Window):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.openMarkbar()
   AssertEqual 0,         getbufvar(g:buffer, '&buflisted')
 
@@ -30,7 +33,7 @@ Execute (Test Open Window):
   AssertEqual    1, getwinvar(g:winnr,      'is_markbar')
 
 Execute (Test Open Window, Switch Out, Already Open):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   let g:cur_window = winnr()
   call g:markbar_view.openMarkbar()
   let g:correct_num_windows = len(tabpagebuflist())
@@ -41,7 +44,7 @@ Then:
   Assert b:is_markbar
 
 Execute (Test Close Window):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   let g:correct_num_windows = len(tabpagebuflist())
   call g:markbar_view.openMarkbar()
   call g:markbar_view.closeMarkbar()
@@ -50,7 +53,7 @@ Then:
   Assert !exists('b:is_markbar')
 
 Execute (Test Close Window, None Open):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   let g:correct_num_windows = len(tabpagebuflist())
   call g:markbar_view.closeMarkbar()
 Then:
@@ -58,13 +61,13 @@ Then:
   Assert !exists('b:is_markbar')
 
 Execute (Test Toggle Window, None Open):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.toggleMarkbar()
 Then:
   Assert b:is_markbar
 
 Execute (Test Toggle Window, Already Open):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   let g:correct_num_windows = len(tabpagebuflist())
   call g:markbar_view.openMarkbar()
   call g:markbar_view.toggleMarkbar()
@@ -73,33 +76,33 @@ Then:
   Assert !exists('b:is_markbar')
 
 Execute (Test markbarIsOpenCurrentTab, True):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.openMarkbar()
 Then:
   Assert g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test markbarIsOpenCurrentTab, Different Tab):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.openMarkbar()
   tabnew
 Then:
   Assert !g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test markbarIsOpenCurrentTab, None Open):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.openMarkbar()
   call g:markbar_view.closeMarkbar()
 Then:
   Assert !g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test getMarkbarWindow, No Markbar Buffer):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   let g:winnr = markbar_view.getMarkbarWindow()
 Then:
   AssertEqual -1, g:winnr
 
 Execute (Test getMarkbarWindow, Markbar Exists But Not Open):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.openMarkbar()
   call g:markbar_view.closeMarkbar()
   let g:winnr = markbar_view.getMarkbarWindow()
@@ -107,7 +110,7 @@ Then:
   AssertEqual -1, g:winnr
 
 Execute (Test getMarkbarWindow, Markbar Exists In Different Tab):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.openMarkbar()
   tabnew
   let g:winnr = markbar_view.getMarkbarWindow()
@@ -115,7 +118,7 @@ Then:
   AssertEqual -1, g:winnr
 
 Execute (Test getMarkbarWindow, Markbar Exists in Current Tab):
-  let g:markbar_view = markbar#MarkbarView#new()
+  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   let g:old_winnr = winnr()
   call g:markbar_view.openMarkbar()
   execute g:old_winnr . 'wincmd w'
