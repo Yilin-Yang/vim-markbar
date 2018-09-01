@@ -1,0 +1,250 @@
+Include: clear-marks.vader
+
+Execute (Set Settings, Set Plugin Mappings):
+  let g:markbar_num_lines_context = 3
+  let g:markbar_open_vertical = v:true
+
+  let g:markbar_mark_name_format_string     = ''
+  let g:markbar_file_mark_format_string     = '%s'
+  let g:markbar_numbered_mark_format_string = ''
+
+  let g:markbar_mark_name_arguments     = []
+  let g:markbar_file_mark_arguments     = ['fname']
+  let g:markbar_numbered_mark_arguments = []
+
+  map Mo <Plug>OpenMarkbar
+  map Mc <Plug>CloseMarkbar
+  map Mt <Plug>ToggleMarkbar
+
+Do (Open Markbar, No Marks):
+  Mo
+Expect:
+  " Press ? for help
+
+Do (Close Markbar):
+  Mc
+Expect:
+  
+
+Do (Toggle Markbar Open, No Marks):
+  Mt
+Expect:
+  " Press ? for help
+
+Do (Toggle Markbar Closed, No Marks):
+  Mt
+  Mt
+Expect:
+  
+
+Do (Set Marks, Open Markbar):
+  :edit! 10lines.txt\<cr>
+  1G5lmA5GmB10GmC
+  Mo
+Then:
+  AssertEqual 0, &buflisted
+  AssertEqual 'nofile', &buftype
+  AssertEqual 'hide', &bufhidden
+  AssertEqual 0, &swapfile
+  AssertEqual 'markbar', &filetype
+  AssertEqual 'markbar', &syntax
+  AssertEqual 1, b:is_markbar
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Do (Close Markbar):
+  Mc
+Expect:
+  first line
+  second line
+  third line
+  fourth line
+  fifth line
+  sixth line
+  seventh line
+  eighth line
+  ninth line
+  tenth line
+
+
+Do (Re-Open Closed Markbar (E499 Check)):
+  Mo
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Do (Move Cursor to Existing Markbar):
+  \<C-w>p
+  Mo
+Then:
+  " TODO: find a way to check for 'didn't create a new split'
+  " AssertEqual num_windows, len(tabpagebuflist())
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Do (Close Markbar):
+  :edit! 10lines.txt\<cr>
+  Mo
+  Mc
+Expect:
+  first line
+  second line
+  third line
+  fourth line
+  fifth line
+  sixth line
+  seventh line
+  eighth line
+  ninth line
+  tenth line
+
+Do (Iterate Through Marks with Next):
+  Mo
+  ggnnn
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 12, cur_pos[1]
+
+Do (Use Count with Next):
+  Mo
+  gg3n
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 12, cur_pos[1]
+
+Do (Iterate Through Marks with Previous):
+  Mo
+  GNNN
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]
+
+Do (Use Count with Previous):
+  Mo
+  G3N
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]
+
+Do (Go To Mark):
+  Mo
+  2G\<cr>
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 6, cur_pos[2]
+
+Execute (Explicitly Rename Mark):
+  " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
+  let g:mark = g:markbar_model.getMarkData('B')
+  call g:mark.setName('Covfefe the Strong')
+  normal! Mo
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: Covfefe the Strong
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+
+Do (Reset Mark Name):
+  Mo
+  7Gc
+  Mo
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+
+Do (Delete Mark):
+  Mo
+  5Gd
+Expect:
+  " Press ? for help
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
