@@ -36,6 +36,11 @@ function! markbar#MarkbarController#new(model, view) abort
                 \ 'markbar#MarkbarController#__noImplementation',
                 \ ['_getMarkbarContents']
             \ ),
+        \ '_setMarkbarMappings':
+            \ function(
+                \ 'markbar#MarkbarController#__noImplementation',
+                \ ['_setMarkbarMappings']
+            \ ),
         \ '_populateWithMarkbar':
             \ function('markbar#MarkbarController#_populateWithMarkbar')
     \ }
@@ -65,11 +70,12 @@ function! markbar#MarkbarController#openMarkbar() abort dict
     let l:markbar_buffer = l:view.getMarkbarBuffer()
 
     call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
+    call l:self._setMarkbarMappings()
 endfunction
 
 function! markbar#MarkbarController#closeMarkbar() abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    call l:self['_markbar_view'].closeMarkbar()
+    return l:self['_markbar_view'].closeMarkbar()
 endfunction
 
 function! markbar#MarkbarController#toggleMarkbar() abort dict

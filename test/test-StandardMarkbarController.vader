@@ -1,0 +1,232 @@
+Include: clear-marks.vader
+
+Execute (Set Settings, Create Standard Markbar Controller):
+  let g:model = markbar#MarkbarModel#get()
+  let g:view = markbar#MarkbarView#new(g:model)
+  let g:standard_controller = 
+    \ markbar#StandardMarkbarController#new(g:model, g:view)
+
+  let g:markbar_num_lines_context = 3
+  let g:markbar_open_vertical = v:true
+
+  let g:markbar_mark_name_format_string     = ''
+  let g:markbar_file_mark_format_string     = '%s'
+  let g:markbar_numbered_mark_format_string = ''
+
+  let g:markbar_mark_name_arguments     = []
+  let g:markbar_file_mark_arguments     = ['fname']
+  let g:markbar_numbered_mark_arguments = []
+
+Do (Open Markbar, No Marks):
+  call g:standard_controller.openMarkbar()
+Expect:
+  
+
+Do (Set Marks, Open Markbar):
+  :edit! 10lines.txt\<cr>
+  1G5lmA5GmB10GmC
+Then:
+  let g:markbar_num_lines_context = 3
+  call g:standard_controller.openMarkbar()
+  AssertEqual 0, &buflisted
+  AssertEqual 'nofile', &buftype
+  AssertEqual 'hide', &bufhidden
+  AssertEqual 0, &swapfile
+  AssertEqual 'markbar', &filetype
+  AssertEqual 'markbar', &syntax
+  AssertEqual 1, b:is_markbar
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Do (Close Markbar):
+  :q\<cr>
+Expect:
+  first line
+  second line
+  third line
+  fourth line
+  fifth line
+  sixth line
+  seventh line
+  eighth line
+  ninth line
+  tenth line
+
+
+Do (Re-Open Closed Markbar (E499 Check)):
+  :call g:standard_controller.openMarkbar()\<cr>
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Do (Move Cursor to Existing Markbar):
+  \<C-w>p:call g:standard_controller.openMarkbar()\<cr>
+Then:
+  " TODO: find a way to check for 'didn't create a new split'
+  " AssertEqual num_windows, len(tabpagebuflist())
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Execute (Close Markbar):
+  edit! 10lines.txt
+  call g:standard_controller.openMarkbar()
+  let result = g:standard_controller.closeMarkbar()
+Then:
+  Assert result, 'Markbar failed to close!'
+Expect:
+  first line
+  second line
+  third line
+  fourth line
+  fifth line
+  sixth line
+  seventh line
+  eighth line
+  ninth line
+  tenth line
+" TODO: Vader keeps reporting test failure, even though it seems to work
+" properly when I do it myself?
+" Do (Test For Fixed Markbar Width, Even After Closing Other Splits):
+"   :call g:standard_controller.openMarkbar()\<cr>
+"   :let g:markbar_width = winwidth(winnr())\<cr>
+"   \<C-w>p
+"   :vsplit\<cr>
+"   :q\<cr>
+"   :call g:standard_controller.openMarkbar()\<cr>
+" Then:
+"   AssertEqual g:markbar_width, winwidth(winnr())
+" TODO: ditto the above, but for markbar height
+" TODO: Vader wipes out the older Markbar, which doesn't happen when I try
+" doing it myself?
+" Do (Jump Back to Preexisting Markbar After Modifications):
+"   :tabnew 30lines.txt\<cr>
+"   mA
+"   :tabprev\<cr>
+" Expect:
+"   ['A]: 30lines.txt
+"       first line
+"       second line
+
+"   ['B]: 10lines.txt
+"       fourth line
+"       fifth line
+"       sixth line
+
+"   ['C]: 10lines.txt
+"       ninth line
+"       tenth line
+"  
+" Do (Get Default Mark Name):
+"   :edit! 10lines.txt\<cr>
+"   :call g:standard_controller.openMarkbar()\<cr>
+"   /['B\<cr>
+" Then:
+"   let g:default_header = getline('.')
+
+" Do (Go To Mark):
+"   \<cr>
+" Then:
+"   AssertEqual 'fifth line', getline('.')
+
+" Do (Rename Mark):
+"   :call g:standard_controller.openMarkbar()\<cr>
+"   /['B\<cr>
+"   r
+"   Covfefe the Strong\<cr>
+" Then:
+"   let mark_b = g:markbar_buffers.getMarkData('B')
+"   AssertEqual 'Covfefe the Strong', mark_b.getName()
+
+" Do (Reset Mark Name):
+"   c
+" Then:
+"   AssertEqual '', mark_b.getName()
+Do (Go To Mark):
+  :call g:standard_controller.openMarkbar()\<cr>
+  2G\<cr>
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 6, cur_pos[2]
+
+Do (Iterate Through Marks with Next):
+  :call g:standard_controller.openMarkbar()\<cr>
+  ggnnn
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 12, cur_pos[1]
+
+Do (Use Count with Next):
+  :call g:standard_controller.openMarkbar()\<cr>
+  gg3n
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 12, cur_pos[1]
+
+Do (Iterate Through Marks with Previous):
+  :call g:standard_controller.openMarkbar()\<cr>
+  GNNN
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]
+
+Do (Use Count with Previous):
+  :call g:standard_controller.openMarkbar()\<cr>
+  G3N
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]

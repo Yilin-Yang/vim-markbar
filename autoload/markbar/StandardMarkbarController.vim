@@ -15,6 +15,7 @@ function! markbar#StandardMarkbarController#new(model, view) abort
     let l:new['_setMarkbarMappings'] =
         \ function('markbar#StandardMarkbarController#_setMarkbarMappings')
 
+    return l:new
 endfunction
 
 function! markbar#StandardMarkbarController#AssertIsStandardMarkbarController(object) abort
