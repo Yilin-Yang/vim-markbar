@@ -69,18 +69,8 @@ Expect:
   
 Do (Close Markbar):
   Mc
-Expect:
-  first line
-  second line
-  third line
-  fourth line
-  fifth line
-  sixth line
-  seventh line
-  eighth line
-  ninth line
-  tenth line
-
+Then:
+  Assert !exists('b:is_markbar')
 
 Do (Re-Open Closed Markbar (E499 Check)):
   Mo
@@ -193,7 +183,7 @@ Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
   let g:mark = g:markbar_model.getMarkData('B')
   call g:mark.setName('Covfefe the Strong')
-  normal! Mo
+  normal Mo
 Expect:
   " Press ? for help
   ['A]: 10lines.txt
