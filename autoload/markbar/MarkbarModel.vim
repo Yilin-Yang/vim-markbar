@@ -77,7 +77,7 @@ function! markbar#MarkbarModel#renameMark(mark) abort dict
         throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
     endif
 
-    let l:mark_data = g:markbar_buffers.getMarkData(a:mark)
+    let l:mark_data = l:self.getMarkData(a:mark)
 
     call inputsave()
     let l:new_name = input('New name for mark [''' . a:mark . ']: ',
@@ -98,7 +98,7 @@ function! markbar#MarkbarModel#resetMark(mark) abort dict
     if type(a:mark) !=# v:t_string || len(a:mark) !=# 1
         throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
     endif
-    let l:mark_data = g:markbar_buffers.getMarkData(a:mark)
+    let l:mark_data = l:self.getMarkData(a:mark)
     call l:mark_data.setName('')
 endfunction
 
@@ -113,11 +113,11 @@ function! markbar#MarkbarModel#deleteMark(mark) abort dict
     endif
 
     let l:cur_pos = getcurpos()
-    if !markbar#helpers#IsGlobalMark(l:selected_mark)
+    if !markbar#helpers#IsGlobalMark(a:mark)
         let l:active_buffer = l:self.getActiveBuffer()
         execute bufwinnr(l:active_buffer) . 'wincmd w'
     endif
-    execute 'delmarks ' . l:selected_mark
+    execute 'delmarks ' . a:mark
     call setpos('.', l:cur_pos)
 endfunction
 

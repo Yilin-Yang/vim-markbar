@@ -157,43 +157,6 @@ Expect:
 "       ninth line
 "       tenth line
 "  
-" Do (Get Default Mark Name):
-"   :edit! 10lines.txt\<cr>
-"   :call g:standard_controller.openMarkbar()\<cr>
-"   /['B\<cr>
-" Then:
-"   let g:default_header = getline('.')
-
-" Do (Go To Mark):
-"   \<cr>
-" Then:
-"   AssertEqual 'fifth line', getline('.')
-
-" Do (Rename Mark):
-"   :call g:standard_controller.openMarkbar()\<cr>
-"   /['B\<cr>
-"   r
-"   Covfefe the Strong\<cr>
-" Then:
-"   let mark_b = g:markbar_buffers.getMarkData('B')
-"   AssertEqual 'Covfefe the Strong', mark_b.getName()
-
-" Do (Reset Mark Name):
-"   c
-" Then:
-"   AssertEqual '', mark_b.getName()
-Do (Go To Mark):
-  :call g:standard_controller.openMarkbar()\<cr>
-  2G\<cr>
-Then:
-  AssertEqual '10lines.txt', expand('%:t')
-  let cur_pos = getcurpos()
-
-  " check line number
-  AssertEqual 1, cur_pos[1]
-
-  " check column number
-  AssertEqual 6, cur_pos[2]
 
 Do (Iterate Through Marks with Next):
   :call g:standard_controller.openMarkbar()\<cr>
@@ -230,3 +193,99 @@ Then:
 
   " check line number
   AssertEqual 2, cur_pos[1]
+
+Do (Go To Mark):
+  :call g:standard_controller.openMarkbar()\<cr>
+  2G\<cr>
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 6, cur_pos[2]
+
+" Do (Rename Mark):
+"   :call g:standard_controller.openMarkbar()\<cr>
+"   7G
+"   rCovfefe the Strong\<cr>
+" Expect:
+"   " Press ? for help
+"   ['A]: 10lines.txt
+"       ~
+"       first line
+"       second line
+
+"   ['B]: Covfefe the Strong
+"       fourth line
+"       fifth line
+"       sixth line
+
+"   ['C]: 10lines.txt
+"       ninth line
+"       tenth line
+"       ~
+"  
+
+Execute (Explicitly Rename Mark):
+  " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
+  let g:mark = g:model.getMarkData('B')
+  call g:mark.setName('Covfefe the Strong')
+  call g:standard_controller.openMarkbar()
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: Covfefe the Strong
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+
+Do (Reset Mark Name):
+  :call g:standard_controller.openMarkbar()\<cr>
+  7Gc
+  :call g:standard_controller.openMarkbar()\<cr>
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+
+Do (Delete Mark):
+  :call g:standard_controller.openMarkbar()\<cr>
+  5Gd
+Expect:
+  " Press ? for help
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  

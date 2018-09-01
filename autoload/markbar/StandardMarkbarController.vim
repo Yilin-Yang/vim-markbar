@@ -114,7 +114,7 @@ function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
         \ . ' :call b:ctrl.openMarkbar()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#ResetMarkMapping()
-        \ . ' :call b:model.resetMarkName(b:view._getCurrentMarkHeading())<cr>'
+        \ . ' :call b:model.resetMark(b:view._getCurrentMarkHeading())<cr>'
         \ . ' :call b:ctrl.openMarkbar()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#DeleteMarkMapping()
