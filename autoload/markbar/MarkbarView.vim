@@ -13,12 +13,14 @@ function! markbar#MarkbarView#new(model) abort
         \ 'TYPE': 'MarkbarView',
         \ '_markbar_model': a:model,
         \ '_markbar_buffer': -1,
+        \ '_show_verbose_help': v:false,
     \ }
     " TODO: markbar buffer window id?
     let l:new['openMarkbar']                 = function('markbar#MarkbarView#openMarkbar')
     let l:new['_openMarkbarSplit']           = function('markbar#MarkbarView#_openMarkbarSplit')
     let l:new['closeMarkbar']                = function('markbar#MarkbarView#closeMarkbar')
     let l:new['toggleMarkbar']               = function('markbar#MarkbarView#toggleMarkbar')
+    let l:new['toggleShowHelp']              = function('markbar#MarkbarView#toggleShowHelp')
     let l:new['markbarIsOpenCurrentTab']     = function('markbar#MarkbarView#markbarIsOpenCurrentTab')
     let l:new['getOpenMarkbars']             = function('markbar#MarkbarView#getOpenMarkbars')
     let l:new['getMarkbarBuffer']            = function('markbar#MarkbarView#getMarkbarBuffer')
@@ -56,7 +58,7 @@ function! markbar#MarkbarView#openMarkbar() abort dict
         " switch to existing markbar window
         execute l:markbar_window . 'wincmd w'
     endif
-    call self._setMarkbarWindowSettings(l:markbar_buffer)
+    call l:self._setMarkbarWindowSettings(l:markbar_buffer)
 endfunction
 
 " BRIEF:    Open a vsplit for a markbar and set settings, if appropriate.
@@ -107,6 +109,13 @@ function! markbar#MarkbarView#toggleMarkbar() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     if   l:self.closeMarkbar() | return | endif
     call l:self.openMarkbar()
+endfunction
+
+" BRIEF:    Toggle the visibility of verbose help in the markbar.
+" DETAILS:  Won't take effect until the markbar has been repopulated.
+function! markbar#MarkbarModel#toggleShowHelp() abort dict
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    let l:self['_show_verbose_help'] = !l:self['_show_verbose_help']
 endfunction
 
 " RETURNS:  (v:t_bool)  `v:true` if a markbar window is open in the current tab.

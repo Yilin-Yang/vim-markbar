@@ -101,22 +101,25 @@ endfunction
 
 function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
     call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
+    let b:ctrl  = l:self
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#JumpToMarkMapping()
         \ . ' :call b:view._goToMark()<cr>'
 
-    " TODO: implement in model
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#RenameMarkMapping()
-        \ . ' :call markbar#ui#RenameMark()<cr>'
+        \ . ' :call b:model.renameMark(b:view._getCurrentMarkHeading())<cr>'
+        \ . ' :call b:ctrl.openMarkbar()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#ResetMarkMapping()
-        \ . ' :call markbar#ui#ResetMarkName()<cr>'
+        \ . ' :call b:model.resetMarkName(b:view._getCurrentMarkHeading())<cr>'
+        \ . ' :call b:ctrl.openMarkbar()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#DeleteMarkMapping()
-        \ . ' :call markbar#ui#DeleteMark()<cr>'
+        \ . ' :call b:model.deleteMark(b:view._getCurrentMarkHeading())<cr>'
+        \ . ' :call b:ctrl.openMarkbar()<cr>'
 
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#NextMarkMapping()
@@ -125,9 +128,7 @@ function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
         \ . markbar#settings#PreviousMarkMapping()
         \ . ' :<C-U>call b:view._cycleToPreviousMark(v:count1)<cr>'
 
-    " unlike other mappings, this one is hardcoded
-    " TODO
     execute 'noremap <silent> <buffer> ? '
-        \ . ':let g:markbar_show_verbose_help = !g:markbar_show_verbose_help<cr>'
-        \ . ':call b:view.openMarkbar()<cr>'
+        \ . ':call b:view.toggleShowHelp()<cr>'
+        \ . ':call b:ctrl.openMarkbar()<cr>'
 endfunction

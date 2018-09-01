@@ -30,6 +30,12 @@ function! markbar#MarkbarModel#get() abort
                 \ function('markbar#helpers#IsRealBuffer'),
                 \ markbar#settings#MaximumActiveBufferHistory()
             \ ),
+        \ 'renameMark':
+            \ function('markbar#MarkbarModel#renameMark'),
+        \ 'resetMark':
+            \ function('markbar#MarkbarModel#resetMark'),
+        \ 'deleteMark':
+            \ function('markbar#MarkbarModel#deleteMark'),
         \ 'getActiveBuffer':
             \ function('markbar#MarkbarModel#getActiveBuffer'),
         \ 'pushNewBuffer':
@@ -58,6 +64,61 @@ function! markbar#MarkbarModel#AssertIsMarkbarModel(object) abort
     if type(a:object) !=# v:t_dict || a:object['TYPE'] !=# 'MarkbarModel'
         throw '(markbar#MarkbarModel) Object is not of type MarkbarModel: ' . a:object
     endif
+endfunction
+
+" BRIEF:    Prompt the user to assign an explicit name to the selected mark.
+" DETAILS:  Requires that the markbar be open and focused.
+"           Changes won't appear until the markbar has been repopulated.
+" PARAM:    mark    (v:t_string)    The single character representing the
+"                                   mark.
+function! markbar#MarkbarModel#renameMark(mark) abort dict
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    if type(a:mark) !=# v:t_string || len(a:mark) !=# 1
+        throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
+    endif
+
+    let l:mark_data = g:markbar_buffers.getMarkData(a:mark)
+
+    call inputsave()
+    let l:new_name = input('New name for mark [''' . a:mark . ']: ',
+        \ l:mark_data.getName(),
+        \ markbar#settings#RenameMarkCompletion()
+    \ )
+    call inputrestore()
+
+    call l:mark_data.setName(l:new_name)
+endfunction
+
+" BRIEF:    Reset the name of the selected mark to the default.
+" DETAILS:  Changes won't appear until the markbar has been repopulated.
+" PARAM:    mark    (v:t_string)    The single character representing the
+"                                   mark.
+function! markbar#MarkbarModel#resetMark(mark) abort dict
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    if type(a:mark) !=# v:t_string || len(a:mark) !=# 1
+        throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
+    endif
+    let l:mark_data = g:markbar_buffers.getMarkData(a:mark)
+    call l:mark_data.setName('')
+endfunction
+
+" BRIEF:    Delete the given mark.
+" DETAILS:  Changes won't appear until the markbar has been repopulated.
+" PARAM:    mark    (v:t_string)    The single character representing the
+"                                   mark.
+function! markbar#MarkbarModel#deleteMark(mark) abort dict
+    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    if type(a:mark) !=# v:t_string || len(a:mark) !=# 1
+        throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
+    endif
+
+    let l:cur_pos = getcurpos()
+    if !markbar#helpers#IsGlobalMark(l:selected_mark)
+        let l:active_buffer = l:self.getActiveBuffer()
+        execute bufwinnr(l:active_buffer) . 'wincmd w'
+    endif
+    execute 'delmarks ' . l:selected_mark
+    call setpos('.', l:cur_pos)
 endfunction
 
 " RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.
