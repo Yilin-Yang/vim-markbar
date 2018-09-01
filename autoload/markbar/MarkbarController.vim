@@ -154,7 +154,7 @@ function! markbar#MarkbarController#_populateWithMarkbar(
     \ into_buffer_expr
 \ ) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    let l:contents  = l:self._getHelpText(g:markbar_show_verbose_help)
+    let l:contents  = l:self._getHelpText(l:self['_markbar_view'].getShouldShowHelp())
     let l:contents += l:self._getMarkbarContents(
         \ a:for_buffer_no,
         \ markbar#settings#MarksToDisplay()

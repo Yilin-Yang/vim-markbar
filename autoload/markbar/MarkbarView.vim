@@ -25,6 +25,7 @@ function! markbar#MarkbarView#new(model) abort
     let l:new['getOpenMarkbars']             = function('markbar#MarkbarView#getOpenMarkbars')
     let l:new['getMarkbarBuffer']            = function('markbar#MarkbarView#getMarkbarBuffer')
     let l:new['getMarkbarWindow']            = function('markbar#MarkbarView#getMarkbarWindow')
+    let l:new['getShouldShowHelp']           = function('markbar#MarkbarView#getShouldShowHelp')
     let l:new['_moveCursorToLine']           = function('markbar#MarkbarView#_moveCursorToLine')
     let l:new['_goToMark']                   = function('markbar#MarkbarView#_goToMark')
     let l:new['_cycleToNextMark']            = function('markbar#MarkbarView#_cycleToNextMark')
@@ -113,7 +114,7 @@ endfunction
 
 " BRIEF:    Toggle the visibility of verbose help in the markbar.
 " DETAILS:  Won't take effect until the markbar has been repopulated.
-function! markbar#MarkbarModel#toggleShowHelp() abort dict
+function! markbar#MarkbarView#toggleShowHelp() abort dict
     call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
     let l:self['_show_verbose_help'] = !l:self['_show_verbose_help']
 endfunction
@@ -169,6 +170,12 @@ function! markbar#MarkbarView#getMarkbarWindow() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:markbar_buffer = l:self.getMarkbarBuffer()
     return bufwinnr(l:markbar_buffer)
+endfunction
+
+" RETURNS:  (v:t_bool)  Whether or not to show verbose help in the markbar.
+function! markbar#MarkbarView#getShouldShowHelp() abort dict
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    return l:self['_show_verbose_help']
 endfunction
 
 " BRIEF:    Move the cursor to the given line number in the current buffer.
