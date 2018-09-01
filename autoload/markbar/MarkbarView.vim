@@ -19,7 +19,6 @@ function! markbar#MarkbarView#new(model) abort
     let l:new['openMarkbar']                 = function('markbar#MarkbarView#openMarkbar')
     let l:new['_openMarkbarSplit']           = function('markbar#MarkbarView#_openMarkbarSplit')
     let l:new['closeMarkbar']                = function('markbar#MarkbarView#closeMarkbar')
-    let l:new['toggleMarkbar']               = function('markbar#MarkbarView#toggleMarkbar')
     let l:new['toggleShowHelp']              = function('markbar#MarkbarView#toggleShowHelp')
     let l:new['markbarIsOpenCurrentTab']     = function('markbar#MarkbarView#markbarIsOpenCurrentTab')
     let l:new['getOpenMarkbars']             = function('markbar#MarkbarView#getOpenMarkbars')
@@ -103,13 +102,6 @@ function! markbar#MarkbarView#closeMarkbar() abort dict
         execute bufwinnr(l:markbar) . 'close'
     endfor
     return v:true
-endfunction
-
-" BRIEF:    Close open markbars in the tab; or open a markbar if none are open.
-function! markbar#MarkbarView#toggleMarkbar() abort dict
-    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    if   l:self.closeMarkbar() | return | endif
-    call l:self.openMarkbar()
 endfunction
 
 " BRIEF:    Toggle the visibility of verbose help in the markbar.

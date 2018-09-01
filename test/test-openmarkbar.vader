@@ -36,11 +36,12 @@ Do (Toggle Markbar Closed, No Marks):
   Mt
 Expect:
   
-
-Do (Set Marks, Open Markbar):
+" If the 'open markbar' binding works while the 'toggle' binding doesn't, 
+" this should fail
+Do (Set Marks, Toggle Markbar Open):
   :edit! 10lines.txt\<cr>
   1G5lmA5GmB10GmC
-  Mo
+  Mt
 Then:
   AssertEqual 0, &buflisted
   AssertEqual 'nofile', &buftype

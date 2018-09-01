@@ -60,21 +60,6 @@ Then:
   AssertEqual g:correct_num_windows, len(tabpagebuflist())
   Assert !exists('b:is_markbar')
 
-Execute (Test Toggle Window, None Open):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
-  call g:markbar_view.toggleMarkbar()
-Then:
-  Assert b:is_markbar
-
-Execute (Test Toggle Window, Already Open):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
-  let g:correct_num_windows = len(tabpagebuflist())
-  call g:markbar_view.openMarkbar()
-  call g:markbar_view.toggleMarkbar()
-Then:
-  AssertEqual g:correct_num_windows, len(tabpagebuflist())
-  Assert !exists('b:is_markbar')
-
 Execute (Test markbarIsOpenCurrentTab, True):
   let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
   call g:markbar_view.openMarkbar()

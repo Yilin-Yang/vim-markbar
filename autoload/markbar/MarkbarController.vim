@@ -42,7 +42,9 @@ function! markbar#MarkbarController#new(model, view) abort
                 \ ['_setMarkbarMappings']
             \ ),
         \ '_populateWithMarkbar':
-            \ function('markbar#MarkbarController#_populateWithMarkbar')
+            \ function('markbar#MarkbarController#_populateWithMarkbar'),
+        \ '_setRefreshMarkbarAutocmds':
+            \ function('markbar#MarkbarController#_setRefreshMarkbarAutocmds'),
     \ }
 
     return l:new
@@ -80,9 +82,9 @@ endfunction
 
 function! markbar#MarkbarController#toggleMarkbar() abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    call l:self['_markbar_view'].toggleMarkbar()
+    if l:self['_markbar_view'].closeMarkbar() | return | endif
+    call l:self.openMarkbar()
 endfunction
-
 
 function! markbar#MarkbarController#__noImplementation(func_name, ...) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
@@ -160,4 +162,14 @@ function! markbar#MarkbarController#_populateWithMarkbar(
         \ markbar#settings#MarksToDisplay()
     \ )
     call markbar#helpers#ReplaceBuffer(a:into_buffer_expr, l:contents)
+endfunction
+
+" BRIEF:    Set autocmds to refresh the markbar with this controller instance.
+function! markbar#MarkbarController#_setRefreshMarkbarAutocmds() abort dict
+    let g:__active_controller = l:self
+    augroup vim_markbar_refresh
+        au!
+        autocmd BufEnter,TextChanged,CursorHold,FileChangedShellPost
+            \ * call markbar#ui#RefreshMarkbar(g:__active_controller)
+    augroup end
 endfunction
