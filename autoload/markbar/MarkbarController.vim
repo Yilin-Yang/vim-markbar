@@ -56,10 +56,11 @@ function! markbar#MarkbarController#AssertIsMarkbarController(object) abort
     endif
 endfunction
 
-" EFFECTS:  - Close any existing markbars.
-"           - Create a markbar buffer for the currently active buffer if one
+" EFFECTS: - Create a markbar buffer for the currently active buffer if one
 "           does not yet exist.
-"           - Open this markbar buffer in a sidebar.
+"           - Open this markbar buffer in a sidebar if the markbar is not yet
+"           open, or refresh its contents if it is already open.
+"           - Set autocmds to refresh the markbar buffer if it remains open.
 function! markbar#MarkbarController#openMarkbar() abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
     let l:model = l:self['_markbar_model']
@@ -73,6 +74,7 @@ function! markbar#MarkbarController#openMarkbar() abort dict
 
     call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
     call l:self._setMarkbarMappings()
+    call l:self._setRefreshMarkbarAutocmds()
 endfunction
 
 function! markbar#MarkbarController#closeMarkbar() abort dict
