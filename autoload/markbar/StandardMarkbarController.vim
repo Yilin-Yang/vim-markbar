@@ -86,7 +86,7 @@ function! markbar#StandardMarkbarController#_getMarkbarContents(buffer_no, marks
         let l:mark =
             \ markbar#helpers#IsGlobalMark(l:mark_char) ?
                 \ l:globals[l:mark_char] : l:marks[l:mark_char]
-        let l:lines += [ markbar#ui#MarkHeading(l:mark) ]
+        let l:lines += [ l:self._getMarkHeading(l:mark) ]
 
         let l:indent_block = markbar#settings#ContextIndentBlock()
         for l:line in l:mark['_context']

@@ -1,3 +1,8 @@
+Execute (Setup Controller):
+  let g:model = markbar#MarkbarModel#get()
+  let g:view = markbar#MarkbarView#new(g:model)
+  let g:controller = markbar#MarkbarController#new(g:model, g:view)
+
 Execute (Make 'Synthetic' MarkData Objects, Set Marks):
   let g:local_alph = markbar#MarkData#fromMarkString(
     \ 'a 1 2 foo'
@@ -27,7 +32,7 @@ Execute (Test Local Alphabetic Mark):
   while i <# len(test_chars)
     let g:local_alph['_data'][0] = test_chars[i]
     AssertEqual 'local 1 2', 
-      \ markbar#ui#GetDefaultName(g:local_alph),
+      \ g:controller._getDefaultMarkName(g:local_alph),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -38,7 +43,7 @@ Execute (Test Local Non-Alphabetic Mark):
   while i <# len(test_chars)
     let g:local_punc['_data'][0] = test_chars[i]
     AssertEqual 'local 3 4', 
-      \ markbar#ui#GetDefaultName(g:local_punc),
+      \ g:controller._getDefaultMarkName(g:local_punc),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -49,7 +54,7 @@ Execute (Test File Mark):
   while i <# len(test_chars)
     let g:file_mark['_data'][0] = test_chars[i]
     AssertEqual 'file 1 2', 
-      \ markbar#ui#GetDefaultName(g:file_mark),
+      \ g:controller._getDefaultMarkName(g:file_mark),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -60,7 +65,7 @@ Execute (Test Numbered Mark):
   while i <# len(test_chars)
     let g:numeric_mark['_data'][0] = test_chars[i]
     AssertEqual 'numbered 3 4', 
-      \ markbar#ui#GetDefaultName(g:numeric_mark),
+      \ g:controller._getDefaultMarkName(g:numeric_mark),
       \ 'Failed on: ' . test_chars[i]
     let i += 1
   endwhile
@@ -89,4 +94,4 @@ Execute (Test Custom Function References):
   let g:local_alph['_context'] = ['boo']
 
   " TODO: more modular helpers#ParentFilename implementation
-  AssertEqual 'a 1 2 [Vader-workbench] boo arg', markbar#ui#GetDefaultName(g:local_alph)
+  AssertEqual 'a 1 2 [Vader-workbench] boo arg', g:controller._getDefaultMarkName(g:local_alph)

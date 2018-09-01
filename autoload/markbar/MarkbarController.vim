@@ -98,7 +98,7 @@ function! markbar#MarkbarController#_getMarkHeading(mark) abort dict
     let l:suffix = ' '
     let l:user_given_name = a:mark.getName()
     if empty(l:user_given_name)
-        let l:suffix .= markbar#ui#GetDefaultName(a:mark)
+        let l:suffix .= l:self._getDefaultMarkName(a:mark)
     else
         let l:suffix .= l:user_given_name
     endif
