@@ -75,7 +75,9 @@ function! markbar#MarkbarView#_openMarkbarSplit(...) abort dict
     let l:orientation =
         \ markbar#settings#MarkbarOpenVertical() ?
             \ 'vertical ' : ' '
-    let l:size = markbar#settings#MarkbarWidth() . ' '
+    let l:size =
+        \ markbar#settings#MarkbarOpenVertical() ?
+            \ markbar#settings#MarkbarWidth() : markbar#settings#MarkbarHeight()
     let l:command = empty(a:markbar) ? 'new ' : 'split #' . a:markbar
 
     try
