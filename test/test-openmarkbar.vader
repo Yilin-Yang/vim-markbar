@@ -130,6 +130,52 @@ Expect:
   ninth line
   tenth line
 
+Execute (:bdelete Markbar):
+  edit! 10lines.txt
+  normal Mo
+  bdelete
+  normal Mo
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Execute (:bunload Markbar):
+  edit! 10lines.txt
+  normal Mo
+  bunload
+  normal Mo
+Then:
+  AssertEqual 'markbar', &filetype
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
 Do (Iterate Through Marks with Next):
   Mo
   ggnnn
