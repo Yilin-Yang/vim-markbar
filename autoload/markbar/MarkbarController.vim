@@ -2,6 +2,13 @@
 " DETAILS:  The 'controller' in Model-View-Controller. Provides an abstract
 "           interface for 'generating' markbars that can be manipulated
 "           through implementation-defined keymappings.
+"
+"           Where possible, shared functionality between derived classes has
+"           been factored up into this base class.
+"
+"           Some functions are declared pure virtual; these functions are
+"           expected to exhibit special behavior based on the derived class,
+"           and lack base class implementations.
 
 " BRIEF:    Construct a MarkbarController object.
 " PARAM:    model   (markbar#MarkbarModel)  Reference to the current markbar
@@ -31,11 +38,18 @@ function! markbar#MarkbarController#new(model, view) abort
             \ function('markbar#MarkbarController#_getMarkHeading'),
         \ '_getDefaultMarkName':
             \ function('markbar#MarkbarController#_getDefaultMarkName'),
+        \ '_getDefaultNameFormat':
+            \ function(
+                \ 'markbar#MarkbarController#__noImplementation',
+                \ ['_getDefaultNameFormat']
+            \ ),
         \ '_getMarkbarContents':
             \ function(
                 \ 'markbar#MarkbarController#__noImplementation',
                 \ ['_getMarkbarContents']
             \ ),
+        \ '_generateMarkbarContents':
+            \ function('markbar#MarkbarController#_generateMarkbarContents'),
         \ '_setMarkbarMappings':
             \ function(
                 \ 'markbar#MarkbarController#__noImplementation',
@@ -121,16 +135,9 @@ function! markbar#MarkbarController#_getDefaultMarkName(mark) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
     call markbar#MarkData#AssertIsMarkData(a:mark)
     let l:mark_char = a:mark.getMark()
-    if !markbar#helpers#IsGlobalMark(l:mark_char)
-        let l:format_str = markbar#settings#MarkNameFormatString()
-        let l:format_arg = markbar#settings#MarkNameArguments()
-    elseif markbar#helpers#IsUppercaseMark(l:mark_char)
-        let l:format_str = markbar#settings#FileMarkFormatString()
-        let l:format_arg = markbar#settings#FileMarkArguments()
-    else " IsNumberedMark
-        let l:format_str = markbar#settings#NumberedMarkFormatString()
-        let l:format_arg = markbar#settings#NumberedMarkArguments()
-    endif
+    let l:format = l:self._getDefaultNameFormat(a:mark)
+    let l:format_str = l:format[0]
+    let l:format_arg = l:format[1]
     let l:name = ''
     if empty(l:format_str) | return l:name | endif
 
@@ -155,6 +162,55 @@ function! markbar#MarkbarController#_getDefaultMarkName(mark) abort dict
     let l:cmd .= ')'
     execute l:cmd
     return l:name
+endfunction
+
+" REQUIRES: - `a:buffer_no` is not a markbar buffer.
+"           - `a:buffer_no` is not the global buffer.
+"           - `a:buffer_no` is a buffer *number.*
+" EFFECTS:  Return a list populated linewise with the requested marks
+"           and those marks' contexts, with a few given parameters.
+" PARAM:    marks   (v:t_string)    Every mark that the user wishes to
+"                                   display, in order from left to right (i.e.
+"                                   first character is the mark that should
+"                                   appear at the top of the markbar.)
+function! markbar#MarkbarController#_generateMarkbarContents(
+    \ buffer_no,
+    \ marks,
+    \ section_separator,
+    \ indent_block
+\ ) abort dict
+    call markbar#MarkbarController#AssertIsMarkbarController(l:self)
+    if a:buffer_no ==# markbar#constants#GLOBAL_MARKS()
+        throw '(markbar#MarkbarController) Bad argument value: ' . a:buffer_no
+    endif
+    let l:buffer_caches = l:self['_markbar_model']['_buffer_caches']
+    let l:marks   = l:buffer_caches[a:buffer_no]['_marks_dict']
+    let l:globals = l:buffer_caches[markbar#constants#GLOBAL_MARKS()]['_marks_dict']
+
+    let l:lines = [] " to return
+
+    let l:i = -1
+    while l:i <# len(a:marks)
+        let l:i += 1
+        let l:mark_char = a:marks[l:i]
+
+        if !has_key(l:marks, l:mark_char) && !has_key(l:globals, l:mark_char)
+            continue
+        endif
+
+        let l:mark =
+            \ markbar#helpers#IsGlobalMark(l:mark_char) ?
+                \ l:globals[l:mark_char] : l:marks[l:mark_char]
+        let l:lines += [ l:self._getMarkHeading(l:mark) ]
+
+        for l:line in l:mark['_context']
+            let l:lines += [a:indent_block . l:line]
+        endfor
+
+        let l:lines += a:section_separator
+    endwhile
+
+    return l:lines
 endfunction
 
 " BRIEF:    Replace the target buffer with the marks/contexts of the given buffer.

@@ -1,7 +1,7 @@
 Execute (Setup Controller):
   let g:model = markbar#MarkbarModel#get()
   let g:view = markbar#MarkbarView#new(g:model)
-  let g:controller = markbar#MarkbarController#new(g:model, g:view)
+  let g:controller = markbar#StandardMarkbarController#new(g:model, g:view)
 
 Execute (Make 'Synthetic' MarkData Objects, Set Marks):
   let g:local_alph = markbar#MarkData#fromMarkString(
