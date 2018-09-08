@@ -176,6 +176,30 @@ Expect:
       tenth line
       ~
   
+Execute (:bwipeout Markbar):
+  edit! 10lines.txt
+  normal Mo
+  bwipeout
+  normal Mo
+Then:
+  AssertEqual 'markbar', &filetype
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
 Do (Iterate Through Marks with Next):
   Mo
   ggnnn
