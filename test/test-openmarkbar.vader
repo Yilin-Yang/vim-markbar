@@ -121,6 +121,53 @@ Expect:
   eighth line
   ninth line
   tenth line
+
+Execute (:bdelete Markbar):
+  edit! 10lines.txt
+  call markbar#ui#OpenMarkbar()
+  bdelete
+  call markbar#ui#OpenMarkbar()
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Execute (:bunload Markbar):
+  edit! 10lines.txt
+  call markbar#ui#OpenMarkbar()
+  bunload
+  call markbar#ui#OpenMarkbar()
+Then:
+  AssertEqual 'markbar', &filetype
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
 " TODO: Vader keeps reporting test failure, even though it seems to work
 " properly when I do it myself?
 " Do (Test For Fixed Markbar Width, Even After Closing Other Splits):
