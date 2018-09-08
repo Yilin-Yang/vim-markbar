@@ -47,12 +47,29 @@ endfunction
 
 " BRIEF:    Open a markbar window for the currently active buffer.
 " DETAILS:  Does nothing if a markbar is already open.
-function! markbar#MarkbarView#openMarkbar() abort dict
+" PARAM:    open_position   (v:t_string)    The position modifier to apply to
+"                                           the opened markbar. See
+"                                           `:h topleft`, `:h botright`.
+" PARAM:    open_vertical   (v:t_bool)  `v:true` if the markbar should be a
+"                                       vertical split, `v:false` otherwise.
+" PARAM:    size    (v:t_number)    The width of the markbar in columns if
+"                                   opened in a vertical split; the height of
+"                                   the markbar in lines, otherwise.
+function! markbar#MarkbarView#openMarkbar(
+    \ open_position,
+    \ open_vertical,
+    \ size
+\ ) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:markbar_buffer = l:self.getMarkbarBuffer()
     let l:markbar_window = l:self.getMarkbarWindow()
     if l:markbar_window ==# -1
-        call l:self._openMarkbarSplit(l:markbar_buffer)
+        call l:self._openMarkbarSplit(
+            \ l:markbar_buffer,
+            \ a:open_position,
+            \ a:open_vertical,
+            \ a:size
+        \ )
         call setbufvar(l:markbar_buffer, '&buflisted', 0)
     else
         " switch to existing markbar window
@@ -64,21 +81,22 @@ endfunction
 " BRIEF:    Open a vsplit for a markbar and set settings, if appropriate.
 " DETAILS:  Moves the cursor to the newly-opened split.
 " PARAM:    markbar     (v:t_number)    The buffer number to be opened in the
-"                                       split. If none is provided, a new
-"                                       buffer will be created.
+"                                       newly created split. If equal to zero,
+"                                       a new markbar buffer will be created.
 " RETURNS:  (v:t_number)    The buffer number of the opened markbar.
-function! markbar#MarkbarView#_openMarkbarSplit(...) abort dict
+function! markbar#MarkbarView#_openMarkbarSplit(
+    \ markbar,
+    \ position,
+    \ open_vertical,
+    \ size
+\ ) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    let a:markbar = get(a:, 1, '')
 
-    let l:position = markbar#settings#OpenPosition() . ' '
-    let l:orientation =
-        \ markbar#settings#MarkbarOpenVertical() ?
-            \ 'vertical ' : ' '
-    let l:size =
-        \ markbar#settings#MarkbarOpenVertical() ?
-            \ markbar#settings#MarkbarWidth() : markbar#settings#MarkbarHeight()
-    let l:command = empty(a:markbar) ? 'new ' : 'split #' . a:markbar
+    let l:position    = a:position . ' '
+    let l:orientation = a:open_vertical ? 'vertical ' : ' '
+    let l:size        = a:size
+
+    let l:command = !a:markbar ? 'new ' : 'split #' . a:markbar
 
     try
         execute 'keepalt silent ' . l:position . l:orientation . l:size . l:command

@@ -41,6 +41,11 @@ function! markbar#MarkbarController#new(model, view) abort
                 \ 'markbar#MarkbarController#__noImplementation',
                 \ ['_setMarkbarMappings']
             \ ),
+        \ '_openMarkbarSplit':
+            \ function(
+                \ 'markbar#MarkbarController#__noImplementation',
+                \ ['_openMarkbarSplit']
+            \ ),
         \ '_populateWithMarkbar':
             \ function('markbar#MarkbarController#_populateWithMarkbar'),
         \ '_setRefreshMarkbarAutocmds':
@@ -67,7 +72,7 @@ function! markbar#MarkbarController#openMarkbar() abort dict
     let l:view  = l:self['_markbar_view']
 
     call l:model.updateCurrentAndGlobal()
-    call l:view.openMarkbar()
+    call l:self._openMarkbarSplit()
 
     let l:active_buffer  = l:model.getActiveBuffer()
     let l:markbar_buffer = l:view.getMarkbarBuffer()

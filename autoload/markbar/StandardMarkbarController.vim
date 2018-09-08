@@ -12,6 +12,8 @@ function! markbar#StandardMarkbarController#new(model, view) abort
     let l:new['_getMarkbarContents'] =
         \ function('markbar#StandardMarkbarController#_getMarkbarContents')
 
+    let l:new['_openMarkbarSplit'] =
+        \ function('markbar#StandardMarkbarController#_openMarkbarSplit')
     let l:new['_setMarkbarMappings'] =
         \ function('markbar#StandardMarkbarController#_setMarkbarMappings')
 
@@ -97,6 +99,16 @@ function! markbar#StandardMarkbarController#_getMarkbarContents(buffer_no, marks
     endwhile
 
     return l:lines
+endfunction
+
+function! markbar#StandardMarkbarController#_openMarkbarSplit() abort dict
+    call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
+    let l:open_vertical = markbar#settings#MarkbarOpenVertical()
+    call l:self['_markbar_view'].openMarkbar(
+        \ markbar#settings#OpenPosition(),
+        \ l:open_vertical,
+        \ l:open_vertical ? markbar#settings#MarkbarWidth() : markbar#settings#MarkbarHeight()
+    \ )
 endfunction
 
 function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
