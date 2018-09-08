@@ -7,6 +7,10 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new = markbar#MarkbarController#new(a:model, a:view)
     let l:new['DYNAMIC_TYPE'] += ['PeekabooMarkbarController']
 
+    let l:new['openMarkbar_SUPER'] = l:new['openMarkbar']
+    let l:new['openMarkbar'] =
+        \ function('markbar#PeekabooMarkbar#openMarkbar')
+
     let l:new['_getHelpText'] =
         \ function('markbar#PeekabooMarkbarController#_getHelpText')
     let l:new['_getDefaultNameFormat'] =
@@ -26,6 +30,14 @@ function! markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(ob
     if type(a:object) !=# v:t_dict || index(a:object['DYNAMIC_TYPE'], 'PeekabooMarkbarController') ==# -1
         throw '(markbar#PeekabooMarkbarController) Object is not of type PeekabooMarkbarController: ' . a:object
     endif
+endfunction
+
+" BRIEF:    Open markbar; wait for user input; go to mark, or close markbar.
+function! markbar#PeekabooMarkbarController#openMarkbar() abort dict
+    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    call l:self.openMarkbar_SUPER()
+
+    " TODO: use PeekabooKeyHandler
 endfunction
 
 " RETURNS:  (v:t_list)      Lines of helptext to display at the top of the
@@ -91,4 +103,11 @@ endfunction
 
 function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    let b:ctrl  = l:self
+    let b:view  = l:self['_markbar_view']
+    let b:model = l:self['_markbar_model']
+
+    execute 'noremap <silent> <buffer> ? '
+        \ . ':call b:view.toggleShowHelp()<cr>'
+        \ . ':call b:ctrl.openMarkbar()<cr>'
 endfunction
