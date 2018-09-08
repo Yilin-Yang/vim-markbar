@@ -24,8 +24,38 @@ function! s:AssertType(variable, expected, variable_name) abort
     endif
 endfunction
 
+" RETURNS:  (v:t_bool)  Whether to open a 'peekaboo markbar' after hitting the
+"                       apostrophe or backtick keys.
+" DETIALS:  Vim must restart in order for changes to this option to take effect.
+function! markbar#settings#EnablePeekabooMarkbar() abort
+    if !exists('g:enable_peekaboo_markbar')
+        let g:enable_peekaboo_markbar = v:true
+    endif
+    call s:AssertType(
+        \ g:enable_peekaboo_markbar,
+        \ v:t_bool,
+        \ 'g:enable_peekaboo_markbar'
+    \ )
+    return g:enable_peekaboo_markbar
+endfunction
+
 " RETURNS:  (v:t_string)    All marks to display in the markbar, in order.
 function! markbar#settings#MarksToDisplay() abort
+    if !exists('g:markbar_marks_to_display')
+        let g:markbar_marks_to_display =
+            \ 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    endif
+    call s:AssertType(
+        \ g:markbar_marks_to_display,
+        \ v:t_string,
+        \ 'g:markbar_marks_to_display'
+    \ )
+    return g:markbar_marks_to_display
+endfunction
+
+" RETURNS:  (v:t_string)    All marks to display in the peekaboo markbar, in
+"                           order.
+function! markbar#settings#PeekabooMarksToDisplay() abort
     if !exists('g:markbar_marks_to_display')
         let g:markbar_marks_to_display =
             \ 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -52,6 +82,20 @@ function! markbar#settings#MarkbarOpenVertical() abort
     return g:markbar_open_vertical
 endfunction
 
+" RETURNS:  (v:t_bool)      Whether to open the peekaboo markbar as a vertical
+"                           split (`v:true`) or horizontal split (`v:false`).
+function! markbar#settings#PeekabooMarkbarOpenVertical() abort
+    if !exists('g:markbar_peekaboo_open_vertical')
+        let g:markbar_peekaboo_open_vertical = v:true
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_open_vertical,
+        \ v:t_bool,
+        \ 'g:markbar_peekaboo_open_vertical'
+    \ )
+    return g:markbar_peekaboo_open_vertical
+endfunction
+
 " RETURNS:  (v:t_number)    The width of an opened vertical markbar, in columns.
 function! markbar#settings#MarkbarWidth() abort
     if !exists('g:markbar_width')
@@ -63,6 +107,20 @@ function! markbar#settings#MarkbarWidth() abort
         \ 'g:markbar_width'
     \ )
     return g:markbar_width
+endfunction
+
+" RETURNS:  (v:t_number)    The width of an opened vertical peekaboo markbar,
+"                           in columns.
+function! markbar#settings#PeekabooMarkbarWidth() abort
+    if !exists('g:markbar_peekaboo_width')
+        let g:markbar_peekaboo_width = 35
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_width,
+        \ v:t_number,
+        \ 'g:markbar_peekaboo_width'
+    \ )
+    return g:markbar_peekaboo_width
 endfunction
 
 " RETURNS:  (v:t_number)    The height of an opened horizontal markbar, in lines.
@@ -78,6 +136,20 @@ function! markbar#settings#MarkbarHeight() abort
     return g:markbar_height
 endfunction
 
+" RETURNS:  (v:t_number)    The height of an opened horizontal peekaboo
+"                           markbar, in lines.
+function! markbar#settings#PeekabooMarkbarHeight() abort
+    if !exists('g:markbar_peekaboo_height')
+        let g:markbar_peekaboo_height = 30
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_height,
+        \ v:t_number,
+        \ 'g:markbar_peekaboo_height'
+    \ )
+    return g:markbar_peekaboo_height
+endfunction
+
 " RETURNS:  (v:t_bool)      Whether to close an open markbar after jumping to
 "                           a mark from the markbar.
 function! markbar#settings#CloseAfterGoTo() abort
@@ -90,6 +162,20 @@ function! markbar#settings#CloseAfterGoTo() abort
         \ 'g:markbar_close_after_go_to'
     \ )
     return g:markbar_close_after_go_to
+endfunction
+
+" RETURNS:  (v:t_bool)      Whether to close an open peekaboo markbar after
+"                           jumping to a mark from the markbar.
+function! markbar#settings#PeekabooCloseAfterGoTo() abort
+    if !exists('g:markbar_peekaboo_close_after_go_to')
+        let g:markbar_peekaboo_close_after_go_to = v:true
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_close_after_go_to,
+        \ v:t_bool,
+        \ 'g:markbar_peekaboo_close_after_go_to'
+    \ )
+    return g:markbar_peekaboo_close_after_go_to
 endfunction
 
 " RETURNS:  (v:t_string)    The positional command modifier to apply when
@@ -111,6 +197,28 @@ function! markbar#settings#OpenPosition() abort
         throw '(vim-markbar) Bad value for g:markbar_open_position: ' . g:markbar_open_position
     endif
     return g:markbar_open_position
+endfunction
+
+" RETURNS:  (v:t_string)    The positional command modifier to apply when
+"                           opening a peekaboo markbar.
+function! markbar#settings#PeekabooOpenPosition() abort
+    if !exists('g:markbar_peekaboo_open_position')
+        let g:markbar_peekaboo_open_position = 'botright'
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_open_position,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_open_position'
+    \ )
+    let l:valid_positions = [
+        \ 'leftabove', 'aboveleft', 'rightbelow',
+        \ 'belowright', 'topleft', 'botright'
+    \ ]
+    if index(l:valid_positions, g:markbar_peekaboo_open_position) ==# -1
+        throw '(vim-markbar) Bad value for g:markbar_peekaboo_open_position: '
+            \ . g:markbar_peekaboo_open_position
+    endif
+    return g:markbar_peekaboo_open_position
 endfunction
 
 " RETURNS:  (v:t_string)    The name to give to any opened markbar buffers.
@@ -174,11 +282,58 @@ function! markbar#settings#ContextIndentBlock() abort
     return g:markbar_context_indent_block
 endfunction
 
+" RETURNS:  (v:t_string)    A block of text with which to indent lines of
+"                           context in a peekaboo markbar.
+function! markbar#settings#PeekabooContextIndentBlock() abort
+    if !exists('g:markbar_peekaboo_context_indent_block')
+        let g:markbar_peekaboo_context_indent_block = '  '
+    endif
+
+    " if user specified a number, 'assemble' an indent block
+    if type(g:markbar_peekaboo_context_indent_block ==# v:t_number)
+        let l:block_to_return = ''
+        let l:i = 0
+        while l:i <# g:markbar_peekaboo_context_indent_block
+            let l:block_to_return += ' '
+            let l:i += 1
+        endwhile
+        let g:markbar_peekaboo_context_indent_block = l:block_to_return
+    endif
+
+    call s:AssertType(
+        \ g:markbar_peekaboo_context_indent_block,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_context_indent_block'
+    \ )
+
+    if !exists('g:markbar_peekaboo_context_indent_block_NOWARN')
+        let l:silence_text =
+            \ '(Set g:markbar_peekaboo_context_indent_block_NOWARN '
+            \ . 'to 1 to silence this warning.)'
+        if !len(g:markbar_peekaboo_context_indent_block)
+                \ ||  (g:markbar_peekaboo_context_indent_block[0] !=# ' '
+                \   && g:markbar_peekaboo_context_indent_block[0] !=# "\t")
+            echoerr '(vim-markbar) WARNING: Context indentation block '
+                \ . 'that doesn''t start with a space or tab '
+                \ . 'will break markbar syntax highlighting. '
+                \ . l:silence_text
+        endif
+        if len(matchstr(g:markbar_peekaboo_context_indent_block, '['))
+            echoerr '(vim-markbar) WARNING: Given context indent block: "'
+                \ . g:markbar_peekaboo_context_indent_block
+                \ . '" contains dangerous character "[" that may break '
+                \ . "markbar's 'jump to mark' mappings. "
+                \ . l:silence_text
+        endif
+    endif
+
+    return g:markbar_peekaboo_context_indent_block
+endfunction
+
 " RETURNS:  (v:t_list)      A list populated with a number of zero-length
 "                           strings equal to the number of blank spaces that
 "                           should exist in between markbar 'section
-"                           headings'. Should be at least 1, or else syntax
-"                           highlighting will break.
+"                           headings'.
 function! markbar#settings#MarkbarSectionSeparator() abort
     if !exists('g:markbar_section_separation')
         let g:markbar_section_separation = 1
@@ -197,6 +352,34 @@ function! markbar#settings#MarkbarSectionSeparator() abort
     let l:separator = []
     let l:i = 0
     while l:i <# g:markbar_section_separation
+        let l:separator += ['']
+        let l:i += 1
+    endwhile
+    return l:separator
+endfunction
+
+" RETURNS:  (v:t_list)      A list populated with a number of zero-length
+"                           strings equal to the number of blank spaces that
+"                           should exist in between markbar 'section
+"                           headings' in a peekaboo markbar.
+function! markbar#settings#PeekabooMarkbarSectionSeparator() abort
+    if !exists('g:markbar_peekaboo_section_separation')
+        let g:markbar_peekaboo_section_separation = 0
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_section_separation,
+        \ v:t_number,
+        \ 'g:markbar_peekaboo_section_separation'
+    \ )
+
+    if g:markbar_peekaboo_section_separation <# 0
+        throw '(vim-markbar) Bad value for g:markbar_peekaboo_section_separation: '
+            \ . g:markbar_peekaboo_section_separation
+    endif
+
+    let l:separator = []
+    let l:i = 0
+    while l:i <# g:markbar_peekaboo_section_separation
         let l:separator += ['']
         let l:i += 1
     endwhile
@@ -260,6 +443,21 @@ function! markbar#settings#NumLinesContext() abort
         \ 'g:markbar_num_lines_context'
     \ )
     return g:markbar_num_lines_context
+endfunction
+
+" RETURNS:  (v:t_number)    The number of lines of context to retrieve around
+"                           marks, including the line that holds the mark,
+"                           when displaying a peekaboo markbar.
+function! markbar#settings#PeekabooNumLinesContext() abort
+    if !exists('g:markbar_peekaboo_num_lines_context')
+        let g:markbar_peekaboo_num_lines_context = 3
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_num_lines_context,
+        \ v:t_peekaboo_number,
+        \ 'g:markbar_peekaboo_num_lines_context'
+    \ )
+    return g:markbar_peekaboo_num_lines_context
 endfunction
 
 " RETURNS:  (v:t_string)    The keymapping used to 'jump to mark from markbar'
@@ -360,6 +558,23 @@ function! markbar#settings#JumpToExactPosition() abort
         \ 'g:markbar_jump_to_exact_position'
     \ )
     return g:markbar_jump_to_exact_position
+endfunction
+
+" RETURNS:  (v:t_bool)      `v:true` if the 'peekaboo markbar' opened by
+"                           should send the cursor to the exact line *and
+"                           column* of the selected mark, even if the user
+"                           opened the 'peekboo markbar' using the apostrophe
+"                           key.
+function! markbar#settings#BacktickBehaviorWithApostrophe() abort
+    if !exists('g:markbar_backtick_behavior_with_apostrophe')
+        let g:markbar_backtick_behavior_with_apostrophe = v:false
+    endif
+    call s:AssertType(
+        \ g:markbar_backtick_behavior_with_apostrophe,
+        \ v:t_bool,
+        \ 'g:markbar_backtick_behavior_with_apostrophe'
+    \ )
+    return g:markbar_backtick_behavior_with_apostrophe
 endfunction
 
 " RETURNS:  (v:t_string)    The `:h command-completion` options used when
@@ -467,4 +682,96 @@ function! markbar#settings#NumberedMarkArguments() abort
         \ 'g:markbar_numbered_mark_arguments'
     \ )
     return g:markbar_numbered_mark_arguments
+endfunction
+
+" RETURNS:  (v:t_string)    A format string (see `:help printf`) defining the
+"                           default 'name pattern' for a mark.
+function! markbar#settings#PeekabooMarkNameFormatString() abort
+    if !exists('g:markbar_peekaboo_mark_name_format_string')
+        let g:markbar_peekaboo_mark_name_format_string =
+            \ markbar#settings#MarkNameFormatString()
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_mark_name_format_string,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_mark_name_format_string'
+    \ )
+    return g:markbar_peekaboo_mark_name_format_string
+endfunction
+
+" RETURNS:  (v:t_list)      The arguments with which to populate the default
+"                           `name pattern` for a mark.
+function! markbar#settings#PeekabooMarkNameArguments() abort
+    if !exists('g:markbar_peekaboo_mark_name_arguments')
+        let g:markbar_peekaboo_mark_name_arguments =
+            \ markbar#settings#MarkNameArguments()
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_mark_name_arguments,
+        \ v:t_list,
+        \ 'g:markbar_peekaboo_mark_name_arguments'
+    \ )
+    return g:markbar_peekaboo_mark_name_arguments
+endfunction
+
+
+" RETURNS:  (v:t_string)    A format string (see `:help printf`) defining the
+"                           default 'name pattern' for an 'uppercase' file mark.
+function! markbar#settings#PeekabooFileMarkFormatString() abort
+    if !exists('g:markbar_peekaboo_file_mark_format_string')
+        let g:markbar_peekaboo_file_mark_format_string =
+            \ markbar#settings#FileMarkFormatString()
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_file_mark_format_string,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_file_mark_format_string'
+    \ )
+    return g:markbar_peekaboo_file_mark_format_string
+endfunction
+
+" RETURNS:  (v:t_list)      The arguments with which to populate the default
+"                           `name pattern` for an uppercase file mark.
+function! markbar#settings#PeekabooFileMarkArguments() abort
+    if !exists('g:markbar_peekaboo_file_mark_arguments')
+        let g:markbar_peekaboo_file_mark_arguments =
+            \ markbar#settings#FileMarkArguments()
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_file_mark_arguments,
+        \ v:t_list,
+        \ 'g:markbar_peekaboo_file_mark_arguments'
+    \ )
+    return g:markbar_peekaboo_file_mark_arguments
+endfunction
+
+
+" RETURNS:  (v:t_string)    A format string (see `:help printf`) defining the
+"                           default 'name pattern' for a 'numbered' mark.
+function! markbar#settings#PeekabooNumberedMarkFormatString() abort
+    if !exists('g:markbar_peekaboo_numbered_mark_format_string')
+        let g:markbar_peekaboo_numbered_mark_format_string =
+            \ markbar#settings#PeekabooFileMarkFormatString()
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_numbered_mark_format_string,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_numbered_mark_format_string'
+    \ )
+    return g:markbar_peekaboo_numbered_mark_format_string
+endfunction
+
+" RETURNS:  (v:t_list)      The arguments with which to populate the default
+"                           `name pattern` for a mark.
+function! markbar#settings#PeekabooNumberedMarkArguments() abort
+    if !exists('g:markbar_peekaboo_numbered_mark_arguments')
+        let g:markbar_peekaboo_numbered_mark_arguments =
+            \ markbar#settings#PeekabooFileMarkArguments()
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_numbered_mark_arguments,
+        \ v:t_list,
+        \ 'g:markbar_peekaboo_numbered_mark_arguments'
+    \ )
+    return g:markbar_peekaboo_numbered_mark_arguments
 endfunction
