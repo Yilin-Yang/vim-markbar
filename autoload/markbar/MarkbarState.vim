@@ -237,8 +237,8 @@ function! markbar#MarkbarState#getMarkbarBuffer() abort dict
             \ escape(l:bufname, '~*.$[]')
         \ )
         let self['_markbar_buffer'] = l:bufnr
-        call markbar#ui#SetMarkbarBufferSettings(l:bufnr)
     endif
+    call markbar#ui#SetMarkbarBufferSettings(self['_markbar_buffer'])
     return self['_markbar_buffer']
 endfunction
 
