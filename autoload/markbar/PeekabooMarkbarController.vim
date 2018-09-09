@@ -11,6 +11,11 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new['openMarkbar'] =
         \ function('markbar#PeekabooMarkbar#openMarkbar')
 
+    let l:new['apostrophe'] =
+        \ function('markbar#PeekabooMarkbar#apostrophe')
+    let l:new['backtick'] =
+        \ function('markbar#PeekabooMarkbar#backtick')
+
     let l:new['_getHelpText'] =
         \ function('markbar#PeekabooMarkbarController#_getHelpText')
     let l:new['_getDefaultNameFormat'] =
@@ -38,6 +43,23 @@ function! markbar#PeekabooMarkbarController#openMarkbar() abort dict
     call l:self.openMarkbar_SUPER()
 
     " TODO: use PeekabooKeyHandler
+endfunction
+
+" BRIEF:    Open the peekaboo bar with apostrophe-like jump behavior.
+" PARAM:    jump_instantly  (v:t_bool)  Whether to instantly jump to the
+"                                       mark corresponding to a user keystroke
+"                                       (`v:true`) or simply skip the cursor
+"                                       to that mark's section in the markbar
+"                                       (`v:false`).
+function! markbar#PeekabooMarkbarController#apostrophe(jump_instantly) abort dict
+    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    " TODO
+endfunction
+
+" BRIEF:    Open the peekaboo bar with backtick-like jump behavior.
+function! markbar#PeekabooMarkbarController#backtick(jump_instantly) abort dict
+    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    " TODO
 endfunction
 
 " RETURNS:  (v:t_list)      Lines of helptext to display at the top of the
