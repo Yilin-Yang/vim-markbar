@@ -81,9 +81,7 @@ endfunction
 " BRIEF:    Open a vsplit for a markbar and set settings, if appropriate.
 " DETAILS:  Moves the cursor to the newly-opened split.
 " PARAM:    markbar     (v:t_number)    The buffer number to be opened in the
-"                                       newly created split. If equal to zero,
-"                                       a new markbar buffer will be created.
-" RETURNS:  (v:t_number)    The buffer number of the opened markbar.
+"                                       newly created split.
 function! markbar#MarkbarView#_openMarkbarSplit(
     \ markbar,
     \ position,
@@ -105,10 +103,9 @@ function! markbar#MarkbarView#_openMarkbarSplit(
             \ . 'split | buffer! ' . a:markbar
     endtry
 
-    let l:new_markbar = empty(a:markbar) ? bufnr('%') : a:markbar
-    call l:self._setMarkbarBufferSettings(l:new_markbar)
+    call l:self._setMarkbarBufferSettings(a:markbar)
 
-    return l:new_markbar
+    return a:markbar
 endfunction
 
 " BRIEF:    Close any markbars open for the active buffer in the current tab.
@@ -164,7 +161,8 @@ function! markbar#MarkbarView#getMarkbarBuffer() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     if !bufexists(l:self['_markbar_buffer'])
         let l:bufname = markbar#settings#MarkbarBufferName()
-        let l:bufnr = bufnr(l:bufname, 1)
+        " escape special characters and create new
+        let l:bufnr = bufnr(escape(l:bufname, '~*.$[]'), 1)
         let l:self['_markbar_buffer'] = l:bufnr
         call l:self._setMarkbarBufferSettings(l:bufnr)
     endif
