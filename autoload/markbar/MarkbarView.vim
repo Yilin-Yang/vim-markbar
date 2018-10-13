@@ -12,7 +12,7 @@ function! markbar#MarkbarView#new(model) abort
     let l:new = {
         \ 'TYPE': 'MarkbarView',
         \ '_markbar_model': a:model,
-        \ '_markbar_buffer': -1,
+        \ '_markbar_buffer': -2,
         \ '_show_verbose_help': v:false,
     \ }
     " TODO: markbar buffer window id?
@@ -164,10 +164,7 @@ function! markbar#MarkbarView#getMarkbarBuffer() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     if !bufexists(l:self['_markbar_buffer'])
         let l:bufname = markbar#settings#MarkbarBufferName()
-        execute 'badd ' . l:bufname
-        let l:bufnr = bufnr(
-            \ escape(l:bufname, '~*.$[]')
-        \ )
+        let l:bufnr = bufnr(l:bufname, 1)
         let l:self['_markbar_buffer'] = l:bufnr
         call l:self._setMarkbarBufferSettings(l:bufnr)
     endif
