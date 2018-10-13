@@ -127,7 +127,7 @@ endfunction
 " BRIEF:    Toggle the visibility of verbose help in the markbar.
 " DETAILS:  Won't take effect until the markbar has been repopulated.
 function! markbar#MarkbarView#toggleShowHelp() abort dict
-    call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:self['_show_verbose_help'] = !l:self['_show_verbose_help']
 endfunction
 
