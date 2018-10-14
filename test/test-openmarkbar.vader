@@ -23,8 +23,8 @@ Expect:
 
 Do (Close Markbar):
   Mc
-Expect:
-  
+Then:
+  AssertEqual '', getbufvar('.', 'is_markbar')
 
 Do (Toggle Markbar Open, No Marks):
   Mt
@@ -34,8 +34,9 @@ Expect:
 Do (Toggle Markbar Closed, No Marks):
   Mt
   Mt
-Expect:
-  
+Then:
+  AssertEqual '', getbufvar('.', 'is_markbar')
+
 " If the 'open markbar' binding works while the 'toggle' binding doesn't, 
 " this should fail
 Do (Set Marks, Toggle Markbar Open):
