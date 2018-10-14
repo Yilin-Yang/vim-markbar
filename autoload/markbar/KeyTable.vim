@@ -51,7 +51,7 @@ function! markbar#KeyTable#ParseModifiers(mods_as_str) abort
         \ '': 0,
         \ 'shift': 2,
         \ 'control': 4,
-        \ 'alt': 8
+        \ 'alt': 8,
         \ 'meta': 16,
         \ 'mouse double click': 32,
         \ 'mouse triple click': 64,
@@ -59,11 +59,12 @@ function! markbar#KeyTable#ParseModifiers(mods_as_str) abort
         \ 'command': 128,
     \ }
 
-    let l:mod_strs = split(a:mods_as_str, ',')
+    let l:mod_strs = split(a:mods_as_str, '\s*,\s*')
     let l:mod_strs_unique = {}
 
     " TODO: refuse to accept quadruple click?
     for l:str in l:mod_strs
+        let l:str = tolower(l:str)
         if !has_key(l:mod_str_to_num, l:str)
             throw '(markbar#KeyTable) Malformed keymod, see :h getcharmod: ' . l:str
         endif
