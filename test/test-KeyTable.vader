@@ -56,3 +56,14 @@ Then:
   Assert keytable.contains(66, 0)
   Assert keytable.contains(66, 16)
   Assert !keytable.contains(97, 12)
+
+Execute (KeyTable: Construct Empty):
+  let keys_and_mods = [ ]
+  let keytable = markbar#KeyTable#new(keys_and_mods)
+Then:
+  Assert !keytable.contains(97, 4)
+  Assert !keytable.contains(51, 140)
+  Assert !keytable.contains(97, 0)
+  Assert !keytable.contains(66, 0)
+  Assert !keytable.contains(66, 16)
+  Assert !keytable.contains(97, 12)
