@@ -129,9 +129,13 @@ its configurable options is provided below.
     details, see `:help botright` (and so on).
 
 *g:markbar_buffer_name*                                  |(v:t_string)|
-    `Default Value:` `'[ Markbar ]'`
+    `Default Value:` `'( Markbar )'`
 
     The "filename" of the markbar, as displayed in the statusline.
+
+    Avoid using special characters like square brackets when setting this
+    option, as this might cause strange behavior in neovim.
+    See `:help file-pattern` for a full list of characters to avoid.
 
 *g:markbar_context_indent_block*                |(v:t_string)| OR |(v:t_number)|
     `Default Value: '    ' (four spaces)`

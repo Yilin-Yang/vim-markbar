@@ -224,7 +224,7 @@ endfunction
 " RETURNS:  (v:t_string)    The name to give to any opened markbar buffers.
 function! markbar#settings#MarkbarBufferName() abort
     if !exists('g:markbar_buffer_name')
-        let g:markbar_buffer_name = '[ Markbar ]'
+        let g:markbar_buffer_name = '( Markbar )'
     endif
     call s:AssertType(
         \ g:markbar_buffer_name,
