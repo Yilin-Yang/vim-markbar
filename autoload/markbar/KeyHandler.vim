@@ -1,9 +1,7 @@
 " BRIEF:    Intercepts keypresses; returns some through a callback function.
 
 " BRIEF:    Construct a KeyHandler object.
-" PARAM:    keycodes    (v:t_dict)  A dictionary whose keys are keycodes that
-"                                   should result in a callback, and whose
-"                                   values can be anything.
+" PARAM:    keycodes    (v:t_dict)  TODO
 " PARAM:    Keypress_callback   (v:t_func)  A callback function that accepts
 "                                           a keycode as returned by
 "                                           `getchar()`.
