@@ -39,3 +39,20 @@ Execute (KeyTable: Parse Modifiers, Exotic Whitespace):
   let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
 Then:
   AssertEqual 14, bitflags
+
+Execute (KeyTable: Test Lookup):
+  let keys_and_mods = [
+    \ ['a', 'control'],
+    \ ['3', 'alt,control,command'],
+    \ ['a', ''],
+    \ ['B', ''],
+    \ ['B', 'meta'],
+  \ ]
+  let keytable = markbar#KeyTable#new(keys_and_mods)
+Then:
+  Assert keytable.contains(97, 4)
+  Assert keytable.contains(51, 140)
+  Assert keytable.contains(97, 0)
+  Assert keytable.contains(66, 0)
+  Assert keytable.contains(66, 16)
+  Assert !keytable.contains(97, 12)

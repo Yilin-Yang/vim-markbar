@@ -11,7 +11,7 @@ function! markbar#KeyTable#new(keys_and_mods) abort
     for l:i in a:keys_and_mods
         if type(l:i) !=# v:t_list && len(l:i) !=# 2
             throw '(markbar#KeyTable) Malformed key-and-modifier: ' . string(l:i)
-        fi
+        endif
     endfor
 
     let l:lookup_table = {}
@@ -26,7 +26,9 @@ function! markbar#KeyTable#new(keys_and_mods) abort
 
     let l:new = {
         \ 'TYPE': 'KeyTable',
-        \ '_keys': l:lookup_table
+        \ '_keys': l:lookup_table,
+        \ 'ParseModifiers': function('markbar#KeyTable#ParseModifiers'),
+        \ 'contains': function('markbar#KeyTable#contains'),
     \ }
 
     return l:new
@@ -51,6 +53,7 @@ function! markbar#KeyTable#ParseModifiers(mods_as_str) abort
         \ '': 0,
         \ 'shift': 2,
         \ 'control': 4,
+        \ 'ctrl': 4,
         \ 'alt': 8,
         \ 'meta': 16,
         \ 'mouse double click': 32,
