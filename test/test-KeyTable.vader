@@ -1,45 +1,3 @@
-Execute (KeyTable: Parse No Modifiers):
-  let modstrs  = ''
-  let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
-Then:
-  AssertEqual 0, bitflags
-
-Execute (KeyTable: Parse Single Modifier):
-  let modstrs  = 'shift'
-  let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
-Then:
-  AssertEqual 2, bitflags
-
-Execute (KeyTable: Parse Single Modifier, Trailing Comma):
-  let modstrs  = 'shift,'
-  let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
-Then:
-  AssertEqual 2, bitflags
-
-Execute (KeyTable: Parse Multiple Distinct Modifiers):
-  let modstrs  = 'shift,control,alt,meta,command'
-  let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
-Then:
-  AssertEqual 158, bitflags
-
-Execute (KeyTable: Parse Multiple Modifiers w/ Duplicates):
-  let modstrs  = 'shift,mouse double click,mouse double click,shift'
-  let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
-Then:
-  AssertEqual 34, bitflags
-
-Execute (KeyTable: Parse Modifiers, Test for Case Sensitivity):
-  let modstrs  = 'shiFt,control, alt'
-  let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
-Then:
-  AssertEqual 14, bitflags
-
-Execute (KeyTable: Parse Modifiers, Exotic Whitespace):
-  let modstrs  = "shiFt,\tcontrol,alt"
-  let bitflags = markbar#KeyTable#ParseModifiers(modstrs)
-Then:
-  AssertEqual 14, bitflags
-
 Execute (KeyTable: Test Lookup):
   let keys_and_mods = [
     \ ['a', 'control'],
@@ -50,20 +8,18 @@ Execute (KeyTable: Test Lookup):
   \ ]
   let keytable = markbar#KeyTable#new(keys_and_mods)
 Then:
-  Assert keytable.contains(97, 4)
-  Assert keytable.contains(51, 140)
-  Assert keytable.contains(97, 0)
-  Assert keytable.contains(66, 0)
-  Assert keytable.contains(66, 16)
-  Assert !keytable.contains(97, 12)
-
+  Assert keytable.contains("\<C-a>")
+  Assert keytable.contains("\<C-A-D-3>")
+  Assert keytable.contains("a")
+  Assert keytable.contains("B")
+  Assert keytable.contains("\<M-B>")
+  
 Execute (KeyTable: Construct Empty):
   let keys_and_mods = [ ]
   let keytable = markbar#KeyTable#new(keys_and_mods)
 Then:
-  Assert !keytable.contains(97, 4)
-  Assert !keytable.contains(51, 140)
-  Assert !keytable.contains(97, 0)
-  Assert !keytable.contains(66, 0)
-  Assert !keytable.contains(66, 16)
-  Assert !keytable.contains(97, 12)
+  Assert !keytable.contains("\<C-a>")
+  Assert !keytable.contains("\<C-A-D-3>")
+  Assert !keytable.contains("a")
+  Assert !keytable.contains("B")
+  Assert !keytable.contains("\<M-B>")
