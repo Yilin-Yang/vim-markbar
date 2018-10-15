@@ -191,13 +191,17 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
     if empty(l:filename) | return [] | endif
 
     if !has('win32')
-        let l:text  = system('sed -n ' .a:start.','.a:end.'p '. l:filename)
-        if !v:shell_error
-            " keep leading blank lines, remove always-spurious empty last line
-            let l:lines = split(l:text, '\r\{0,1}\n', 1)
-            call remove(l:lines, -1)
-            return l:lines
-        endif
+        try
+            let l:text  = system('sed -n ' .a:start.','.a:end.'p '. l:filename)
+            if !v:shell_error
+                " keep leading blank lines, remove always-spurious empty last line
+                let l:lines = split(l:text, '\r\{0,1}\n', 1)
+                call remove(l:lines, -1)
+                return l:lines
+            endif
+        catch /./
+            " failed, for whatever reason; try reading lines a different way
+        endtry
     endif
 
     " assume that `sed` is unavailable on windows, or that sed failed
