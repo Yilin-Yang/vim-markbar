@@ -24,6 +24,9 @@ You can refresh your memory using the built-in `:marks` command, but the menu
 this spawns is purely informational and also a bit sparse. vim-markbar serves
 as a fancier extension of the `:marks` menu.
 
+If you like vim-markbar, please star it on GitHub! This boosts its visibility
+and helps others discover it as well!
+
 ================================================================================
 USAGE                                                   *vim-markbar-usage*
 
