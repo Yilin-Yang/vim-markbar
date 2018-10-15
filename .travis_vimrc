@@ -3,6 +3,7 @@
 " Taken from:
 "   https://github.com/junegunn/vader.vim
 "----------------------------------------
+set nocompatible
 filetype off
 set runtimepath+=.
 set runtimepath+=..
