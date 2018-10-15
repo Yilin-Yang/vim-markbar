@@ -6,9 +6,7 @@
 "                                           transparent to keys not held in
 "                                           this table.
 " PARAM:    Keypress_callback   (v:t_func)  A callback function that accepts
-"                                           a keycode as returned by
-"                                           `getchar()` and a set of modifiers
-"                                           as returned by `getcharmod()`.
+"                                           a keycode as returned by `getchar()`.
 function! markbar#KeyHandler#new(keytable, Keypress_callback) abort
     call markbar#KeyTable#AssertIsKeyTable(a:keytable)
     if type(a:Keypress_callback) !=# v:t_func
@@ -20,7 +18,7 @@ function! markbar#KeyHandler#new(keytable, Keypress_callback) abort
         \ 'TYPE': 'KeyHandler',
         \ '_keytable': a:keytable,
         \ '_keypress_callback()': a:Keypress_callback,
-        \ 'waitForKeypress': function('markbar#KeyHandler#waitForKeypress')
+        \ 'waitForKey': function('markbar#KeyHandler#waitForKey')
     \ }
 
     return l:new
@@ -30,34 +28,6 @@ function! markbar#KeyHandler#AssertIsKeyHandler(object) abort
     if type(a:object) !=# v:t_dict || a:object['TYPE'] !=# 'KeyHandler'
         throw '(markbar#KeyHandler) Object is not of type KeyHandler: ' . a:object
     endif
-endfunction
-
-" RETURNS:  (v:t_string)    The given keycode and modifiers, as an `eval`uable
-"                           string (see `:h expr-quote`). Doesn't actually use
-"                           feedkeys, despite the name.
-function! markbar#KeyHandler#ParseIntoFeedkeys(keycode, charmod) abort
-    let l:key = nr2char(a:keycode)
-    let l:mods = a:charmod
-    let l:command = '<'
-
-    " see `:h keycodes`
-    let l:num_to_mods = {
-        \ 128: 'D',
-        \ 16: 'M',
-        \ 8: 'A',
-        \ 4: 'C',
-        \ 2: 'S',
-    \ }
-
-    " NOTE: doesn't handle mouse clicks
-    for l:num in l:num_to_mods
-        if l:mods <# l:num | continue | endif
-        let l:mods    -= l:num
-        let l:command .= l:num_to_mods[l:num] . '-'
-    endfor
-
-    let l:command .= l:key . '>'
-    return l:command
 endfunction
 
 " BRIEF:    Wait for the user to press a key and process it.
@@ -70,12 +40,13 @@ endfunction
 function! markbar#KeyHandler#waitForKey() abort dict
     call markbar#KeyHandler#AssertIsKeyHandler(l:self)
     let l:key = getchar()
-    let l:mod = getcharmod()
-    if l:self.contains(l:key, l:mod)
-        call l:self['_keypress_callback()'](l:key, l:mod)
+    if l:self['_keytable'].contains(l:key)
+        call l:self['_keypress_callback()'](l:key)
         return v:true
     endif
-    let l:feedkeys_cmd = markbar#KeyHandler#ParseIntoFeedkeys(l:key, l:mod)
-    execute 'normal ' . l:feedkeys_cmd
+    if type(l:key) ==# v:t_number
+        let l:key = nr2char(l:key)
+    endif
+    call feedkeys(l:key, 't')
     return v:false
 endfunction
