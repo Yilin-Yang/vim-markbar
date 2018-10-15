@@ -1,3 +1,19 @@
+" RETURNS:  (v:t_list)      A list populated with the numbers of every
+"                           buffer, listed or unlisted.
+function! markbar#helpers#GetOpenBuffers() abort
+    let l:buffers_str = ''
+    redir => l:buffers_str
+    silent ls!
+    redir end
+    " let l:buffers_str = markbar#textmanip#TrimMarksHeader(l:buffers_str)
+    let l:buffers_str_list = split(l:buffers_str, '\r\{0,1}\n')
+    let l:buffers_list = []
+    for l:str in l:buffers_str_list
+        let l:buffers_list += [ matchstr(l:str, '[0-9]\+') + 0 ]
+    endfor
+    return l:buffers_list
+endfunction
+
 " RETURNS:  (v:t_string)    All buffer-local marks active within the current
 "                           file as a 'raw' string.
 function! markbar#helpers#GetLocalMarks() abort

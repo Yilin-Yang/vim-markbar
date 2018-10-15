@@ -52,6 +52,7 @@ function! markbar#MarkbarModel#get() abort
 
     augroup markbar_model_update
         au!
+        autocmd VimEnter * call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
         autocmd BufEnter * call g:markbar_model.pushNewBuffer(expand('<abuf>') + 0)
         autocmd BufDelete,BufWipeout *
             \ call g:markbar_model.evictBufferCache(expand('<abuf>') + 0)
@@ -131,6 +132,10 @@ endfunction
 "           ConditionalStack.
 function! markbar#MarkbarModel#pushNewBuffer(buffer_no) abort dict
     call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
+    if type(a:buffer_no) ==# v:t_list
+        for l:no in a:buffer_no | call l:self.pushNewBuffer(l:no) | endfor
+        return
+    endif
     call l:self['_active_buffer_stack'].push(a:buffer_no)
 endfunction
 
