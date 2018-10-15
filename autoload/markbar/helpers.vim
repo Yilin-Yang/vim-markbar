@@ -199,7 +199,7 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
                 call remove(l:lines, -1)
                 return l:lines
             endif
-        catch /./
+        catch
             " failed, for whatever reason; try reading lines a different way
         endtry
     endif
