@@ -2,19 +2,19 @@
 " DETAILS:  Handles creation and population of the 'compact' markbar opened
 "           when the user hits the apostrophe or backtick keys.
 
-" BRIEF:    Construct a PeekabooMarkbarController object.
+" BRIEF:    Construct a PeekabooMarkbarController object. Set keymaps.
 function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new = markbar#MarkbarController#new(a:model, a:view)
     let l:new['DYNAMIC_TYPE'] += ['PeekabooMarkbarController']
 
     let l:new['openMarkbar_SUPER'] = l:new['openMarkbar']
     let l:new['openMarkbar'] =
-        \ function('markbar#PeekabooMarkbar#openMarkbar')
+        \ function('markbar#PeekabooMarkbarController#openMarkbar')
 
     let l:new['apostrophe'] =
-        \ function('markbar#PeekabooMarkbar#apostrophe')
+        \ function('markbar#PeekabooMarkbarController#apostrophe')
     let l:new['backtick'] =
-        \ function('markbar#PeekabooMarkbar#backtick')
+        \ function('markbar#PeekabooMarkbarController#backtick')
 
     let l:new['_getHelpText'] =
         \ function('markbar#PeekabooMarkbarController#_getHelpText')
@@ -27,6 +27,13 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
         \ function('markbar#PeekabooMarkbarController#_openMarkbarSplit')
     let l:new['_setMarkbarMappings'] =
         \ function('markbar#PeekabooMarkbarController#_setMarkbarMappings')
+
+    let l:new['_dispatchFromKeypress'] =
+        \ function('markbar#PeekabooMarkbarController#_dispatchFromKeypress')
+    " let l:new['_key_handler'] = markbar#KeyHandler#new()
+
+    " TODO: check that highlight, jump to modifiers aren't the same
+    " TODO: implement KeyHandler
 
     return l:new
 endfunction
@@ -64,16 +71,36 @@ endfunction
 
 " RETURNS:  (v:t_list)      Lines of helptext to display at the top of the
 "                           markbar.
-function! markbar#PeekabooMarkbarController#_getHelpText(...) abort dict
+function! markbar#PeekabooMarkbarController#_getHelpText(display_verbose) abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
-    return [ '" Press a key to jump to that mark.' ]
+    if (a:display_verbose)
+        let l:highlight_mods = markbar#settings#PeekabooHighlightModifiers()
+        if !len(l:highlight_mods)
+            let l:highlight_mods = 'no modifiers.'
+        endif
+        let l:jump_mods = markbar#settings#PeekabooJumpToMarkModifiers()
+        if !len(l:jump_mods)
+            let l:jump_mods = 'no modifiers.'
+        endif
+        return [
+            \ '" vim-markbar "Peekaboo" Keymappings',
+            \ '" -----------------------',
+            \ '" Press ? to close help' ,
+            \ '" -----------------------',
+            \ '" To jump directly to a mark, press',
+            \ '"  its key with ' .  l:jump_mods,
+            \ '" To highlight a mark in the markbar,',
+            \ '"  press its key with ' . l:highlight_mods,
+        \ ]
+    endif
+    return [ '" Press ? for help' ]
 endfunction
 
 " RETURNS:  (v:t_list)  The name format string for the given mark, and the
 "                       list of naming arguments for that mark, in that order.
 " DETAILS:  See `:h vim-markbar-funcref`.
 function! markbar#PeekabooMarkbarController#_getDefaultNameFormat(mark) abort dict
-    call markbar#PeekabooMarkbarController#AssertIsStandardMarkbarController(l:self)
+    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     call markbar#MarkData#AssertIsMarkData(a:mark)
 
     let l:mark_char = a:mark.getMark()
@@ -129,7 +156,14 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
 
+    execute 'noremap <silent> <buffer> '
+        \ . markbar#settings#PeekabooJumpToMarkMapping()
+        \ . ' :call b:view._goToMark()<cr>'
     execute 'noremap <silent> <buffer> ? '
         \ . ':call b:view.toggleShowHelp()<cr>'
         \ . ':call b:ctrl.openMarkbar()<cr>'
+endfunction
+
+" BRIEF:    Highlight or jump to a mark, depending on what keys were pressed.
+function! markbar#PeekabooMarkbarController#_dispatchFromKeypress(keycode) abort dict
 endfunction

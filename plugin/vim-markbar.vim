@@ -8,15 +8,19 @@ let g:markbar_model = markbar#MarkbarModel#get()
 let g:markbar_view  = markbar#MarkbarView#new(g:markbar_model)
 let g:standard_controller =
     \ markbar#StandardMarkbarController#new(g:markbar_model, g:markbar_view)
-let g:peekaboo_controller =
-    \ markbar#PeekabooMarkbarController#new(g:markbar_model, g:markbar_view)
 
 noremap <silent> <Plug>OpenMarkbar      :call g:standard_controller.openMarkbar()<cr>
 noremap <silent> <Plug>CloseMarkbar     :call g:standard_controller.closeMarkbar()<cr>
 noremap <silent> <Plug>ToggleMarkbar    :call g:standard_controller.toggleMarkbar()<cr>
 
-noremap <silent> <Plug>OpenMarkbarPeekabooApostrophe    :call g:peekaboo_controller.apostrophe()<cr>
-noremap <silent> <Plug>OpenMarkbarPeekabooBacktick      :call g:peekaboo_controller.backtick()<cr>
+if markbar#settings#EnablePeekabooMarkbar()
+    let g:peekaboo_controller =
+        \ markbar#PeekabooMarkbarController#new(g:markbar_model, g:markbar_view)
+    noremap <silent> <Plug>OpenMarkbarPeekabooApostrophe    :call g:peekaboo_controller.apostrophe()<cr>
+    noremap <silent> <Plug>OpenMarkbarPeekabooBacktick      :call g:peekaboo_controller.backtick()<cr>
+    map <silent>    '   <Plug>OpenMarkbarPeekabooApostrophe
+    map <silent>    `   <Plug>OpenMarkbarPeekabooBacktick
+endif
 
 augroup vim_markbar_buffer_updates
     au!

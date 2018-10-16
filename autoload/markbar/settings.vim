@@ -68,6 +68,50 @@ function! markbar#settings#PeekabooMarksToDisplay() abort
     return g:markbar_marks_to_display
 endfunction
 
+" RETURNS:  (v:t_string)    Comma-separated list of modifiers used when
+"                           merely highlighting a mark in the peekaboo
+"                           markbar.
+function! markbar#settings#PeekabooHighlightModifiers() abort
+    if !exists('g:markbar_peekaboo_highlight_modifiers')
+        let g:markbar_peekaboo_highlight_modifiers = 'shift'
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_highlight_modifiers,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_highlight_modifiers'
+    \ )
+    return g:markbar_peekaboo_highlight_modifiers
+endfunction
+
+" RETURNS:  (v:t_string)    The keymapping used to jump to the 'moused-over'
+"                           mark from the peekaboo markbar.
+function! markbar#settings#PeekabooJumpToMarkMapping() abort
+    if !exists('g:markbar_peekaboo_jump_to_mark_mapping')
+        let g:markbar_peekaboo_jump_to_mark_mapping = '<cr>'
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_jump_to_mark_mapping,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_jump_to_mark_mapping'
+    \ )
+    return g:markbar_peekaboo_jump_to_mark_mapping
+endfunction
+
+" RETURNS:  (v:t_string)    Comma-separated list of modifiers used when
+"                           jumping straight to a mark from the peekaboo
+"                           markbar.
+function! markbar#settings#PeekabooJumpToMarkModifiers() abort
+    if !exists('g:markbar_peekaboo_jump_to_mark_modifiers')
+        let g:markbar_peekaboo_jump_to_mark_modifiers = ''
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_jump_to_mark_modifiers,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_jump_to_mark_modifiers'
+    \ )
+    return g:markbar_peekaboo_jump_to_mark_modifiers
+endfunction
+
 " RETURNS:  (v:t_bool)      Whether to open markbars as vertical splits
 "                           (`v:true`) or horizontal splits (`v:false`).
 function! markbar#settings#MarkbarOpenVertical() abort
