@@ -38,6 +38,28 @@ function! markbar#KeyTable#new(keys_and_mods) abort
     return l:new
 endfunction
 
+" BRIEF:    Make a `uniform' KeyTable; the same modifiers for every character.
+" PARAM:    keys    (v:t_string)    Every individual character to be included
+"                                   in the KeyTable.
+" PARAM:    modifiers   (v:t_string)    Comma-separated list of modifiers to
+"                                       be applied to every key in this
+"                                       KeyTable.
+function! markbar#KeyTable#newWithUniformModifiers(keys, modifiers)
+    if type(a:keys) !=# v:t_string
+        throw '(markbar#KeyTable) Bad type for: '.a:keys
+    endif
+    if type(a:modifiers) !=# v:t_string
+        throw '(markbar#KeyTable) Bad type for: '.a:modifiers
+    endif
+    let l:keys_and_mods = []
+    let l:len = len(a:keys) | let l:i = 0 | while l:i <# l:len
+        let l:m = a:keys[l:i]
+        let l:keys_and_mods += [ [l:m, a:modifiers] ]
+        let l:i += 1
+    endwhile
+    return markbar#KeyTable#new(l:keys_and_mods)
+endfunction
+
 " BRIEF:    Construct a KeyTable object by combining two existing KeyTables.
 function! markbar#KeyTable#fromTwoCombined(lhs, rhs) abort
     call markbar#KeyTable#AssertIsKeyTable(a:lhs)

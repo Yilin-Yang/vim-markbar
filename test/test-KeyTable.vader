@@ -39,9 +39,39 @@ Execute (KeyTable: Test Construct from Two):
   let keytable_2 = markbar#KeyTable#new(keys_and_mods_2)
   let keytable = markbar#KeyTable#fromTwoCombined(keytable_1, keytable_2)
 Then:
-  Assert keytable.contains("\<C-a>")
-  Assert keytable.contains("\<C-A-D-3>")
-  Assert keytable.contains("a")
-  Assert keytable.contains("B")
-  Assert keytable.contains("\<M-B>")
+  Assert  keytable.contains("\<C-a>")
+  Assert  keytable.contains("\<C-A-D-3>")
+  Assert  keytable.contains("a")
+  Assert  keytable.contains("B")
+  Assert  keytable.contains("\<M-B>")
   Assert !keytable.contains("\<C-B>")
+
+Execute (KeyTable: Test Uniform KeyTable, No Modifiers):
+  let keys = 'abcdefgh'
+  let mods = ''
+  let keytable = markbar#KeyTable#newWithUniformModifiers(keys, mods)
+Then:
+  Assert  keytable.contains('a'), 'Failed on: a'
+  Assert  keytable.contains('b'), 'Failed on: b'
+  Assert  keytable.contains('c'), 'Failed on: c'
+  Assert  keytable.contains('d'), 'Failed on: d'
+  Assert  keytable.contains('e'), 'Failed on: e'
+  Assert  keytable.contains('f'), 'Failed on: f'
+  Assert  keytable.contains('g'), 'Failed on: g'
+  Assert  keytable.contains('h'), 'Failed on: h'
+  Assert !keytable.contains('i'), 'Failed on: i'
+
+Execute (KeyTable: Test Uniform KeyTable, With Modifiers):
+  let keys = 'abcdefgh'
+  let mods = 'control,alt'
+  let keytable = markbar#KeyTable#newWithUniformModifiers(keys, mods)
+Then:
+  Assert  keytable.contains("\<C-A-a>"), 'Failed on: a'
+  Assert  keytable.contains("\<C-A-b>"), 'Failed on: b'
+  Assert  keytable.contains("\<C-A-c>"), 'Failed on: c'
+  Assert  keytable.contains("\<C-A-d>"), 'Failed on: d'
+  Assert  keytable.contains("\<C-A-e>"), 'Failed on: e'
+  Assert  keytable.contains("\<C-A-f>"), 'Failed on: f'
+  Assert  keytable.contains("\<C-A-g>"), 'Failed on: g'
+  Assert  keytable.contains("\<C-A-h>"), 'Failed on: h'
+  Assert !keytable.contains("\<C-A-i>"), 'Failed on: i'
