@@ -38,6 +38,17 @@ function! markbar#KeyTable#new(keys_and_mods) abort
     return l:new
 endfunction
 
+" BRIEF:    Construct a KeyTable object by combining two existing KeyTables.
+function! markbar#KeyTable#fromTwoCombined(lhs, rhs) abort
+    call markbar#KeyTable#AssertIsKeyTable(a:lhs)
+    call markbar#KeyTable#AssertIsKeyTable(a:rhs)
+    let l:new = deepcopy(a:lhs, 1)
+    for l:keycode in keys(a:rhs['_keys'])
+        let l:new['_keys'][l:keycode] = 1
+    endfor
+    return l:new
+endfunction
+
 function! markbar#KeyTable#AssertIsKeyTable(object) abort
     if type(a:object) !=# v:t_dict || a:object['TYPE'] !=# 'KeyTable'
         throw '(markbar#KeyTable) Object is not of type KeyTable: ' . a:object

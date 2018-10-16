@@ -23,3 +23,25 @@ Then:
   Assert !keytable.contains("a")
   Assert !keytable.contains("B")
   Assert !keytable.contains("\<M-B>")
+
+Execute (KeyTable: Test Construct from Two):
+  let keys_and_mods_1 = [
+    \ ['a', 'control'],
+    \ ['3', 'alt,control,command'],
+    \ ['a', ''],
+  \ ]
+  let keys_and_mods_2 = [
+    \ ['a', ''],
+    \ ['B', ''],
+    \ ['B', 'meta'],
+  \ ]
+  let keytable_1 = markbar#KeyTable#new(keys_and_mods_1)
+  let keytable_2 = markbar#KeyTable#new(keys_and_mods_2)
+  let keytable = markbar#KeyTable#fromTwoCombined(keytable_1, keytable_2)
+Then:
+  Assert keytable.contains("\<C-a>")
+  Assert keytable.contains("\<C-A-D-3>")
+  Assert keytable.contains("a")
+  Assert keytable.contains("B")
+  Assert keytable.contains("\<M-B>")
+  Assert !keytable.contains("\<C-B>")
