@@ -35,6 +35,27 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     " TODO: check that highlight, jump to modifiers aren't the same
     " TODO: implement KeyHandler
 
+    let l:highlight_keys = markbar#KeyTable#newWithUniformModifiers(
+        \ markbar#constants#ALL_MARKS_STRING(),
+        \ markbar#settings#PeekabooHighlightModifiers()
+    \ )
+    let l:new['_highlight_keys'] = l:highlight_keys
+
+    let l:jump_keys = markbar#KeyTable#newWithUniformModifiers(
+        \ markbar#settings#PeekabooMarksToDisplay(),
+        \ markbar#settings#PeekabooJumpToMarkModifiers()
+    \ )
+    let l:new['_jump_keys'] = l:jump_keys
+
+    let l:new['_keyhandler'] =
+        \ markbar#KeyHandler#new(
+            \ markbar#KeyTable#fromTwoCombined(
+                \ l:highlight_keys,
+                \ l:jump_keys
+            \ ),
+            \ l:new['_dispatchFromKeypress']
+        \ )
+
     return l:new
 endfunction
 
@@ -53,18 +74,13 @@ function! markbar#PeekabooMarkbarController#openMarkbar() abort dict
 endfunction
 
 " BRIEF:    Open the peekaboo bar with apostrophe-like jump behavior.
-" PARAM:    jump_instantly  (v:t_bool)  Whether to instantly jump to the
-"                                       mark corresponding to a user keystroke
-"                                       (`v:true`) or simply skip the cursor
-"                                       to that mark's section in the markbar
-"                                       (`v:false`).
-function! markbar#PeekabooMarkbarController#apostrophe(jump_instantly) abort dict
+function! markbar#PeekabooMarkbarController#apostrophe() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     " TODO
 endfunction
 
 " BRIEF:    Open the peekaboo bar with backtick-like jump behavior.
-function! markbar#PeekabooMarkbarController#backtick(jump_instantly) abort dict
+function! markbar#PeekabooMarkbarController#backtick() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     " TODO
 endfunction
@@ -162,6 +178,10 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     execute 'noremap <silent> <buffer> ? '
         \ . ':call b:view.toggleShowHelp()<cr>'
         \ . ':call b:ctrl.openMarkbar()<cr>'
+
+    " disable mappings that open peekaboo markbar
+    silent! unmap '
+    silent! unmap `
 endfunction
 
 " BRIEF:    Highlight or jump to a mark, depending on what keys were pressed.
