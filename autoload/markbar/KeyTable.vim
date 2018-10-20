@@ -21,6 +21,8 @@ function! markbar#KeyTable#new(keys_and_mods) abort
         endif
         if len(l:mods)
             let l:mod_notation = markbar#KeyTable#ParseModifiers(l:mods)
+            " ugly handling for double quote edge case
+            if l:key ==# '"' | let l:key = '\"' | endif
             let l:key = '<' . l:mod_notation . l:key . '>'
             " convert to expr-quote
             execute 'let l:key = "\' . l:key . '"'
