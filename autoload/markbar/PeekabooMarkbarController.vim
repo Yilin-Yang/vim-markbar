@@ -50,7 +50,12 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
             \ ),
             \ function('markbar#PeekabooMarkbarController#DispatchFromKeypress', [l:new] )
         \ )
+
+    " behavioral and signal flags
     let l:new['_jump_like_backtick'] = v:false
+
+    " set to false when the getchar() input loop should break
+    let l:new['_should_prompt'] = v:false
 
     return l:new
 endfunction
@@ -70,7 +75,8 @@ function! markbar#PeekabooMarkbarController#openMarkbar() abort dict
     " TODO: constantly reprompt the user for additional inputs?
 
     " wait for user input, while open
-    while exists('b:is_markbar') && !l:self['_keyhandler'].waitForKey()
+    while exists('b:is_markbar') || l:self['_should_prompt']
+        call l:self['_keyhandler'].waitForKey()
         " waitForKey may dispatch to _dispatchFromKeypress
     endwhile
 
@@ -84,6 +90,7 @@ endfunction
 function! markbar#PeekabooMarkbarController#apostrophe() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     let l:self['_jump_like_backtick'] = v:false
+    let l:self['_should_prompt'] = v:true
     call l:self.openMarkbar()
 endfunction
 
@@ -91,6 +98,7 @@ endfunction
 function! markbar#PeekabooMarkbarController#backtick() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     let l:self['_jump_like_backtick'] = v:true
+    let l:self['_should_prompt'] = v:true
     call l:self.openMarkbar()
 endfunction
 
@@ -181,6 +189,7 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
 
+    noremap <buffer> <Esc> <C-c>:let b:ctrl['_should_prompt']=v:false<cr>:call b:ctrl.closeMarkbar()<cr>
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PeekabooJumpToMarkMapping()
         \ . ' :call b:view._goToMark()<cr>'

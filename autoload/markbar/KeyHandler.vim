@@ -47,6 +47,9 @@ function! markbar#KeyHandler#waitForKey() abort dict
     if type(l:key) ==# v:t_number
         let l:key = nr2char(l:key)
     endif
-    call feedkeys(l:key, 't')
+
+    " :normal can trigger keymappings from inside of a while loop
+    " call feedkeys(l:key)
+    execute 'normal ' . l:key
     return v:false
 endfunction
