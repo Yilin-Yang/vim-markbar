@@ -10,6 +10,12 @@ fu! markbar#constants#MARK_HEADING_SEARCH_PATTERN()
     return '^\[''.\]'
 endf
 
+" BRIEF:    The search pattern to use when trying to find the line number of a
+"           specific mark heading.
+fu! markbar#constants#MARK_SPECIFIC_HEADING_SEARCH_PATTERN(mark)
+    return '^\[''' . a:mark . '\]'
+endf
+
 " BRIEF:    The null 'buffer number' used to index the global mark database.
 fu! markbar#constants#GLOBAL_MARKS()
     return 0

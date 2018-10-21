@@ -27,12 +27,14 @@ function! markbar#MarkbarView#new(model) abort
     let l:new['getShouldShowHelp']           = function('markbar#MarkbarView#getShouldShowHelp')
     let l:new['_moveCursorToLine']           = function('markbar#MarkbarView#_moveCursorToLine')
     let l:new['_goToMark']                   = function('markbar#MarkbarView#_goToMark')
+    let l:new['_selectMark']                 = function('markbar#MarkbarView#_selectMark')
     let l:new['_cycleToNextMark']            = function('markbar#MarkbarView#_cycleToNextMark')
     let l:new['_cycleToPreviousMark']        = function('markbar#MarkbarView#_cycleToPreviousMark')
     let l:new['_getCurrentMarkHeading']      = function('markbar#MarkbarView#_getCurrentMarkHeading')
     let l:new['_getCurrentMarkHeadingLine']  = function('markbar#MarkbarView#_getCurrentMarkHeadingLine')
     let l:new['_getNextMarkHeadingLine']     = function('markbar#MarkbarView#_getNextMarkHeadingLine')
     let l:new['_getPreviousMarkHeadingLine'] = function('markbar#MarkbarView#_getPreviousMarkHeadingLine')
+    let l:new['_getSpecificMarkHeadingLine'] = function('markbar#MarkbarView#_getSpecificMarkHeadingLine')
     let l:new['_setMarkbarBufferSettings']   = function('markbar#MarkbarView#_setMarkbarBufferSettings')
     let l:new['_setMarkbarWindowSettings']   = function('markbar#MarkbarView#_setMarkbarWindowSettings')
 
@@ -211,6 +213,18 @@ function! markbar#MarkbarView#_goToMark() abort dict
     endif
 endfunction
 
+" BRIEF:    Move the cursor to the line of the given mark in the markbar.
+" DETAILS:  Prints an error message if the given mark could not be found.
+function! markbar#MarkbarView#_selectMark(mark) abort dict
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    let l:line_no = l:self._getSpecificMarkHeadingLine(a:mark)
+    if !l:line_no
+        echoerr 'Could not find mark: [''' . a:mark . ']'
+        return
+    endif
+    call l:self._moveCursorToLine(l:line_no)
+endfunction
+
 " BRIEF:    Move the cursor to the section heading of the next mark.
 " PARAM:    count   (v:t_number)    Move forward this many headings. Defaults
 "                                   to 1.
@@ -280,6 +294,18 @@ function! markbar#MarkbarView#_getPreviousMarkHeadingLine() abort dict
         \ 0
     \ )
     return l:cur_heading_no
+endfunction
+
+" RETURNS:  (v:t_number)    The line number of the heading corresponding to
+"                           the requested mark, if it exists; 0, otherwise.
+function! markbar#MarkbarView#_getSpecificMarkHeadingLine(mark) abort dict
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    let l:heading_no = search(
+        \ markbar#constants#MARK_SPECIFIC_HEADING_SEARCH_PATTERN(a:mark),
+        \ 'bnc',
+        \ 0
+    \ )
+    return l:heading_no
 endfunction
 
 " BRIEF:    Set buffer-local settings for the given markbar buffer.
