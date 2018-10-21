@@ -28,18 +28,13 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new['_setMarkbarMappings'] =
         \ function('markbar#PeekabooMarkbarController#_setMarkbarMappings')
 
-    let l:new['_dispatchFromKeypress'] =
-        \ function('markbar#PeekabooMarkbarController#_dispatchFromKeypress')
-    " let l:new['_key_handler'] = markbar#KeyHandler#new()
+    " TODO: check that select, jump to modifiers aren't the same
 
-    " TODO: check that highlight, jump to modifiers aren't the same
-    " TODO: implement KeyHandler
-
-    let l:highlight_keys = markbar#KeyTable#newWithUniformModifiers(
+    let l:select_keys = markbar#KeyTable#newWithUniformModifiers(
         \ markbar#constants#ALL_MARKS_STRING(),
-        \ markbar#settings#PeekabooHighlightModifiers()
+        \ markbar#settings#PeekabooSelectModifiers()
     \ )
-    let l:new['_highlight_keys'] = l:highlight_keys
+    let l:new['_select_keys'] = l:select_keys
 
     let l:jump_keys = markbar#KeyTable#newWithUniformModifiers(
         \ markbar#settings#PeekabooMarksToDisplay(),
@@ -50,11 +45,12 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new['_keyhandler'] =
         \ markbar#KeyHandler#new(
             \ markbar#KeyTable#fromTwoCombined(
-                \ l:highlight_keys,
+                \ l:select_keys,
                 \ l:jump_keys
             \ ),
-            \ l:new['_dispatchFromKeypress']
+            \ function('markbar#PeekabooMarkbarController#DispatchFromKeypress', [l:new] )
         \ )
+    let l:new['_jump_like_backtick'] = v:false
 
     return l:new
 endfunction
@@ -69,20 +65,33 @@ endfunction
 function! markbar#PeekabooMarkbarController#openMarkbar() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     call l:self.openMarkbar_SUPER()
+    redraw " don't wait for user key input, even if ladyredraw is set
 
-    " TODO: use PeekabooKeyHandler
+    " TODO: constantly reprompt the user for additional inputs?
+
+    " wait for user input, while open
+    while exists('b:is_markbar') && !l:self['_keyhandler'].waitForKey()
+        " waitForKey may dispatch to _dispatchFromKeypress
+    endwhile
+
+    " if !exists('b:is_markbar')
+    "     " close peekaboo markbar, if the user manually unfocused its window
+    "     call l:self.closeMarkbar()
+    " endif
 endfunction
 
 " BRIEF:    Open the peekaboo bar with apostrophe-like jump behavior.
 function! markbar#PeekabooMarkbarController#apostrophe() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
-    " TODO
+    let l:self['_jump_like_backtick'] = v:false
+    call l:self.openMarkbar()
 endfunction
 
 " BRIEF:    Open the peekaboo bar with backtick-like jump behavior.
 function! markbar#PeekabooMarkbarController#backtick() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
-    " TODO
+    let l:self['_jump_like_backtick'] = v:true
+    call l:self.openMarkbar()
 endfunction
 
 " RETURNS:  (v:t_list)      Lines of helptext to display at the top of the
@@ -90,9 +99,9 @@ endfunction
 function! markbar#PeekabooMarkbarController#_getHelpText(display_verbose) abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     if (a:display_verbose)
-        let l:highlight_mods = markbar#settings#PeekabooHighlightModifiers()
-        if !len(l:highlight_mods)
-            let l:highlight_mods = 'no modifiers.'
+        let l:select_mods = markbar#settings#PeekabooSelectModifiers()
+        if !len(l:select_mods)
+            let l:select_mods = 'no modifiers.'
         endif
         let l:jump_mods = markbar#settings#PeekabooJumpToMarkModifiers()
         if !len(l:jump_mods)
@@ -105,8 +114,8 @@ function! markbar#PeekabooMarkbarController#_getHelpText(display_verbose) abort 
             \ '" -----------------------',
             \ '" To jump directly to a mark, press',
             \ '"  its key with ' .  l:jump_mods,
-            \ '" To highlight a mark in the markbar,',
-            \ '"  press its key with ' . l:highlight_mods,
+            \ '" To select a mark in the markbar,',
+            \ '"  press its key with ' . l:select_mods,
         \ ]
     endif
     return [ '" Press ? for help' ]
@@ -180,10 +189,23 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
         \ . ':call b:ctrl.openMarkbar()<cr>'
 
     " disable mappings that open peekaboo markbar
-    silent! unmap '
-    silent! unmap `
+    " buffer-local remapping to noop
+    silent! map <buffer> ' <Plug>
+    silent! map <buffer> ` <Plug>
 endfunction
 
-" BRIEF:    Highlight or jump to a mark, depending on what keys were pressed.
-function! markbar#PeekabooMarkbarController#_dispatchFromKeypress(keycode) abort dict
+" BRIEF:    Select or jump to a mark, depending on what keys were pressed.
+function! markbar#PeekabooMarkbarController#DispatchFromKeypress(self, keycode) abort
+    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(a:self)
+    " NOTE: currently, just prints the given keycode
+    if a:self['_select_keys'].contains(a:keycode)
+        " TODO: select the given mark
+        echoerr "SELECT: " . a:keycode
+        return
+    elseif a:self['_jump_keys'].contains(a:keycode)
+        " TODO: go to the given mark
+        echoerr "JUMP: " . a:keycode
+        return
+    endif
+    throw '(markbar#PeekabooMarkbarController) Intercepted bad keycode: ' . a:keycode
 endfunction

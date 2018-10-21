@@ -71,16 +71,16 @@ endfunction
 " RETURNS:  (v:t_string)    Comma-separated list of modifiers used when
 "                           merely highlighting a mark in the peekaboo
 "                           markbar.
-function! markbar#settings#PeekabooHighlightModifiers() abort
-    if !exists('g:markbar_peekaboo_highlight_modifiers')
-        let g:markbar_peekaboo_highlight_modifiers = 'shift'
+function! markbar#settings#PeekabooSelectModifiers() abort
+    if !exists('g:markbar_peekaboo_select_modifiers')
+        let g:markbar_peekaboo_select_modifiers = ''
     endif
     call s:AssertType(
-        \ g:markbar_peekaboo_highlight_modifiers,
+        \ g:markbar_peekaboo_select_modifiers,
         \ v:t_string,
-        \ 'g:markbar_peekaboo_highlight_modifiers'
+        \ 'g:markbar_peekaboo_select_modifiers'
     \ )
-    return g:markbar_peekaboo_highlight_modifiers
+    return g:markbar_peekaboo_select_modifiers
 endfunction
 
 " RETURNS:  (v:t_string)    The keymapping used to jump to the 'moused-over'
@@ -102,7 +102,7 @@ endfunction
 "                           markbar.
 function! markbar#settings#PeekabooJumpToMarkModifiers() abort
     if !exists('g:markbar_peekaboo_jump_to_mark_modifiers')
-        let g:markbar_peekaboo_jump_to_mark_modifiers = ''
+        let g:markbar_peekaboo_jump_to_mark_modifiers = 'control'
     endif
     call s:AssertType(
         \ g:markbar_peekaboo_jump_to_mark_modifiers,
