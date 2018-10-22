@@ -43,9 +43,6 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     " behavioral and signal flags
     let l:new['_jump_like_backtick'] = v:false
 
-    " set to false when the getchar() input loop should break
-    let l:new['_should_prompt'] = v:false
-
     return l:new
 endfunction
 
@@ -59,7 +56,6 @@ endfunction
 function! markbar#PeekabooMarkbarController#apostrophe() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     let l:self['_jump_like_backtick'] = v:false
-    let l:self['_should_prompt'] = v:true
     call l:self.openMarkbar()
 endfunction
 
@@ -67,7 +63,6 @@ endfunction
 function! markbar#PeekabooMarkbarController#backtick() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     let l:self['_jump_like_backtick'] = v:true
-    let l:self['_should_prompt'] = v:true
     call l:self.openMarkbar()
 endfunction
 
