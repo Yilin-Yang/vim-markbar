@@ -222,7 +222,16 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     execute bufwinnr(l:active_buffer) . 'wincmd w'
     let l:jump_command = 'normal! '
     let l:jump_command .= a:goto_exact ? '`' : "'"
-    execute l:jump_command . a:mark
+
+    try
+        execute l:jump_command . a:mark
+    catch /E20/
+        " Mark not set
+        execute bufwinnr(l:self['_markbar_buffer']) . 'wincmd w'
+        echohl WarningMsg | echomsg 'Mark not set: ' . a:mark | echohl None
+        call getchar() " pause until user hits a key
+        return
+    endtry
 
     if markbar#settings#CloseAfterGoTo()
         call l:self.closeMarkbar()
