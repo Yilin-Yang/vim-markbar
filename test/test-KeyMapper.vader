@@ -1,0 +1,34 @@
+Execute (KeyMapper: Construct):
+  function! WriteGlobalVariable(key, mods, prefix) abort
+    let g:keymapper_testvar = [a:key, a:mods, a:prefix]
+  endfunction
+  let keymapper = markbar#KeyMapper#new([
+      \ ['a', 'shift',   ''],
+      \ ['b', '',        ''],
+      \ ['a', 'control', ''],
+      \ ['b', '',     '<space>'],
+    \ ],
+    \ function('WriteGlobalVariable')
+  \ )
+Execute (KeyMapper: Set Keymappings):
+  call keymapper.setMappings('nmap <silent>')
+
+Do (Check '<S-a>'):
+  A
+Then:
+  AssertEqual ['a', 'shift', ''], g:keymapper_testvar
+
+Do (Check 'a'):
+  b
+Then:
+  AssertEqual ['b', '', ''], g:keymapper_testvar
+
+Do (Check '<C-a>'):
+  \<C-a>
+Then:
+  AssertEqual ['a', 'control', ''], g:keymapper_testvar
+
+Do (Check '<Space>b'):
+  \<Space>b
+Then:
+  AssertEqual ['b', '', '<space>'], g:keymapper_testvar
