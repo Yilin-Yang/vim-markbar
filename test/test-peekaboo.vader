@@ -1,0 +1,137 @@
+Include: clear-marks.vader
+
+Execute (Set Settings, Set Plugin Mappings):
+  let g:markbar_peekaboo_num_lines_context = 3
+  let g:markbar_peekaboo_open_vertical = v:true
+  let g:markbar_peekaboo_section_separation = 1
+
+  let g:markbar_peekaboo_mark_name_format_string     = ''
+  let g:markbar_peekaboo_file_mark_format_string     = '%s'
+  let g:markbar_peekaboo_numbered_mark_format_string = ''
+
+  let g:markbar_peekaboo_mark_name_arguments     = []
+  let g:markbar_peekaboo_file_mark_arguments     = ['fname']
+  let g:markbar_peekaboo_numbered_mark_arguments = []
+
+Do (Open Peekaboo Markbar, Apostrophe, No Marks):
+  '
+Expect:
+  " Press ? for help
+
+Do (Open Peekaboo Markbar, Backtick, No Marks):
+  `
+Expect:
+  " Press ? for help
+
+Do (Close Peekaboo Markbar):
+  \<Esc>
+Then:
+  AssertEqual '', getbufvar('.', 'is_markbar')
+
+" If the 'open markbar' binding works while the 'toggle' binding doesn't, 
+" this should fail
+Do (Set Marks, Peekaboo Markbar Open):
+  :edit! 10lines.txt\<cr>
+  1G5lmA5GmB10GmC
+  '
+Then:
+  AssertEqual 0, &buflisted
+  AssertEqual 'nofile', &buftype
+  AssertEqual 'hide', &bufhidden
+  AssertEqual 0, &swapfile
+  AssertEqual 'markbar', &filetype
+  AssertEqual 'markbar', &syntax
+  AssertEqual 1, b:is_markbar
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+    ~
+    first line
+    second line
+
+  ['B]: 10lines.txt
+    fourth line
+    fifth line
+    sixth line
+
+  ['C]: 10lines.txt
+    ninth line
+    tenth line
+    ~
+  
+Do (Close Peekaboo Markbar):
+  \<Esc>
+Then:
+  Assert !exists('b:is_markbar')
+
+Do (Select Mark):
+  '
+  \C
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 12, cur_pos[1]
+
+Do (Select Further Marks):
+  `
+  \C\B\A
+Then:
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 2, cur_pos[1]
+
+Do (Select and Go To Mark, Apostrophe):
+  '
+  \A\<cr>
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  " default JumpToExactPosition behavior makes this behave like backtick
+  AssertEqual 6, cur_pos[2]
+
+Do (Select and Go To Mark, Backtick):
+  `
+  \A\<cr>
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 6, cur_pos[2]
+
+Do (Go Direct To Mark, Apostrophe):
+  '
+  A
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 1, cur_pos[2]
+
+Do (Go Direct To Mark, Backtick):
+  `
+  A
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 6, cur_pos[2]
+
