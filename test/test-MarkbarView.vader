@@ -187,6 +187,22 @@ Execute (Get Previous Mark, From Section Header):
   normal! 14G
   AssertEqual 8, g:markbar_view._getPreviousMarkHeadingLine()
 
+Execute (Select Mark):
+  call g:markbar_view._selectMark('A')
+  AssertEqual 2, getpos('.')[1]
+
+  call g:markbar_view._selectMark('B')
+  AssertEqual 8, getpos('.')[1]
+
+  call g:markbar_view._selectMark('C')
+  AssertEqual 14, getpos('.')[1]
+
+  call g:markbar_view._selectMark('D')
+  AssertEqual 20, getpos('.')[1]
+
+  call g:markbar_view._selectMark('E')
+  AssertEqual 26, getpos('.')[1]
+
 Execute (Set Up Cycle Keymappings):
   nnoremap n :<C-U>call g:markbar_view._cycleToNextMark(v:count1)<cr>
   nnoremap N :<C-U>call g:markbar_view._cycleToPreviousMark(v:count1)<cr>
