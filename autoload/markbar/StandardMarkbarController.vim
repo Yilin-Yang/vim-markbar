@@ -102,12 +102,14 @@ endfunction
 
 function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
     call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
+    mapclear <buffer>
+
     let b:ctrl  = l:self
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#JumpToMarkMapping()
-        \ . ' :call b:view._goToMark()<cr>'
+        \ . ' :call b:view._goToSelectedMark()<cr>'
 
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#RenameMarkMapping()

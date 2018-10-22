@@ -26,6 +26,7 @@ function! markbar#MarkbarView#new(model) abort
     let l:new['getMarkbarWindow']            = function('markbar#MarkbarView#getMarkbarWindow')
     let l:new['getShouldShowHelp']           = function('markbar#MarkbarView#getShouldShowHelp')
     let l:new['_moveCursorToLine']           = function('markbar#MarkbarView#_moveCursorToLine')
+    let l:new['_goToSelectedMark']           = function('markbar#MarkbarView#_goToSelectedMark')
     let l:new['_goToMark']                   = function('markbar#MarkbarView#_goToMark')
     let l:new['_selectMark']                 = function('markbar#MarkbarView#_selectMark')
     let l:new['_cycleToNextMark']            = function('markbar#MarkbarView#_cycleToNextMark')
@@ -194,26 +195,28 @@ function! markbar#MarkbarView#_moveCursorToLine(line) abort dict
     execute 'silent normal! ' . a:line . 'G'
 endfunction
 
-" BRIEF:    Jump to the currently selected mark, or the mark given.
+" BRIEF:    Jump to the currently selected mark
 " DETAILS:  Requires that the window containing the most recent active buffer
 "           still be open in the current tab.
-" PARAM:    mark    (v:t_string)    The mark to jump to. If not provided, will
-"                                   jump to the currently selected mark.
-function! markbar#MarkbarView#_goToMark(...) abort dict
+function! markbar#MarkbarView#_goToSelectedMark() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    " TODO: break into separate functions, goToMark, goToSelectedMark
-    if a:0
-        let l:selected_mark = a:1
-    else
-        let l:selected_mark = l:self._getCurrentMarkHeading()
-        if !len(l:selected_mark) | return | endif
-    endif
+    let l:selected_mark = l:self._getCurrentMarkHeading()
+    if !len(l:selected_mark) | return | endif
+    call l:self._goToMark(l:selected_mark)
+endfunction
+
+" BRIEF:    Jump to the the mark given.
+" DETAILS:  Requires that the window containing the most recent active buffer
+"           still be open in the current tab.
+" PARAM:    mark    (v:t_string)    The mark to jump to.
+function! markbar#MarkbarView#_goToMark(mark) abort dict
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
 
     let l:active_buffer = l:self['_markbar_model'].getActiveBuffer()
     execute bufwinnr(l:active_buffer) . 'wincmd w'
     let l:jump_command = 'normal! '
     let l:jump_command .= markbar#settings#JumpToExactPosition() ? '`' : "'"
-    execute l:jump_command . l:selected_mark
+    execute l:jump_command . a:mark
 
     if markbar#settings#CloseAfterGoTo()
         call l:self.closeMarkbar()

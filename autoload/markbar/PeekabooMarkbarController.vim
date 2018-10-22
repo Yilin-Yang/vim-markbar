@@ -150,6 +150,8 @@ endfunction
 
 function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    mapclear <buffer>
+
     let b:ctrl  = l:self
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
