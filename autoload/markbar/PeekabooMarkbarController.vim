@@ -159,7 +159,9 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     noremap <silent> <buffer> <Esc> :call b:ctrl.closeMarkbar()<cr>
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PeekabooJumpToMarkMapping()
-        \ . ' :call b:view._goToMark()<cr>'
+        \ . ' :call b:view._goToSelectedMark('
+            \ . 'markbar#settings#JumpToExactPosition()'
+        \ . ')<cr>'
     execute 'noremap <silent> <buffer> ? '
         \ . ':call b:view.toggleShowHelp()<cr>'
         \ . ':call b:ctrl.openMarkbar()<cr>'
@@ -168,7 +170,7 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
         \ { key, mods, prefix -> b:view._selectMark(key) }
     \ )
     call l:self['_jump_to_keys'].setCallback(
-        \ { key, mods, prefix -> b:view._goToMark(key) }
+        \ { key, mods, prefix -> b:view._goToMark(key, l:self['_jump_like_backtick']) }
     \ )
 
     call l:self['_select_keys' ].setMappings('noremap <silent> <buffer>')

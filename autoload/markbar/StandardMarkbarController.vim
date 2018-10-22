@@ -109,7 +109,9 @@ function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
     let b:model = l:self['_markbar_model']
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#JumpToMarkMapping()
-        \ . ' :call b:view._goToSelectedMark()<cr>'
+        \ . ' :call b:view._goToSelectedMark('
+            \ . 'markbar#settings#JumpToExactPosition()'
+        \ . ')<cr>'
 
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#RenameMarkMapping()

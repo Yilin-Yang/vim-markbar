@@ -198,24 +198,30 @@ endfunction
 " BRIEF:    Jump to the currently selected mark
 " DETAILS:  Requires that the window containing the most recent active buffer
 "           still be open in the current tab.
-function! markbar#MarkbarView#_goToSelectedMark() abort dict
+" PARAM:    goto_exact  (v:t_bool)  Whether to go to the line *and column* of
+"                                   the selected mark (`v:true`) or just the
+"                                   line (`v:false`).
+function! markbar#MarkbarView#_goToSelectedMark(goto_exact) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:selected_mark = l:self._getCurrentMarkHeading()
     if !len(l:selected_mark) | return | endif
-    call l:self._goToMark(l:selected_mark)
+    call l:self._goToMark(l:selected_mark, a:goto_exact)
 endfunction
 
 " BRIEF:    Jump to the the mark given.
 " DETAILS:  Requires that the window containing the most recent active buffer
 "           still be open in the current tab.
 " PARAM:    mark    (v:t_string)    The mark to jump to.
-function! markbar#MarkbarView#_goToMark(mark) abort dict
+" PARAM:    goto_exact  (v:t_bool)  Whether to go to the line *and column* of
+"                                   the selected mark (`v:true`) or just the
+"                                   line (`v:false`).
+function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
 
     let l:active_buffer = l:self['_markbar_model'].getActiveBuffer()
     execute bufwinnr(l:active_buffer) . 'wincmd w'
     let l:jump_command = 'normal! '
-    let l:jump_command .= markbar#settings#JumpToExactPosition() ? '`' : "'"
+    let l:jump_command .= a:goto_exact ? '`' : "'"
     execute l:jump_command . a:mark
 
     if markbar#settings#CloseAfterGoTo()
