@@ -55,7 +55,11 @@ endfunction
 " BRIEF:    Open the peekaboo bar with apostrophe-like jump behavior.
 function! markbar#PeekabooMarkbarController#apostrophe() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
-    let l:self['_jump_like_backtick'] = v:false
+    if markbar#settings#BacktickBehaviorWithApostrophe()
+        let l:self['_jump_like_backtick'] = v:true
+    else
+        let l:self['_jump_like_backtick'] = v:false
+    endif
     call l:self.openMarkbar()
 endfunction
 

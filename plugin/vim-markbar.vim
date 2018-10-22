@@ -18,8 +18,10 @@ if markbar#settings#EnablePeekabooMarkbar()
         \ markbar#PeekabooMarkbarController#new(g:markbar_model, g:markbar_view)
     noremap <silent> <Plug>OpenMarkbarPeekabooApostrophe    :call g:peekaboo_controller.apostrophe()<cr>
     noremap <silent> <Plug>OpenMarkbarPeekabooBacktick      :call g:peekaboo_controller.backtick()<cr>
-    map <silent>    '   <Plug>OpenMarkbarPeekabooApostrophe
-    map <silent>    `   <Plug>OpenMarkbarPeekabooBacktick
+    execute 'map <silent> '.markbar#settings#PeekabooApostropheMapping()
+        \ .' <Plug>OpenMarkbarPeekabooApostrophe'
+    execute 'map <silent> '.markbar#settings#PeekabooBacktickMapping()
+        \ .' <Plug>OpenMarkbarPeekabooBacktick'
 endif
 
 augroup vim_markbar_buffer_updates

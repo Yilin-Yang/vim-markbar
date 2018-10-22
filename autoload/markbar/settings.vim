@@ -39,6 +39,34 @@ function! markbar#settings#EnablePeekabooMarkbar() abort
     return g:enable_peekaboo_markbar
 endfunction
 
+" RETURNS:  (v:t_string)    The LHS keymapping used to open the peekaboo
+"                           markbar with apostrophe-like behavior.
+function! markbar#settings#PeekabooApostropheMapping() abort
+    if !exists('g:peekaboo_apostrophe_mapping')
+        let g:peekaboo_apostrophe_mapping = "'"
+    endif
+    call s:AssertType(
+        \ g:peekaboo_apostrophe_mapping,
+        \ v:t_string,
+        \ 'g:peekaboo_apostrophe_mapping'
+    \ )
+    return g:peekaboo_apostrophe_mapping
+endfunction
+
+" RETURNS:  (v:t_string)    The LHS keymapping used to open the peekaboo
+"                           markbar with backtick-like behavior.
+function! markbar#settings#PeekabooBacktickMapping() abort
+    if !exists('g:peekaboo_backtick_mapping')
+        let g:peekaboo_backtick_mapping = '`'
+    endif
+    call s:AssertType(
+        \ g:peekaboo_backtick_mapping,
+        \ v:t_string,
+        \ 'g:peekaboo_backtick_mapping'
+    \ )
+    return g:peekaboo_backtick_mapping
+endfunction
+
 " RETURNS:  (v:t_string)    All marks to display in the markbar, in order.
 function! markbar#settings#MarksToDisplay() abort
     if !exists('g:markbar_marks_to_display')
