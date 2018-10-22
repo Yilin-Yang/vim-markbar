@@ -32,6 +32,9 @@
 "                   therefore, be explicitly destroyed so as to not leak
 "                   memory.
 
+" used for name mangling
+let s:counter = 0
+
 " BRIEF:    Construct a KeyMapper object.
 " PARAM:    keys_mods_prefixes  (v:t_list)  A list of three-element `v:t_list`'s,
 "               each corresponding to a particular keymapping and each containing:
@@ -74,7 +77,8 @@ function! markbar#KeyMapper#new(keys_mods_prefixes, Callback) abort
         \ 'setMappings': function('markbar#KeyMapper#setMappings')
     \ }
 
-    let l:self_ref = 'g:__markbar_KeyMapper_'.localtime()
+    let s:counter += 1
+    let l:self_ref = 'g:__markbar_KeyMapper_'.localtime().s:counter
     execute 'let '.l:self_ref.' = l:new'
     let l:new['__self_ref'] = l:self_ref
 
