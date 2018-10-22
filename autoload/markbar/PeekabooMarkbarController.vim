@@ -167,10 +167,10 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
         \ . ':call b:ctrl.openMarkbar()<cr>'
 
     call l:self['_select_keys'].setCallback(
-        \ { key, mods, prefix -> b:view._selectMark(a:key) }
+        \ { key, mods, prefix -> b:view._selectMark(key) }
     \ )
     call l:self['_jump_to_keys'].setCallback(
-        \ { key, mods, prefix -> b:view._goToMark(a:key) }
+        \ { key, mods, prefix -> b:view._goToMark(key) }
     \ )
 
     call l:self['_select_keys' ].setMappings('noremap <silent> <buffer>')
