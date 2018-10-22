@@ -194,13 +194,20 @@ function! markbar#MarkbarView#_moveCursorToLine(line) abort dict
     execute 'silent normal! ' . a:line . 'G'
 endfunction
 
-" BRIEF:    Jump to the currently selected mark.
+" BRIEF:    Jump to the currently selected mark, or the mark given.
 " DETAILS:  Requires that the window containing the most recent active buffer
 "           still be open in the current tab.
-function! markbar#MarkbarView#_goToMark() abort dict
+" PARAM:    mark    (v:t_string)    The mark to jump to. If not provided, will
+"                                   jump to the currently selected mark.
+function! markbar#MarkbarView#_goToMark(...) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    let l:selected_mark = l:self._getCurrentMarkHeading()
-    if !len(l:selected_mark) | return | endif
+    " TODO: break into separate functions, goToMark, goToSelectedMark
+    if a:0
+        let l:selected_mark = a:1
+    else
+        let l:selected_mark = l:self._getCurrentMarkHeading()
+        if !len(l:selected_mark) | return | endif
+    endif
 
     let l:active_buffer = l:self['_markbar_model'].getActiveBuffer()
     execute bufwinnr(l:active_buffer) . 'wincmd w'
