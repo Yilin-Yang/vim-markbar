@@ -30,26 +30,26 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
 
     " TODO: check that select, jump to modifiers aren't the same
 
-    let l:select_keys = markbar#KeyTable#newWithUniformModifiers(
-        \ markbar#constants#ALL_MARKS_STRING(),
-        \ markbar#settings#PeekabooSelectModifiers()
-    \ )
-    let l:new['_select_keys'] = l:select_keys
+    " let l:select_keys = markbar#KeyTable#newWithUniformModifiers(
+    "     \ markbar#constants#ALL_MARKS_STRING(),
+    "     \ markbar#settings#PeekabooSelectModifiers()
+    " \ )
+    " let l:new['_select_keys'] = l:select_keys
 
-    let l:jump_keys = markbar#KeyTable#newWithUniformModifiers(
-        \ markbar#settings#PeekabooMarksToDisplay(),
-        \ markbar#settings#PeekabooJumpToMarkModifiers()
-    \ )
-    let l:new['_jump_keys'] = l:jump_keys
+    " let l:jump_keys = markbar#KeyTable#newWithUniformModifiers(
+    "     \ markbar#settings#PeekabooMarksToDisplay(),
+    "     \ markbar#settings#PeekabooJumpToMarkModifiers()
+    " \ )
+    " let l:new['_jump_keys'] = l:jump_keys
 
-    let l:new['_keyhandler'] =
-        \ markbar#KeyHandler#new(
-            \ markbar#KeyTable#fromTwoCombined(
-                \ l:select_keys,
-                \ l:jump_keys
-            \ ),
-            \ function('markbar#PeekabooMarkbarController#DispatchFromKeypress', [l:new] )
-        \ )
+    " let l:new['_keyhandler'] =
+    "     \ markbar#KeyHandler#new(
+    "         \ markbar#KeyTable#fromTwoCombined(
+    "             \ l:select_keys,
+    "             \ l:jump_keys
+    "         \ ),
+    "         \ function('markbar#PeekabooMarkbarController#DispatchFromKeypress', [l:new] )
+    "     \ )
 
     " behavioral and signal flags
     let l:new['_jump_like_backtick'] = v:false
