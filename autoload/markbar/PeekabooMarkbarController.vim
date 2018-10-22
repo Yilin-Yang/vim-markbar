@@ -71,23 +71,24 @@ endfunction
 function! markbar#PeekabooMarkbarController#_getHelpText(display_verbose) abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     if (a:display_verbose)
-        let l:select_mods = markbar#settings#PeekabooSelectModifiers()
-        if !len(l:select_mods)
-            let l:select_mods = 'no modifiers.'
-        endif
-        let l:jump_mods = markbar#settings#PeekabooJumpToMarkModifiers()
-        if !len(l:jump_mods)
-            let l:jump_mods = 'no modifiers.'
-        endif
+        " use an arbitrary LHS entry from KeyMapper objects in the helptext
+        let l:select_map  = l:self['_select_keys' ]['_keys_to_map'][0]
+            let l:select_lhs_map = l:select_map[0]
+            let l:select_target = l:select_map[1][0]
+        let l:jump_to_map = l:self['_jump_to_keys']['_keys_to_map'][0]
+            let l:jump_to_lhs_map = l:jump_to_map[0]
+            let l:jump_to_target = l:jump_to_map[1][0]
         return [
-            \ '" vim-markbar "Peekaboo" Keymappings',
+            \ '" "Peekaboo" vim-markbar',
             \ '" -----------------------',
             \ '" Press ? to close help' ,
             \ '" -----------------------',
-            \ '" To jump directly to a mark, press',
-            \ '"  its key with ' .  l:jump_mods,
-            \ '" To select a mark in the markbar,',
-            \ '"  press its key with ' . l:select_mods,
+            \ '" ' . l:select_lhs_map.': select ['''.l:select_target.'] in markbar',
+            \ '" ' . markbar#settings#PeekabooJumpToMarkMapping()
+                \ . ': jump to selected mark',
+            \ '" ' . l:jump_to_lhs_map.': jump directly to mark ['''
+                \ . l:jump_to_target . ']',
+            \ '" -----------------------',
         \ ]
     endif
     return [ '" Press ? for help' ]
