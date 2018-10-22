@@ -83,6 +83,20 @@ function! markbar#settings#PeekabooSelectModifiers() abort
     return g:markbar_peekaboo_select_modifiers
 endfunction
 
+" RETURNS:  (v:t_string)    Prefix keymapping to be prepended to all 'select
+"                           mark in peekaboo markbar' mappings.
+function! markbar#settings#PeekabooSelectPrefix() abort
+    if !exists('g:markbar_peekaboo_select_prefix')
+        let g:markbar_peekaboo_select_prefix = '<leader>'
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_select_prefix,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_select_prefix'
+    \ )
+    return g:markbar_peekaboo_select_prefix
+endfunction
+
 " RETURNS:  (v:t_string)    The keymapping used to jump to the 'moused-over'
 "                           mark from the peekaboo markbar.
 function! markbar#settings#PeekabooJumpToMarkMapping() abort
@@ -102,7 +116,7 @@ endfunction
 "                           markbar.
 function! markbar#settings#PeekabooJumpToMarkModifiers() abort
     if !exists('g:markbar_peekaboo_jump_to_mark_modifiers')
-        let g:markbar_peekaboo_jump_to_mark_modifiers = 'control'
+        let g:markbar_peekaboo_jump_to_mark_modifiers = ''
     endif
     call s:AssertType(
         \ g:markbar_peekaboo_jump_to_mark_modifiers,
@@ -110,6 +124,20 @@ function! markbar#settings#PeekabooJumpToMarkModifiers() abort
         \ 'g:markbar_peekaboo_jump_to_mark_modifiers'
     \ )
     return g:markbar_peekaboo_jump_to_mark_modifiers
+endfunction
+
+" RETURNS:  (v:t_string)    Prefix keymapping to be prepended to all 'jump to
+"                           mark in peekaboo markbar' mappings.
+function! markbar#settings#PeekabooJumpToMarkPrefix() abort
+    if !exists('g:markbar_peekaboo_jump_to_mark_prefix')
+        let g:markbar_peekaboo_jump_to_mark_prefix = ''
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_jump_to_mark_prefix,
+        \ v:t_string,
+        \ 'g:markbar_peekaboo_jump_to_mark_prefix'
+    \ )
+    return g:markbar_peekaboo_jump_to_mark_prefix
 endfunction
 
 " RETURNS:  (v:t_bool)      Whether to open markbars as vertical splits

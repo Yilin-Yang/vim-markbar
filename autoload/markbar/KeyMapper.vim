@@ -70,6 +70,7 @@ function! markbar#KeyMapper#new(keys_mods_prefixes, Callback) abort
         \ '_keys_to_map': l:keys_to_map,
         \ '_callback()': a:Callback,
         \ 'ParseModifiers': function('markbar#KeyMapper#ParseModifiers'),
+        \ 'setCallback': function('markbar#KeyMapper#setCallback'),
         \ 'setMappings': function('markbar#KeyMapper#setMappings')
     \ }
 
@@ -79,6 +80,39 @@ function! markbar#KeyMapper#new(keys_mods_prefixes, Callback) abort
 
     return l:new
 endfunction
+
+" BRIEF:    Make a `uniform' KeyMapper; same modifiers and prefixes for all keys.
+" PARAM:    keys    (v:t_string)    Every individual character to be included
+"                                   in the KeyMapper.
+" PARAM:    modifiers   (v:t_string)    Comma-separated list of modifiers to
+"                                       be applied to every key in this
+"                                       KeyMapper.
+" PARAM:    prefix  (v:t_string)    Prefix to be prepended to every keymapping
+"                                   produced by this KeyMapper.
+function! markbar#KeyMapper#newWithUniformModifiers(
+    \ keys,
+    \ modifiers,
+    \ prefix,
+    \ Callback
+\ ) abort
+    if type(a:keys) !=# v:t_string
+        throw '(markbar#KeyMapper) Bad type for: '.a:keys
+    endif
+    if type(a:modifiers) !=# v:t_string
+        throw '(markbar#KeyMapper) Bad type for: '.a:modifiers
+    endif
+    if type(a:prefix) !=# v:t_string
+        throw '(markbar#KeyMapper) Bad type for: '.a:prefix
+    endif
+    let l:keys_mods_prefix = []
+    let l:len = len(a:keys) | let l:i = 0 | while l:i <# l:len
+        let l:m = a:keys[l:i]
+        let l:keys_mods_prefix += [ [l:m, a:modifiers, a:prefix] ]
+        let l:i += 1
+    endwhile
+    return markbar#KeyMapper#new(l:keys_mods_prefix, a:Callback)
+endfunction
+
 
 " BRIEF:    Cleanly destroy this KeyMapper object.
 function! markbar#KeyMapper#delete() abort dict
@@ -128,6 +162,12 @@ function! markbar#KeyMapper#ParseModifiers(mods_as_str) abort
     endfor
 
     return l:mods_as_keynotation
+endfunction
+
+" BRIEF:    Replace the callback function used as the RHS in mappings.
+function! markbar#KeyMapper#setCallback(NewCallback) abort dict
+    call markbar#KeyMapper#AssertIsKeyMapper(l:self)
+    let l:self['_callback()'] = a:NewCallback
 endfunction
 
 " BRIEF:    Set all keymappings.

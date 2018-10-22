@@ -7,10 +7,6 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new = markbar#MarkbarController#new(a:model, a:view)
     let l:new['DYNAMIC_TYPE'] += ['PeekabooMarkbarController']
 
-    let l:new['openMarkbar_SUPER'] = l:new['openMarkbar']
-    let l:new['openMarkbar'] =
-        \ function('markbar#PeekabooMarkbarController#openMarkbar')
-
     let l:new['apostrophe'] =
         \ function('markbar#PeekabooMarkbarController#apostrophe')
     let l:new['backtick'] =
@@ -28,28 +24,21 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new['_setMarkbarMappings'] =
         \ function('markbar#PeekabooMarkbarController#_setMarkbarMappings')
 
-    " TODO: check that select, jump to modifiers aren't the same
+    let l:select_keys = markbar#KeyMapper#newWithUniformModifiers(
+        \ markbar#constants#ALL_MARKS_STRING(),
+        \ markbar#settings#PeekabooSelectModifiers(),
+        \ markbar#settings#PeekabooSelectPrefix(),
+        \ v:false
+    \ )
+    let l:new['_select_keys'] = l:select_keys
 
-    " let l:select_keys = markbar#KeyTable#newWithUniformModifiers(
-    "     \ markbar#constants#ALL_MARKS_STRING(),
-    "     \ markbar#settings#PeekabooSelectModifiers()
-    " \ )
-    " let l:new['_select_keys'] = l:select_keys
-
-    " let l:jump_keys = markbar#KeyTable#newWithUniformModifiers(
-    "     \ markbar#settings#PeekabooMarksToDisplay(),
-    "     \ markbar#settings#PeekabooJumpToMarkModifiers()
-    " \ )
-    " let l:new['_jump_keys'] = l:jump_keys
-
-    " let l:new['_keyhandler'] =
-    "     \ markbar#KeyHandler#new(
-    "         \ markbar#KeyTable#fromTwoCombined(
-    "             \ l:select_keys,
-    "             \ l:jump_keys
-    "         \ ),
-    "         \ function('markbar#PeekabooMarkbarController#DispatchFromKeypress', [l:new] )
-    "     \ )
+    let l:jump_to_keys = markbar#KeyMapper#newWithUniformModifiers(
+        \ markbar#constants#ALL_MARKS_STRING(),
+        \ markbar#settings#PeekabooJumpToMarkModifiers(),
+        \ markbar#settings#PeekabooJumpToMarkPrefix(),
+        \ v:false
+    \ )
+    let l:new['_jump_to_keys'] = l:jump_to_keys
 
     " behavioral and signal flags
     let l:new['_jump_like_backtick'] = v:false
@@ -64,26 +53,6 @@ function! markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(ob
     if type(a:object) !=# v:t_dict || index(a:object['DYNAMIC_TYPE'], 'PeekabooMarkbarController') ==# -1
         throw '(markbar#PeekabooMarkbarController) Object is not of type PeekabooMarkbarController: ' . a:object
     endif
-endfunction
-
-" BRIEF:    Open markbar; wait for user input; go to mark, or close markbar.
-function! markbar#PeekabooMarkbarController#openMarkbar() abort dict
-    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
-    call l:self.openMarkbar_SUPER()
-    redraw " don't wait for user key input, even if ladyredraw is set
-
-    " TODO: constantly reprompt the user for additional inputs?
-
-    " wait for user input, while open
-    while exists('b:is_markbar') || l:self['_should_prompt']
-        call l:self['_keyhandler'].waitForKey()
-        " waitForKey may dispatch to _dispatchFromKeypress
-    endwhile
-
-    " if !exists('b:is_markbar')
-    "     " close peekaboo markbar, if the user manually unfocused its window
-    "     call l:self.closeMarkbar()
-    " endif
 endfunction
 
 " BRIEF:    Open the peekaboo bar with apostrophe-like jump behavior.
@@ -189,7 +158,7 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
 
-    noremap <buffer> <Esc> <C-c>:let b:ctrl['_should_prompt']=v:false<cr>:call b:ctrl.closeMarkbar()<cr>
+    noremap <silent> <buffer> <Esc> :call b:ctrl.closeMarkbar()<cr>
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PeekabooJumpToMarkMapping()
         \ . ' :call b:view._goToMark()<cr>'
@@ -197,24 +166,14 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
         \ . ':call b:view.toggleShowHelp()<cr>'
         \ . ':call b:ctrl.openMarkbar()<cr>'
 
-    " disable mappings that open peekaboo markbar
-    " buffer-local remapping to noop
-    silent! map <buffer> ' <Plug>
-    silent! map <buffer> ` <Plug>
-endfunction
+    call l:self['_select_keys'].setCallback(
+        \ { key, mods, prefix -> b:view._selectMark(a:key) }
+    \ )
+    call l:self['_jump_to_keys'].setCallback(
+        \ { key, mods, prefix -> b:view._goToMark(a:key) }
+    \ )
 
-" BRIEF:    Select or jump to a mark, depending on what keys were pressed.
-function! markbar#PeekabooMarkbarController#DispatchFromKeypress(self, keycode) abort
-    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(a:self)
-    " NOTE: currently, just prints the given keycode
-    if a:self['_select_keys'].contains(a:keycode)
-        " TODO: select the given mark
-        echoerr "SELECT: " . a:keycode
-        return
-    elseif a:self['_jump_keys'].contains(a:keycode)
-        " TODO: go to the given mark
-        echoerr "JUMP: " . a:keycode
-        return
-    endif
-    throw '(markbar#PeekabooMarkbarController) Intercepted bad keycode: ' . a:keycode
+    call l:self['_select_keys' ].setMappings('noremap <silent> <buffer>')
+    call l:self['_jump_to_keys'].setMappings('noremap <silent> <buffer>')
+
 endfunction
