@@ -189,7 +189,15 @@ function! markbar#KeyMapper#setMappings(mapcommand) abort dict
         let l:prefix = l:lhs_pieces[2]
         let l:command = a:mapcommand.' '.l:map_cmd_lhs.' '
             \ .':call '.l:self['__self_ref'].'[''_callback()'']('
-                \."'".l:lhs_pieces[0]."','".l:lhs_pieces[1]."','"
+        " handle edge case where mapped key is the single quote '
+        " ''' --> syntax error, instead write a double-quoted apostrophe
+        if l:lhs_pieces[0] !=# "'"
+            let l:command .= "'".l:lhs_pieces[0]."','"
+        else
+            let l:command .= '"'.l:lhs_pieces[0].'",'''
+        endif
+
+        let l:command .= l:lhs_pieces[1]."','"
 
         " NOTE: for some reason, `:execute` parses:
         "           'map <foo> :call Blah('<space>')<cr>'
