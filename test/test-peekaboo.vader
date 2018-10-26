@@ -111,8 +111,7 @@ Then:
 
 Do (Go Direct To Mark, Apostrophe):
   '
-  A
-Then:
+  A Then:
   AssertEqual '10lines.txt', expand('%:t')
   let cur_pos = getcurpos()
 
@@ -135,3 +134,8 @@ Then:
   " check column number
   AssertEqual 6, cur_pos[2]
 
+" edge case checks KeyMapper's quoting of single quotes, test passes if no
+" exception is thrown
+Do (Edge Case: Go Direct To Single-Quote Mark):
+  '
+  '
