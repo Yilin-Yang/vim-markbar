@@ -84,16 +84,16 @@ endfunction
 " RETURNS:  (v:t_string)    All marks to display in the peekaboo markbar, in
 "                           order.
 function! markbar#settings#PeekabooMarksToDisplay() abort
-    if !exists('g:markbar_marks_to_display')
-        let g:markbar_marks_to_display =
-            \ 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    if !exists('g:peekaboo_markbar_marks_to_display')
+        let g:peekaboo_markbar_marks_to_display =
+            \ '''abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     endif
     call s:AssertType(
-        \ g:markbar_marks_to_display,
+        \ g:peekaboo_markbar_marks_to_display,
         \ v:t_string,
-        \ 'g:markbar_marks_to_display'
+        \ 'g:peekaboo_markbar_marks_to_display'
     \ )
-    return g:markbar_marks_to_display
+    return g:peekaboo_markbar_marks_to_display
 endfunction
 
 " RETURNS:  (v:t_string)    Comma-separated list of modifiers used when
