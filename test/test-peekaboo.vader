@@ -13,6 +13,8 @@ Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_peekaboo_file_mark_arguments     = ['fname']
   let g:markbar_peekaboo_numbered_mark_arguments = []
 
+  let g:markbar_peekaboo_marks_to_display = 'ABC'
+
 Do (Open Peekaboo Markbar, Apostrophe, No Marks):
   '
 Expect:
