@@ -783,7 +783,7 @@ function! markbar#settings#PeekabooNumLinesContext() abort
     endif
     call s:AssertType(
         \ g:markbar_peekaboo_num_lines_context,
-        \ v:t_peekaboo_number,
+        \ v:t_number,
         \ 'g:markbar_peekaboo_num_lines_context'
     \ )
     return g:markbar_peekaboo_num_lines_context
