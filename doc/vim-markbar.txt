@@ -10,6 +10,8 @@ CONTENTS                                                *vim-markbar-contents*
     1. Introduction.................................|vim-markbar-introduction|
     2. Usage........................................|vim-markbar-usage|
     3. Options......................................|vim-markbar-options|
+       3.1. Standard Markbar........................|vim-markbar-general-options|
+       3.2. Peekaboo Markbar........................|vim-markbar-peekaboo-options|
     4. Highlighting.................................|vim-markbar-highlighting|
 
 ================================================================================
@@ -88,8 +90,20 @@ OPTIONS                                                 *vim-markbar-options*
 vim-markbar is meant to be customizable to suit its users' needs. A list of
 its configurable options is provided below.
 
+--------------------------------------------------------------------------------
+GENERAL MARKBAR OPTIONS                                 *vim-markbar-general-options*
+
+These options affect to the "standard" vim-markbar, i.e. the one you open with
+a `<Plug>ToggleMarkbar` or `<Plug>OpenMarkbar` mapping, as well as the plugin
+as a whole.
+
+For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|.
+
 *g:markbar_marks_to_display*                             |(v:t_string)|
     `Default Value:` `'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'`
+
+*g:markbar_peekaboo_marks_to_display*
+    `Default Value:` `'''abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'`
 
     The marks to display in the markbar, listed in order. The mark
     corresponding to the leftmost character (`'a`, in the example above) is
@@ -98,6 +112,7 @@ its configurable options is provided below.
     Marks not listed in the string above are not listed in the markbar.
 
 *g:markbar_open_vertical*                                |(v:t_bool)|
+*g:markbar_peekaboo_open_vertical*
     `Default Value:` `v:true`
 
     Whether to open the markbar as a vertical split (i.e. as a "sidebar"). If
@@ -105,21 +120,25 @@ its configurable options is provided below.
     top of the screen.
 
 *g:markbar_width*                                        |(v:t_number)|
+*g:markbar_peekaboo_width*
     `Default Value:` `35`
 
     The width of a vertical markbar, in columns of text.
 
 *g:markbar_height*                                       |(v:t_number)|
+*g:markbar_peekaboo_height*
     `Default Value:` `30`
 
     The height of a horizontal markbar, in lines of text.
 
 *g:markbar_close_after_go_to*                            |(v:t_bool)|
+*g:markbar_peekaboo_close_after_go_to*
     `Default Value:` `v:true`
 
     Whether to close the markbar after using it to jump to a mark.
 
 *g:markbar_open_position*                                |(v:t_string)|
+*g:markbar_peekaboo_open_position*
     `Default Value:` `'botright'`
 
     The position at which to open the markbar. Potential values include:
@@ -142,6 +161,8 @@ its configurable options is provided below.
 
 *g:markbar_context_indent_block*                |(v:t_string)| OR |(v:t_number)|
     `Default Value: '    ' (four spaces)`
+*g:markbar_peekaboo_context_indent_block*
+    `Default Value: '  ' (two spaces)`
 
     The text block used to indent lines of context.
 
@@ -159,6 +180,8 @@ its configurable options is provided below.
 
 *g:markbar_section_separation*                           |(v:t_number)|
     `Default Value:` `1`
+*g:markbar_peekaboo_section_separation*
+    `Default Value:` `0`
 
     The number of blank lines used to separate "blocks" of marks and context
     from each other.
@@ -187,11 +210,14 @@ its configurable options is provided below.
 
 *g:markbar_num_lines_context*                            |(v:t_number)|
     `Default Value:` `5`
+*g:markbar_peekaboo_num_lines_context*
+    `Default Value:` `3`
 
     The number of lines of context that vim-markbar should grab "around" each
     mark.
 
 *g:markbar_jump_to_mark_mapping*                         |(v:t_string)|
+*g:markbar_peekaboo_jump_to_mark_mapping*
     `Default Value:` `<cr>`
 
     The mapping used to jump to a mark from an active markbar.
@@ -239,6 +265,7 @@ its configurable options is provided below.
     See `:help command-completion` for further details.
 
 *g:markbar_mark_name_format_string*                      |(v:t_string)|
+*g:markbar_peekaboo_mark_name_format_string*
     `Default Value:` `'l: %4d, c: %4d'`
 
     The format string used when setting "default names" for a local mark.
@@ -246,6 +273,7 @@ its configurable options is provided below.
     See `:help printf` for further details.
 
 *g:markbar_mark_name_arguments*                          |(v:t_list)|
+*g:markbar_peekaboo_mark_name_arguments*
     `Default Value:` `['line', 'col']`
 
     The values with which to populate |g:markbar_mark_name_format_string|.
@@ -304,16 +332,109 @@ its configurable options is provided below.
     See `:help function()` for more details.
 
 *g:markbar_file_mark_format_string*                      |(v:t_string)|
+*g:markbar_peekaboo_file_mark_format_string*
     `Default Value:` `%s [l: %4d, c: %4d]`
 
 *g:markbar_file_mark_arguments*                          |(v:t_list)|
+*g:markbar_peekaboo_file_mark_arguments*
     `Default Value:` `['fname', 'line', 'col']`
 
 *g:markbar_numbered_mark_format_string*                  |(v:t_string)|
+*g:markbar_peekaboo_numbered_mark_format_string*
     `Default Value:` `g:markbar_file_mark_format_string`
 
 *g:markbar_numbered_mark_arguments*                      |(v:t_list)|
+*g:markbar_peekaboo_numbered_mark_arguments*
     `Default Value:` `g:markbar_file_mark_arguments`
+
+--------------------------------------------------------------------------------
+PEEKABOO MARKBAR OPTIONS                                *vim-markbar-peekaboo-options*
+
+These are options unique to the 'peekaboo markbar' that may open when you hit
+the backtick or apostrophe keys. Options duplicated from the standard markbar
+can be found in |vim-markbar-general-options|.
+
+*g:enable_peekaboo_markbar*                              |(v:t_bool)|
+    `Default Value:` `v:true`
+
+    Whether to open a 'peekaboo markbar' when hitting the apostrophe or
+    backtick keys.
+
+    Vim must restart for this change to take effect.
+
+*g:markbar_peekaboo_apostrophe_mapping*                  |(v:t_string)|
+    `Default Value:` `"'"`
+
+    The key that opens a peekaboo markbar with "apostrophe-like" behavior, i.e.
+    jumping to a mark will move the cursor to the "first non-blank character in
+    the line of the specified location."
+
+    See `:help mark-motions`.
+
+*g:markbar_peekaboo_backtick_mapping*                    |(v:t_string)|
+    `Default Value:` `'`'`
+
+    The key that opens a peekaboo markbar with "backtick-like" behavior, i.e.
+    jumping to a mark will move the cursor to the exact line and column of the
+    target mark.
+
+    See `:help mark-motions`.
+
+*g:markbar_peekaboo_select_modifiers*                    |(v:t_string)|
+    `Default Value:` `''`
+
+    Comma-separated list of modifiers to be used when selecting a mark in the
+    peekaboo markbar. For example, >
+
+        " the apostrophe key ' opens the peekaboo markbar
+
+        let g:markbar_peekaboo_select_modifiers = 'ctrl,shift'
+        " Ctrl+Shift+a will select mark ['a]
+<
+
+    Use of this option is not recommended, since vim's handling of modifier
+    keys is often unpredictable and unreliable. Consider using
+    |g:markbar_peekaboo_select_prefix| instead.
+
+*g:markbar_peekaboo_select_prefix*                       |(v:t_string)|
+    `Default Value:` `'<leader>'`
+
+    Keymapping to be prepended to all "select mark" mappings in the peekaboo
+    markbar. For example, >
+
+        " the apostrophe key ' opens the peekaboo markbar
+
+        let g:markbar_peekaboo_select_prefix = '<leader>s'
+        " <leader>sa will select mark ['a]
+<
+
+*g:markbar_peekaboo_jump_to_mark_modifiers*              |(v:t_string)|
+    `Default Value:` `''`
+
+    Comma-separated list of modifiers to be used when jumping directly to
+    a mark in the peekaboo markbar. For example, >
+
+        " the apostrophe key ' opens the peekaboo markbar
+
+        let g:markbar_peekaboo_select_modifiers = 'ctrl,shift'
+        " Ctrl+Shift+a will jump to the location of mark ['a]
+<
+
+    Use of this option is not recommended, since vim's handling of modifier
+    keys is often unpredictable and unreliable. Consider using
+    |g:markbar_peekaboo_jump_to_mark_prefix| instead.
+
+*g:markbar_peekaboo_jump_to_mark_prefix*                 |(v:t_string)|
+    `Default Value:` `'<leader>'`
+
+    Keymapping to be prepended to all "jump to mark" mappings in the peekaboo
+    markbar. For example, >
+
+        " the apostrophe key ' opens the peekaboo markbar
+
+        let g:markbar_peekaboo_select_prefix = '<leader>s'
+        " <leader>sa will jump to the location of mark ['a]
+<
 
 
 ================================================================================
