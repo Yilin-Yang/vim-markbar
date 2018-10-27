@@ -774,21 +774,6 @@ function! markbar#settings#PeekabooMarkbarSectionSeparator() abort
     return l:separator
 endfunction
 
-" RETURNS:  (v:t_number)    The number of lines of context to retrieve around
-"                           marks, including the line that holds the mark,
-"                           when displaying a peekaboo markbar.
-function! markbar#settings#PeekabooNumLinesContext() abort
-    if !exists('g:markbar_peekaboo_num_lines_context')
-        let g:markbar_peekaboo_num_lines_context = 3
-    endif
-    call s:AssertType(
-        \ g:markbar_peekaboo_num_lines_context,
-        \ v:t_number,
-        \ 'g:markbar_peekaboo_num_lines_context'
-    \ )
-    return g:markbar_peekaboo_num_lines_context
-endfunction
-
 " RETURNS:  (v:t_string)    A format string (see `:help printf`) defining the
 "                           default 'name pattern' for a mark.
 function! markbar#settings#PeekabooMarkNameFormatString() abort

@@ -210,11 +210,11 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
 *g:markbar_num_lines_context*                            |(v:t_number)|
     `Default Value:` `5`
-*g:markbar_peekaboo_num_lines_context*
-    `Default Value:` `3`
 
     The number of lines of context that vim-markbar should grab "around" each
     mark.
+
+    This option is shared between the standard and peekaboo markbars.
 
 *g:markbar_jump_to_mark_mapping*                         |(v:t_string)|
 *g:markbar_peekaboo_jump_to_mark_mapping*
