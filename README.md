@@ -130,6 +130,8 @@ non-blank character in the line of the specified location" (see `:help
 mark-motions`), while "backtick-like" behavior moves the cursor to the exact
 line and column of the mark. See `:help 'a` for details.
 
+If opened by accident, the peekaboo markbar can be closed by pressing `Escape`.
+
 #### Navigating the Peekaboo Markbar
 You can scroll the peekaboo markbar using standard vim keymappings, provided
 that they don't collide with markbar mappings (e.g. `Ctrl-D` will scroll down
