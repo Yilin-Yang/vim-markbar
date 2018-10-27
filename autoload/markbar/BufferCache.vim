@@ -27,7 +27,7 @@ endfunction
 "           the given marks.
 " PARAM:    marks_output    (v:t_string)    The 'raw' output of `:marks`.
 function! markbar#BufferCache#updateCache(marks_output) abort dict
-    call markbar#BufferCache#AssertIsBufferCache(self)
+    call markbar#BufferCache#AssertIsBufferCache(l:self)
     if type(a:marks_output) !=# v:t_string
         throw '(markbar#BufferCache#updateCache) Bad argument type for: ' . a:marks_output
     endif
@@ -47,7 +47,7 @@ function! markbar#BufferCache#updateCache(marks_output) abort dict
     endwhile
 
     " copy over existing mark names
-    let l:old_dict = self['_marks_dict']
+    let l:old_dict = l:self['_marks_dict']
     for l:mark in keys(l:old_dict)
         if !has_key(l:new_marks_dict, l:mark) | continue | endif
         call l:new_marks_dict[l:mark].setName(
@@ -55,7 +55,7 @@ function! markbar#BufferCache#updateCache(marks_output) abort dict
         \ )
     endfor
 
-    let self['_marks_dict'] = l:new_marks_dict
+    let l:self['_marks_dict'] = l:new_marks_dict
 endfunction
 
 " EFFECTS:  - Retrieve new contexts for the marks held in this buffer cache.
@@ -65,9 +65,9 @@ endfunction
 " PARAM:    num_lines   (v:t_number)    The total number of lines of context
 "                                       to retrieve.
 function! markbar#BufferCache#updateContexts(num_lines) abort dict
-    call markbar#BufferCache#AssertIsBufferCache(self)
+    call markbar#BufferCache#AssertIsBufferCache(l:self)
 
-    let l:marks_database = self['_marks_dict']
+    let l:marks_database = l:self['_marks_dict']
 
     " remove orphaned contexts
     " for l:mark in keys(l:marks_to_contexts)
@@ -79,8 +79,8 @@ function! markbar#BufferCache#updateContexts(num_lines) abort dict
 
     " fetch updated mark contexts
     let l:i = 0
-    let l:using_global_marks = self.isGlobal()
-    let l:buffer_no = self['_buffer_no']
+    let l:using_global_marks = l:self.isGlobal()
+    let l:buffer_no = l:self['_buffer_no']
 
     for l:mark in keys(l:marks_database)
         let l:mark_data = l:marks_database[l:mark]
@@ -101,6 +101,6 @@ function! markbar#BufferCache#updateContexts(num_lines) abort dict
 endfunction
 
 function! markbar#BufferCache#isGlobal() abort dict
-    call markbar#BufferCache#AssertIsBufferCache(self)
-    return self['_buffer_no'] ==# markbar#constants#GLOBAL_MARKS()
+    call markbar#BufferCache#AssertIsBufferCache(l:self)
+    return l:self['_buffer_no'] ==# markbar#constants#GLOBAL_MARKS()
 endfunction
