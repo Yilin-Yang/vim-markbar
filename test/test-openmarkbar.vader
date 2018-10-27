@@ -310,3 +310,42 @@ Expect:
       tenth line
       ~
   
+
+Do (Set Local Mark, Toggle Markbar Open):
+  :edit! 10lines.txt\<cr>
+  1Gma
+  Mt
+Expect:
+  " Press ? for help
+  ['a]: 
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Do (Delete Local Mark):
+  :edit! 10lines.txt\<cr>
+  Mt
+  2G
+  d
+Expect:
+  " Press ? for help
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
