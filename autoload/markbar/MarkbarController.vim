@@ -237,7 +237,7 @@ function! markbar#MarkbarController#_setRefreshMarkbarAutocmds() abort dict
     let g:__active_controller = l:self
     augroup vim_markbar_refresh
         au!
-        autocmd BufEnter,TextChanged,CursorHold,FileChangedShellPost
+        autocmd BufEnter,BufLeave,TextChanged,CursorHold,FileChangedShellPost
             \ * call markbar#ui#RefreshMarkbar(g:__active_controller)
     augroup end
 endfunction

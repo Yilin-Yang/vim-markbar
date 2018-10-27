@@ -75,7 +75,7 @@ endfunction
 function! markbar#MarkbarModel#renameMark(mark) abort dict
     call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
     if type(a:mark) !=# v:t_string || len(a:mark) !=# 1
-        throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
+        throw '(markbar#MarkbarModel) Bad argument to renameMark: ' . a:mark
     endif
 
     let l:mark_data = l:self.getMarkData(a:mark)
@@ -97,7 +97,7 @@ endfunction
 function! markbar#MarkbarModel#resetMark(mark) abort dict
     call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
     if type(a:mark) !=# v:t_string || len(a:mark) !=# 1
-        throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
+        throw '(markbar#MarkbarModel) Bad argument to resetMark: ' . a:mark
     endif
     let l:mark_data = l:self.getMarkData(a:mark)
     call l:mark_data.setName('')
@@ -105,6 +105,7 @@ endfunction
 
 " BRIEF:    Delete the given mark.
 " DETAILS:  Changes won't appear until the markbar has been repopulated.
+"           Must be invoked while the cursor is inside a markbar.
 " PARAM:    mark    (v:t_string)    The single character representing the
 "                                   mark.
 function! markbar#MarkbarModel#deleteMark(mark) abort dict
@@ -113,12 +114,14 @@ function! markbar#MarkbarModel#deleteMark(mark) abort dict
         throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
     endif
 
+    let l:markbar_buffer = bufnr('%')
     let l:cur_pos = getcurpos()
     if !markbar#helpers#IsGlobalMark(a:mark)
         let l:active_buffer = l:self.getActiveBuffer()
         execute bufwinnr(l:active_buffer) . 'wincmd w'
     endif
     execute 'delmarks ' . a:mark
+    execute bufwinnr(l:markbar_buffer) . 'wincmd w'
     call setpos('.', l:cur_pos)
 endfunction
 
