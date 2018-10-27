@@ -228,7 +228,10 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     catch /E20/
         " Mark not set
         execute bufwinnr(l:self['_markbar_buffer']) . 'wincmd w'
-        echohl WarningMsg | echomsg 'Mark not set: ' . a:mark | echohl None
+        echohl WarningMsg
+        echomsg 'Mark not set: ' . a:mark
+        echomsg 'Press any key to continue.'
+        echohl None
         call getchar() " pause until user hits a key
         return
     endtry
@@ -244,7 +247,11 @@ function! markbar#MarkbarView#_selectMark(mark) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:line_no = l:self._getSpecificMarkHeadingLine(a:mark)
     if !l:line_no
-        echoerr 'Could not find mark: [''' . a:mark . ']'
+        echohl WarningMsg
+        echomsg 'Mark not in markbar: ' . a:mark
+        echomsg 'Press any key to continue.'
+        echohl None
+        call getchar() " pause until user hits a key
         return
     endif
     call l:self._moveCursorToLine(l:line_no)
