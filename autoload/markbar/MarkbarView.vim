@@ -219,12 +219,32 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
 
     let l:active_buffer = l:self['_markbar_model'].getActiveBuffer()
+    let l:mark_is_quote = a:mark ==# "'" || a:mark ==# '`'
+
+    " save the 'correct' position of the [''] mark
+    if l:mark_is_quote
+        " note that ['`] isn't actually stored as a distinct mark
+        let l:targ_mark = deepcopy(
+            \ l:self['_markbar_model'].getBufferCache(l:active_buffer)['_marks_dict']["'"]
+        \ )
+        let l:mark_line = l:targ_mark.getLineNo()
+        let l:mark_col  = l:targ_mark.getColumnNo() + 1
+    endif
+
     execute bufwinnr(l:active_buffer) . 'wincmd w'
     let l:jump_command = 'normal! '
     let l:jump_command .= a:goto_exact ? '`' : "'"
 
     try
+        if l:mark_is_quote
+            " clobber the erroneous ['']/['`] mark position
+            " set by the jump from the markbar
+            call setpos( "''", [l:active_buffer, l:mark_line, l:mark_col, 0 ])
+        endif
         execute l:jump_command . a:mark
+        if a:mark ==# "'"
+            normal! ^
+        endif
     catch /E20/
         " Mark not set
         execute bufwinnr(l:self['_markbar_buffer']) . 'wincmd w'
