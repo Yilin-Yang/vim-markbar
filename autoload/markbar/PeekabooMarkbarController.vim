@@ -16,10 +16,10 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
         \ function('markbar#PeekabooMarkbarController#_getHelpText')
     let l:new['_getDefaultNameFormat'] =
         \ function('markbar#PeekabooMarkbarController#_getDefaultNameFormat')
+    let l:new['_getMarksToDisplay'] =
+        \ function('markbar#PeekabooMarkbarController#_getMarksToDisplay')
     let l:new['_getMarkbarContents'] =
         \ function('markbar#PeekabooMarkbarController#_getMarkbarContents')
-    let l:new['_populateWithMarkbar'] =
-        \ function('markbar#PeekabooMarkbarController#_populateWithMarkbar')
 
     let l:new['_openMarkbarSplit'] =
         \ function('markbar#PeekabooMarkbarController#_openMarkbarSplit')
@@ -122,6 +122,11 @@ function! markbar#PeekabooMarkbarController#_getDefaultNameFormat(mark) abort di
     return [ l:format_str, l:format_arg ]
 endfunction
 
+function! markbar#PeekabooMarkbarController#_getMarksToDisplay() abort dict
+    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    return markbar#settings#PeekabooMarksToDisplay()
+endfunction
+
 " REQUIRES: - `a:buffer_no` is not a markbar buffer.
 "           - `a:buffer_no` is not the global buffer.
 "           - `a:buffer_no` is a buffer *number.*
@@ -139,19 +144,6 @@ function! markbar#PeekabooMarkbarController#_getMarkbarContents(buffer_no, marks
         \ markbar#settings#PeekabooMarkbarSectionSeparator(),
         \ markbar#settings#PeekabooContextIndentBlock()
     \ )
-endfunction
-
-function! markbar#PeekabooMarkbarController#_populateWithMarkbar(
-    \ for_buffer_no,
-    \ into_buffer_expr
-\ ) abort dict
-    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
-    let l:contents  = l:self._getHelpText(l:self['_markbar_view'].getShouldShowHelp())
-    let l:contents += l:self._getMarkbarContents(
-        \ a:for_buffer_no,
-        \ markbar#settings#PeekabooMarksToDisplay()
-    \ )
-    call markbar#helpers#ReplaceBuffer(a:into_buffer_expr, l:contents)
 endfunction
 
 function! markbar#PeekabooMarkbarController#_openMarkbarSplit() abort dict

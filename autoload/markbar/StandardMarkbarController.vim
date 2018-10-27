@@ -11,6 +11,8 @@ function! markbar#StandardMarkbarController#new(model, view) abort
         \ function('markbar#StandardMarkbarController#_getHelpText')
     let l:new['_getDefaultNameFormat'] =
         \ function('markbar#StandardMarkbarController#_getDefaultNameFormat')
+    let l:new['_getMarksToDisplay'] =
+        \ function('markbar#StandardMarkbarController#_getMarksToDisplay')
     let l:new['_getMarkbarContents'] =
         \ function('markbar#StandardMarkbarController#_getMarkbarContents')
 
@@ -78,6 +80,11 @@ function! markbar#StandardMarkbarController#_getDefaultNameFormat(mark) abort di
     endif
 
     return [ l:format_str, l:format_arg ]
+endfunction
+
+function! markbar#StandardMarkbarController#_getMarksToDisplay() abort dict
+    call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
+    return markbar#settings#MarksToDisplay()
 endfunction
 
 function! markbar#StandardMarkbarController#_getMarkbarContents(buffer_no, marks) abort dict

@@ -43,6 +43,11 @@ function! markbar#MarkbarController#new(model, view) abort
                 \ 'markbar#MarkbarController#__noImplementation',
                 \ ['_getDefaultNameFormat']
             \ ),
+        \ '_getMarksToDisplay':
+            \ function(
+                \ 'markbar#MarkbarController#__noImplementation',
+                \ ['_getMarksToDisplay']
+            \ ),
         \ '_getMarkbarContents':
             \ function(
                 \ 'markbar#MarkbarController#__noImplementation',
@@ -222,7 +227,7 @@ function! markbar#MarkbarController#_populateWithMarkbar(
     let l:contents  = l:self._getHelpText(l:self['_markbar_view'].getShouldShowHelp())
     let l:contents += l:self._getMarkbarContents(
         \ a:for_buffer_no,
-        \ markbar#settings#MarksToDisplay()
+        \ l:self._getMarksToDisplay()
     \ )
     call markbar#helpers#ReplaceBuffer(a:into_buffer_expr, l:contents)
 endfunction
