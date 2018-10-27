@@ -16,6 +16,7 @@ Features
 
 - **Remember** why you set those marks in the first place by looking at their context!
 - **Jump to marks** directly from the markbar.
+- **Open automatically on `` ` `` or `'`,** _à la_ [vim-peekaboo!](https://github.com/junegunn/vim-peekaboo)
 - **Assign names** to your marks, directly or automatically!
 - **Heavily customizable!** See below for details.
 
@@ -116,6 +117,36 @@ let g:markbar_rename_mark_mapping = '<C-r>d'
 let g:markbar_reset_mark_mapping = '<BS>'
 ```
 
+### The "Peekaboo" Markbar
+The "peekaboo" markbar is meant to be used in the same fashion as vim's
+built-in "jump to mark" functionality: to jump to a mark, the user
+only needs to press `'` or `` ` ``, and then the key corresponding to their
+target mark, e.g. `'a` to jump to mark `a`.
+
+By default, pressing the apostrophe key (`'`) or the backtick key (`` ` ``)
+opens the peekaboo markbar with apostrophe-like or backtick-like behavior,
+respectively. "Apostrophe-like" behavior moves the cursor to "the first
+non-blank character in the line of the specified location" (see `:help
+mark-motions`), while "backtick-like" behavior moves the cursor to the exact
+line and column of the mark. See `:help 'a` for details.
+
+#### Navigating the Peekaboo Markbar
+You can scroll the peekaboo markbar using standard vim keymappings, provided
+that they don't collide with markbar mappings (e.g. `Ctrl-D` will scroll down
+as expected, but `j` will jump to the mark `j`).
+
+There also exist mappings to **select a mark,** i.e. move the cursor to
+a particular mark's location in the markbar. By default, this is done by
+prefixing the target mark with the `<leader>` key, e.g. `'<leader>a` to open
+the peekaboo markbar and _select_ mark `a`, rather than `'a` to open it and
+_jump to_ mark `a`.
+
+By default, you can **jump to the selected mark** by pressing the `Enter` key.
+
+As of the time of writing, **the peekaboo markbar is not compatible with visual
+mode,** e.g. you can't press `V` to start a linewise selection, and then press
+`'a` to select every line between that starting position and the mark `a`.
+
 Customization
 --------------------------------------------------------------------------------
 
@@ -139,17 +170,63 @@ let g:markbar_context_indent_block = '  '
 let g:markbar_num_lines_context = 3
 
 " markbar-local mappings
-"let g:markbar_jump_to_mark_mapping  = 'G'
-"let g:markbar_next_mark_mapping     = '/'
-"let g:markbar_previous_mark_mapping = '?'
-"let g:markbar_rename_mark_mapping   = '<F2>'
-"let g:markbar_reset_mark_mapping    = 'r'
-"let g:markbar_delete_mark_mapping   = '<Del>'
+let g:markbar_jump_to_mark_mapping  = 'G'
+let g:markbar_next_mark_mapping     = '/'
+let g:markbar_previous_mark_mapping = '?'
+let g:markbar_rename_mark_mapping   = '<F2>'
+let g:markbar_reset_mark_mapping    = 'r'
+let g:markbar_delete_mark_mapping   = '<Del>'
 
 " open/close markbar mappings
-"map <Leader>m  <Plug>ToggleMarkbar
-"map <Leader>mo <Plug>OpenMarkbar
-"map <Leader>mc <Plug>CloseMarkbar
+map <Leader>m  <Plug>ToggleMarkbar
+map <Leader>mo <Plug>OpenMarkbar
+map <Leader>mc <Plug>CloseMarkbar
+```
+
+### Peekaboo Customization
+
+The peekaboo markbar has its own equivalents for most of the standard markbar's
+customization options, e.g. `g:markbar_section_separation <-->
+g:markbar_peekaboo_section_separation`. See `:help vim-markbar-options` for
+details.
+
+If you want to use the peekaboo markbar without shadowing vim's built-in "jump
+to marks" functionality, you can set the following options:
+
+```vim
+" open an 'apostrophe-like' peekaboo markbar with <Leader>a
+let g:markbar_peekaboo_apostrophe_mapping = '<leader>a'
+
+" open a 'backtick-like' peekaboo markbar with <Leader>b
+let g:markbar_peekaboo_backtick_mapping = '<leader>b'
+```
+
+If you want to disable the peekaboo markbar entirely, you can set
+`g:markbar_enable_peekaboo` to `v:false`.
+
+#### "Select" and "Jump To" Mappings
+The plugin sets buffer-local "select" and "jump to" mappings for every possible
+mark on entering the peekaboo markbar. These mappings can be customized by
+setting a **prefix** (e.g. `<leader>` for "select" mappings) or by setting
+**modifiers** (e.g. `Control`, `Shift`, `Meta`).
+
+The use of modifiers is not recommended. vim's built-in support for modifiers
+can be flaky at the best of times, and attempting to set multiple modifiers may
+lead to undefined behavior.
+
+For example, you can set the following:
+
+```vim
+" select a mark by pressing backslash, and then the target mark
+let g:markbar_peekaboo_select_prefix = '\'
+
+" OR, select mark 'a' just by tapping the 'a' key
+" NOTE: you'll have to change the 'jump_to_mark' mappings accordingly
+let g:markbar_peekaboo_select_prefix = ''
+
+" jump to mark 'a' by pressing Ctrl-Shift-Alt-a
+" NOTE: this probably won't work in practice
+let g:markbar_peekaboo_jump_to_mark_modifiers = 'control,shift,alt'
 ```
 
 ### Default Mark Name Customization
