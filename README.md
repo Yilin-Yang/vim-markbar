@@ -3,14 +3,16 @@
 vim-markbar
 ================================================================================
 Open a sidebar that shows you every mark that you can access from your current
-buffer, as well as the contexts in which those marks appear.
+buffer, as well as the contexts in which those marks appear. Now with "peekaboo"
+support!
 
 Features
 --------------------------------------------------------------------------------
 
 ### Demo
-![markbar](https://user-images.githubusercontent.com/23268616/43757140-d683233c-99e5-11e8-9fd1-edb8eb867be2.gif)
-[(asciinema Link)](https://asciinema.org/a/0r01UbKPcPpTeIfBp1SDmLnYW)
+![markbar](https://user-images.githubusercontent.com/23268616/47609602-2fbc4680-da10-11e8-9789-1ab6575d22d6.gif)
+
+[(asciinema Link)](https://asciinema.org/a/JY4F2AHb0PSBMINOQg6APFNa0)
 
 ### List
 
