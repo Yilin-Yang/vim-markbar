@@ -494,15 +494,15 @@ endfunction
 "                       apostrophe or backtick keys.
 " DETIALS:  Vim must restart in order for changes to this option to take effect.
 function! markbar#settings#EnablePeekabooMarkbar() abort
-    if !exists('g:enable_peekaboo_markbar')
-        let g:enable_peekaboo_markbar = v:true
+    if !exists('g:markbar_enable_peekaboo')
+        let g:markbar_enable_peekaboo = v:true
     endif
     call s:AssertType(
-        \ g:enable_peekaboo_markbar,
+        \ g:markbar_enable_peekaboo,
         \ v:t_bool,
-        \ 'g:enable_peekaboo_markbar'
+        \ 'g:markbar_enable_peekaboo'
     \ )
-    return g:enable_peekaboo_markbar
+    return g:markbar_enable_peekaboo
 endfunction
 
 " RETURNS:  (v:t_string)    The LHS keymapping used to open the peekaboo

@@ -354,7 +354,7 @@ These are options unique to the 'peekaboo markbar' that may open when you hit
 the backtick or apostrophe keys. Options duplicated from the standard markbar
 can be found in |vim-markbar-general-options|.
 
-*g:enable_peekaboo_markbar*                              |(v:t_bool)|
+*g:markbar_enable_peekaboo*                              |(v:t_bool)|
     `Default Value:` `v:true`
 
     Whether to open a 'peekaboo markbar' when hitting the apostrophe or
