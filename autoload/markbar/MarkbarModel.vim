@@ -50,6 +50,10 @@ function! markbar#MarkbarModel#get() abort
             \ function('markbar#MarkbarModel#updateCurrentAndGlobal'),
     \ }
 
+    if v:vim_did_enter
+      call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
+    endif
+
     augroup markbar_model_update
         au!
         autocmd VimEnter * call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
