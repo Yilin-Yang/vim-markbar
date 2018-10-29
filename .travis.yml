@@ -12,6 +12,7 @@ before_script:
       sudo add-apt-repository ppa:neovim-ppa/stable   -y
     fi
   - sudo apt-get update  -q
+  - sudo apt-get install -y language-pack-de
   - |
     sudo apt-get remove vim -y
     sudo apt-get install -y vim
