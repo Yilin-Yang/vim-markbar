@@ -8,3 +8,6 @@
 
 set -p
 vim -Nnu .lvimrc -i NONE -c 'Vader! *vader'
+
+# test non-English locale
+vim -Nnu .lvimrc -i NONE -c 'language de_DE.utf8' -c 'Vader! *vader'
