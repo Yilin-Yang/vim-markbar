@@ -866,8 +866,6 @@ function! markbar#settings#PeekabooNumberedMarkArguments() abort
     return g:markbar_peekaboo_numbered_mark_arguments
 endfunction
 
-"===============================================================================
-
 " RETURNS:  (v:t_bool)      Whether to explicitly remap standard mark
 "                           mappings.
 function! markbar#settings#ExplicitlyRemapMarkMappings() abort

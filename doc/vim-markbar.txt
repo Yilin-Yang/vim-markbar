@@ -10,8 +10,8 @@ CONTENTS                                                *vim-markbar-contents*
     1. Introduction.................................|vim-markbar-introduction|
     2. Usage........................................|vim-markbar-usage|
     3. Options......................................|vim-markbar-options|
-       3.1. Standard Markbar........................|vim-markbar-general-options|
-       3.2. Peekaboo Markbar........................|vim-markbar-peekaboo-options|
+       3.1. General Markbar Options.................|vim-markbar-general-options|
+       3.2. Peekaboo-Specific Options...............|vim-markbar-peekaboo-options|
     4. Highlighting.................................|vim-markbar-highlighting|
 
 ================================================================================
@@ -348,7 +348,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     `Default Value:` `g:markbar_file_mark_arguments`
 
 --------------------------------------------------------------------------------
-PEEKABOO MARKBAR OPTIONS                                *vim-markbar-peekaboo-options*
+PEEKABOO-SPECIFIC OPTIONS                               *vim-markbar-peekaboo-options*
 
 These are options unique to the 'peekaboo markbar' that may open when you hit
 the backtick or apostrophe keys. Options duplicated from the standard markbar
@@ -435,6 +435,45 @@ can be found in |vim-markbar-general-options|.
         let g:markbar_peekaboo_select_prefix = '<leader>s'
         " <leader>sa will jump to the location of mark ['a]
 <
+*g:markbar_explicitly_remap_mark_mappings*               |(v:t_bool)|
+    `Default Value:` `v:false`
+
+    Whether to set explicit mappings to "short-circuit" the peekaboo
+    markbar when you already know the mark to which you want to jump, i.e.
+    whether to set mappings that are functionally equivalent to: >
+
+        noremap 'a  :normal! 'a<cr>
+        noremap 'b  :normal! 'b<cr>
+        " ...
+        noremap '0  :normal! '0<cr>
+        " ...
+        noremap ''  :normal! ''<cr>
+        " ...
+        noremap 'A  :normal! 'A<cr>
+        " ...
+        noremap `a  :normal! `a<cr>
+        " etc. for all marks
+<
+
+    By default, the peekaboo markbar always opens when you tap the
+    single-quote or backtick keys, even when it's not strictly necessary. For
+    instance, double-tapping *''* to return to the position before the latest
+    jump will (unnecessarily) open the markbar and then immediately jump to
+    mark `['']`.
+
+    On most machines, the markbar opens quickly enough that this introduces no
+    noticeable delay, but in some environments (e.g. virtual machines, older
+    laptops, Windows Subsystem for Linux) a noticeable delay may exist.
+    Setting this option to `v:true` will skip opening the markbar
+    if both keys are pressed in quick succession.
+
+    Enabling this option will delay the appearance of the peekaboo markbar by
+    'timeoutlen' milliseconds, which is why it defaults to `v:false`. Set this
+    option to `v:true` if opening the peekaboo markbar is noticeably slow.
+
+    If you want to preserve vim's "jump-to-mark" behavior, but still want the
+    peekaboo markbar to open as quickly as possible, consider changing
+    |g:markbar_peekaboo_apostrophe_mapping| and |g:markbar_peekaboo_backtick_mapping|.
 
 
 ================================================================================
