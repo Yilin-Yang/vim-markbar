@@ -870,7 +870,7 @@ endfunction
 "                           mappings.
 function! markbar#settings#ExplicitlyRemapMarkMappings() abort
     if !exists('g:markbar_explicitly_remap_mark_mappings')
-        let g:markbar_explicitly_remap_mark_mappings = v:true
+        let g:markbar_explicitly_remap_mark_mappings = v:false
     endif
     call s:AssertType(
         \ g:markbar_explicitly_remap_mark_mappings,

@@ -206,24 +206,7 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
     let l:filename = bufname(a:buffer_expr)
     if empty(l:filename) | return [] | endif
 
-    if !has('win32')
-        try
-            let l:text  = system('sed -n ' .a:start.','.a:end.'p '. l:filename)
-            if !v:shell_error
-                " keep leading blank lines, remove always-spurious empty last line
-                let l:lines = split(l:text, '\r\{0,1}\n', 1)
-                call remove(l:lines, -1)
-                return l:lines
-            endif
-        catch
-            " failed, for whatever reason; try reading lines a different way
-        endtry
-    endif
-
-    " assume that `sed` is unavailable on windows, or that sed failed
-    " readfile() loads entire file into memory, making it more expensive
-    " than printing line range with `sed`
-    " note: zero-based indexing for lists
+    " readfile is several times faster than `sed`, at least on WSL
     try
         let l:lines = readfile(l:filename)[a:start - 1 : a:end - 1]
     catch
