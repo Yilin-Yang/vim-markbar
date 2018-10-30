@@ -865,3 +865,19 @@ function! markbar#settings#PeekabooNumberedMarkArguments() abort
     \ )
     return g:markbar_peekaboo_numbered_mark_arguments
 endfunction
+
+"===============================================================================
+
+" RETURNS:  (v:t_bool)      Whether to explicitly remap standard mark
+"                           mappings.
+function! markbar#settings#ExplicitlyRemapMarkMappings() abort
+    if !exists('g:markbar_explicitly_remap_mark_mappings')
+        let g:markbar_explicitly_remap_mark_mappings = v:true
+    endif
+    call s:AssertType(
+        \ g:markbar_explicitly_remap_mark_mappings,
+        \ v:t_bool,
+        \ 'g:markbar_explicitly_remap_mark_mappings'
+    \ )
+    return g:markbar_explicitly_remap_mark_mappings
+endfunction

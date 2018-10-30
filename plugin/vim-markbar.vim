@@ -24,6 +24,31 @@ if markbar#settings#EnablePeekabooMarkbar()
         \ .' <Plug>OpenMarkbarPeekabooBacktick'
 endif
 
+if markbar#settings#ExplicitlyRemapMarkMappings()
+    " explicitly map 'a, 'b, 'c, etc. to `normal! 'a` (etc.), to avoid
+    " unnecessarily opening the peekaboo bar for quick jumps
+
+    function! s:MarkbarGoToMark(key, modifiers, prefix) abort
+        execute 'normal! ' . a:prefix . a:key
+    endfunction
+
+    let g:markbar_apostrophe_remapper = markbar#KeyMapper#newWithUniformModifiers(
+        \ markbar#constants#ALL_MARKS_STRING(),
+        \ '',
+        \ "'",
+        \ function('<SID>MarkbarGoToMark')
+    \ )
+    call g:markbar_apostrophe_remapper.setMappings('noremap <silent>')
+
+    let g:markbar_backtick_remapper = markbar#KeyMapper#newWithUniformModifiers(
+        \ markbar#constants#ALL_MARKS_STRING(),
+        \ '',
+        \ '`',
+        \ function('<SID>MarkbarGoToMark')
+    \ )
+    call g:markbar_backtick_remapper.setMappings('noremap <silent>')
+endif
+
 augroup vim_markbar_buffer_updates
     au!
     autocmd BufEnter * call markbar#ui#SetEchoHeaderAutocmds()
