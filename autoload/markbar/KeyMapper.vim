@@ -194,7 +194,7 @@ function! markbar#KeyMapper#setMappings(mapcommand) abort dict
         if l:lhs_pieces[0] !=# "'"
             let l:command .= "'".l:lhs_pieces[0]."','"
         else
-            let l:command .= '"'.l:lhs_pieces[0].'",'''
+            let l:command .= '"'.l:lhs_pieces[0]."\",'"
         endif
 
         let l:command .= l:lhs_pieces[1]."','"
@@ -210,7 +210,15 @@ function! markbar#KeyMapper#setMappings(mapcommand) abort dict
         " Do this by 'breaking' the affected string:
         "           'map <foo> :call Blah('<'.'space>')<cr>'
         "                                    ^ note
-        let l:command .= l:prefix[0]."'.'".l:prefix[1:]."')<cr>"
+        if len(l:prefix) ># 1
+            let l:command .= l:prefix[0]."'.'".l:prefix[1:]."')<cr>"
+        elseif l:prefix ==# "'"
+            " 'escape' single quote inside of a single-quoted string by
+            " prepending a single quote
+            let l:command .= "'".l:prefix."')<cr>"
+        else
+            let l:command .= l:prefix."')<cr>"
+        endif
         execute l:command
     endfor
 endfunction
