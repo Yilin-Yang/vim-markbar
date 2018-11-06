@@ -475,6 +475,30 @@ can be found in |vim-markbar-general-options|.
     peekaboo markbar to open as quickly as possible, consider changing
     |g:markbar_peekaboo_apostrophe_mapping| and |g:markbar_peekaboo_backtick_mapping|.
 
+*g:markbar_set_default_peekaboo_mappings*                |v:t_bool|
+    `Default Value:` `v:true`
+
+    Whether to set the default mappings to open the peekaboo markbar (i.e.
+    apostrophe and backtick). Set this to `v:false` if you want to explicitly
+    set your own mappings for opening the peekaboo markbar.
+
+    You can use the following as the RHS in your mappings: >
+        <Plug>OpenMarkbarPeekabooApostrophe
+        <Plug>OpenMarkbarPeekabooBacktick
+
+        " for instance,
+        nmap <leader>a <Plug>OpenMarkbarPeekabooApostrophe
+        " NOTE: `noremap` mappings aren't usable in this case
+<
+    Setting this to `v:false` does not disable the peekaboo markbar: the
+    peekaboo markbar will still exist "in the background," but no mappings to
+    open it will be set. See |g:markbar_enable_peekaboo| to disable the peekaboo
+    markbar entirely.
+
+    If set to `v:false`, vim-markbar will ignore options like
+    |g:markbar_peekaboo_apostrophe_mapping| and
+    |g:markbar_peekaboo_backtick_mapping|.
+
 
 ================================================================================
 HIGHLIGHTING                                            *vim-markbar-highlighting*

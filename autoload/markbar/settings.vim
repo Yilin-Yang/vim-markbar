@@ -879,3 +879,15 @@ function! markbar#settings#ExplicitlyRemapMarkMappings() abort
     \ )
     return g:markbar_explicitly_remap_mark_mappings
 endfunction
+
+function! markbar#settings#SetDefaultPeekabooMappings() abort
+    if !exists('g:markbar_set_default_peekaboo_mappings')
+        let g:markbar_set_default_peekaboo_mappings = v:true
+    endif
+    call s:AssertType(
+        \ g:markbar_set_default_peekaboo_mappings,
+        \ v:t_bool,
+        \ 'g:markbar_set_default_peekaboo_mappings'
+    \ )
+    return g:markbar_set_default_peekaboo_mappings
+endfunction
