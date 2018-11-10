@@ -20,9 +20,9 @@ if markbar#settings#EnablePeekabooMarkbar()
     noremap <silent> <Plug>OpenMarkbarPeekabooBacktick      :call g:peekaboo_controller.backtick()<cr>
 
     if markbar#settings#SetDefaultPeekabooMappings()
-        execute 'map <silent> '.markbar#settings#PeekabooApostropheMapping()
+        execute 'nmap <silent> '.markbar#settings#PeekabooApostropheMapping()
             \ .' <Plug>OpenMarkbarPeekabooApostrophe'
-        execute 'map <silent> '.markbar#settings#PeekabooBacktickMapping()
+        execute 'nmap <silent> '.markbar#settings#PeekabooBacktickMapping()
             \ .' <Plug>OpenMarkbarPeekabooBacktick'
     endif
 endif

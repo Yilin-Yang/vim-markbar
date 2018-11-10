@@ -76,11 +76,11 @@ Quick Start
 At a minimum, you should set some of the following keymappings in your `.vimrc`.
 
 ```vim
-map <Leader>m <Plug>ToggleMarkbar
+nmap <Leader>m <Plug>ToggleMarkbar
 
 " the following are unneeded if ToggleMarkbar is mapped
-map <Leader>mo <Plug>OpenMarkbar
-map <Leader>mc <Plug>CloseMarkbar
+nmap <Leader>mo <Plug>OpenMarkbar
+nmap <Leader>mc <Plug>CloseMarkbar
 ```
 
 These examples use the [leader key,](https://stackoverflow.com/questions/1764263/what-is-the-leader-in-a-vimrc-file)
@@ -147,10 +147,6 @@ _jump to_ mark `a`.
 
 By default, you can **jump to the selected mark** by pressing the `Enter` key.
 
-As of the time of writing, **the peekaboo markbar is not compatible with visual
-mode,** e.g. you can't press `V` to start a linewise selection, and then press
-`'a` to select every line between that starting position and the mark `a`.
-
 Customization
 --------------------------------------------------------------------------------
 
@@ -182,9 +178,9 @@ let g:markbar_reset_mark_mapping    = 'r'
 let g:markbar_delete_mark_mapping   = '<Del>'
 
 " open/close markbar mappings
-map <Leader>m  <Plug>ToggleMarkbar
-map <Leader>mo <Plug>OpenMarkbar
-map <Leader>mc <Plug>CloseMarkbar
+nmap <Leader>m  <Plug>ToggleMarkbar
+nmap <Leader>mo <Plug>OpenMarkbar
+nmap <Leader>mc <Plug>CloseMarkbar
 ```
 
 ### Peekaboo Customization
@@ -204,6 +200,22 @@ let g:markbar_peekaboo_apostrophe_mapping = '<leader>a'
 " open a 'backtick-like' peekaboo markbar with <Leader>b
 let g:markbar_peekaboo_backtick_mapping = '<leader>b'
 ```
+
+Alternatively, if you want to set your own explicit mappings, you can set the
+following options:
+
+```vim
+" leave peekaboo markbar enabled, but don't set default mappings
+let g:markbar_set_default_peekaboo_mappings = v:false
+
+nmap <leader>a <Plug>OpenMarkbarPeekabooApostrophe
+nmap <leader>b <Plug>OpenMarkbarPeekabooBacktick
+```
+
+As of the time of writing, the peekaboo markbar isn't fully compatible with
+operator-pending mode, visual mode, or select mode. For instance, setting `vmap
+' <Plug>OpenMarkbarPeekabooApostrophe` will allow you to _open_ the
+peekaboo markbar from visual mode, but doing so will cancel your visual selection.
 
 If you want to disable the peekaboo markbar entirely, you can set
 `g:markbar_enable_peekaboo` to `v:false`.
