@@ -499,6 +499,41 @@ can be found in |vim-markbar-general-options|.
     |g:markbar_peekaboo_apostrophe_mapping| and
     |g:markbar_peekaboo_backtick_mapping|.
 
+*g:markbar_peekaboo_invocation_filters*                  |v:t_list|
+    `Default Value`: >
+        [
+            \ {bufno -> getbufvar(bufno, '&filetype') ==# 'netrw' },
+        \ ]
+<
+    References to functions that accept a buffer number (see `:help bufnr`) and
+    return `v:true` if opening the peekaboo markbar should silently fail if
+    attempted from within that buffer. These functions are called "filters."
+
+    Filters should have the following signature: >
+        function! ExampleFilter(bufno)
+            " don't open the peekaboo markbar from buffers named 'foobar'
+            return bufname(a:bufno) ==# 'foobar'
+        endfunction
+<
+    The filter above can be enabled through the following: >
+        let g:markbar_peekaboo_invocation_filters += [function('ExampleFilter')]
+<
+    The above can be done more concisely (without explicitly defining a separate
+    function) by using lambdas: >
+        " replace all the above with,
+        let g:markbar_peekaboo_invocation_filters +=
+            \ [ {bufno -> bufname(bufno) ==# 'foobar'} ]
+<
+    This option exists because some (combinations of) plugins may inadvertently
+    open the peekaboo markbar, e.g. if they contain a line like `normal '`,
+    which would trigger the mapping to open an 'apostrophe-like' markbar.
+    (Note that `normal! '` would not open the markbar, as `normal!` ignores
+    user- or plugin-set mappings, and should be preferred over the naked
+    `normal` in most cases.)
+
+    As of the time of writing, netrw (used in conjunction with vim-signature and
+    vim-vinegar) is one such problematic plugin (see: https://github.com/Yilin-Yang/vim-markbar/issues/8).
+    If you encounter others, please report them on the Issues page.
 
 ================================================================================
 HIGHLIGHTING                                            *vim-markbar-highlighting*
