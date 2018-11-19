@@ -50,8 +50,12 @@ function! markbar#MarkbarModel#get() abort
             \ function('markbar#MarkbarModel#updateCurrentAndGlobal'),
     \ }
 
+    " bottom of the active buffer stack will *always* be zero, to prevent
+    " errors when the entire stack is cleared
+    call g:markbar_model.pushNewBuffer(0)
+
     if v:vim_did_enter
-      call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
+        call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
     endif
 
     augroup markbar_model_update

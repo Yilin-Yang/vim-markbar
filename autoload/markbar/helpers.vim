@@ -101,7 +101,10 @@ endfunction
 " RETURNS:  (v:t_bool)      `v:true` if the given buffer is a 'real' buffer,
 "                           i.e. a buffer in which vim-markbar should track
 "                           marks.
+" DETAILS:  - Buffer number `0`, despite not being a 'real' buffer, is always
+"           treated as 'real' since it corresponds to the global buffer cache.
 function! markbar#helpers#IsRealBuffer(buffer_expr) abort
+    if a:buffer_expr ==# '0' | return v:true | endif
     return bufexists(bufnr(a:buffer_expr))
         \  && !getbufvar(a:buffer_expr, 'is_markbar')
         \  && !has_key(markbar#settings#IgnoreBufferCriteria(), &bufhidden)

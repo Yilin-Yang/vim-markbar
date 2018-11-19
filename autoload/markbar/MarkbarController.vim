@@ -185,9 +185,6 @@ function! markbar#MarkbarController#_generateMarkbarContents(
     \ indent_block
 \ ) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    if a:buffer_no ==# markbar#constants#GLOBAL_MARKS()
-        throw '(markbar#MarkbarController) Bad argument value: ' . a:buffer_no
-    endif
     let l:buffer_caches = l:self['_markbar_model']['_buffer_caches']
     let l:marks   = l:buffer_caches[a:buffer_no]['_marks_dict']
     let l:globals = l:buffer_caches[markbar#constants#GLOBAL_MARKS()]['_marks_dict']
