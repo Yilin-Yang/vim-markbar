@@ -880,6 +880,9 @@ function! markbar#settings#ExplicitlyRemapMarkMappings() abort
     return g:markbar_explicitly_remap_mark_mappings
 endfunction
 
+" RETURNS:  (v:t_bool)      Whether to set the default mappings (the backtick
+"                           key, the apostrophe key) to open the peekaboo
+"                           markbar.
 function! markbar#settings#SetDefaultPeekabooMappings() abort
     if !exists('g:markbar_set_default_peekaboo_mappings')
         let g:markbar_set_default_peekaboo_mappings = v:true
@@ -890,4 +893,21 @@ function! markbar#settings#SetDefaultPeekabooMappings() abort
         \ 'g:markbar_set_default_peekaboo_mappings'
     \ )
     return g:markbar_set_default_peekaboo_mappings
+endfunction
+
+" RETURNS:  (v:t_list)      List of boolean functors that take in a bufno and
+"                           return true if opening the peekaboo markbar should
+"                           be *disallowed* from within that buffer.
+function! markbar#settings#PeekabooInvocationFilters() abort
+    if !exists('g:markbar_peekaboo_invocation_filters')
+        let g:markbar_peekaboo_invocation_filters = [
+            \ {bufno -> getbufvar(bufno, '&filetype') ==# 'netrw' },
+        \ ]
+    endif
+    call s:AssertType(
+        \ g:markbar_peekaboo_invocation_filters,
+        \ v:t_list,
+        \ 'g:markbar_peekaboo_invocation_filters'
+    \ )
+    return g:markbar_peekaboo_invocation_filters
 endfunction

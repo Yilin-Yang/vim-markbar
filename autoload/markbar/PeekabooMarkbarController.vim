@@ -26,6 +26,10 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new['_setMarkbarMappings'] =
         \ function('markbar#PeekabooMarkbarController#_setMarkbarMappings')
 
+
+    let l:new['_shouldNotOpen'] =
+        \ function('markbar#PeekabooMarkbarController#_shouldNotOpen')
+
     let l:select_keys = markbar#KeyMapper#newWithUniformModifiers(
         \ markbar#constants#ALL_MARKS_STRING(),
         \ markbar#settings#PeekabooSelectModifiers(),
@@ -55,8 +59,11 @@ function! markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(ob
 endfunction
 
 " BRIEF:    Open the peekaboo bar with apostrophe-like jump behavior.
+" DETAILS:  - Don't open the peekaboo markbar if an invocation filter returns
+"           `v:true` for the current buffer.
 function! markbar#PeekabooMarkbarController#apostrophe() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    if l:self._shouldNotOpen() | return | endif
     if markbar#settings#BacktickBehaviorWithApostrophe()
         let l:self['_jump_like_backtick'] = v:true
     else
@@ -66,8 +73,11 @@ function! markbar#PeekabooMarkbarController#apostrophe() abort dict
 endfunction
 
 " BRIEF:    Open the peekaboo bar with backtick-like jump behavior.
+" DETAILS:  - Don't open the peekaboo markbar if an invocation filter returns
+"           `v:true` for the current buffer.
 function! markbar#PeekabooMarkbarController#backtick() abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    if l:self._shouldNotOpen() | return | endif
     let l:self['_jump_like_backtick'] = v:true
     call l:self.openMarkbar()
 endfunction
@@ -187,4 +197,17 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     call l:self['_select_keys' ].setMappings('noremap <silent> <buffer>')
     call l:self['_jump_to_keys'].setMappings('noremap <silent> <buffer>')
 
+endfunction
+
+" RETURNS:  (v:t_bool)  `v:true` if the peekaboo markbar should not be opened
+"                       from the current buffer, i.e. if a call to
+"                       `apostrophe()` or `backtick()` should silently fail.
+function! markbar#PeekabooMarkbarController#_shouldNotOpen() abort dict
+    call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    let l:bufno = bufnr('%')
+    let l:filters = markbar#settings#PeekabooInvocationFilters()
+    for l:Test in l:filters
+        if l:Test(l:bufno) | return v:true | endif
+    endfor
+    return v:false
 endfunction
