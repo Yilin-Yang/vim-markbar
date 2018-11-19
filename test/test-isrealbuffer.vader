@@ -2,38 +2,38 @@ Execute (IsRealBuffer Markbar):
   let b:is_markbar = 1
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
-  AssertEqual 0, result
+  Assert 0 ==# result
 
 Execute (IsRealBuffer Not Markbar):
   unlet b:is_markbar
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
-  AssertEqual 1, result
+  Assert 1 ==# result
 
 Execute (IsRealBuffer bh=hide):
   new
   setlocal bufhidden=hide
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
-  AssertEqual 1, markbar#helpers#IsRealBuffer('%')
+  Assert 1 ==# markbar#helpers#IsRealBuffer('%')
 
 Execute (IsRealBuffer bh=delete):
   new
   setlocal bufhidden=delete
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
-  AssertEqual 0, result
+  Assert 0 ==# result
 
 Execute (IsRealBuffer bh=unload):
   new
   setlocal bufhidden=unload
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
-  AssertEqual 0, result
+  Assert 0 ==# result
 
 Execute (IsRealBuffer bh=wipe):
   new
   setlocal bufhidden=wipe
 Then:
   let result = markbar#helpers#IsRealBuffer('%')
-  AssertEqual 0, result
+  Assert 0 ==# result
