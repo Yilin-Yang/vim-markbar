@@ -304,6 +304,7 @@ customize to your liking.
 |`markbarSectionName`             | `Title`                 | The text following the colon in, e.g. `['A]:    Section Name Here`
 |`markbarContext`                 | `NormalNC`              | The lines below the section headings, plucked from around the mark's actual location.
 |`markbarContextEndOfBuffer`      | `EndOfBuffer`           | The `~` character that appears when a mark's context is cut off by the top  or bottom of its parent file.
+|`markbarContextMarkHighlight`    | `TermCursor`            | Highlighting used to show a mark's location in its context.
 
 These can be customized by linking them to other preexisting highlight groups
 (as is done by default), or by explicitly defining a colorscheme for the

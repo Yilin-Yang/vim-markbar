@@ -1,7 +1,6 @@
 " Vim syntax file
 " Language: markbar
 " Maintainer: Yilin Yang
-" Latest Revision: 3 August 2018
 
 if exists('b:current_syntax')
     finish
@@ -39,8 +38,12 @@ syn region markbarContext
     \ fold keepend contains=@markbarContextElements
 
 syn match markbarContextEndOfBuffer /\M~/ contained
+syn match markbarContextMarkHighlightMarker /➜/ contained conceal
+execute 'syn match markbarContextMarkHighlight /'. markbar#settings#MarkMarker() .'./ contained contains=markbarContextMarkHighlightMarker'
 
-syn cluster markbarContextElements contains=markbarContextEndOfBuffer
+syn cluster markbarContextElements
+    \ contains=markbarContextEndOfBuffer,
+             \ markbarContextMarkHighlight
 
 "===============================================================================
 
@@ -55,5 +58,6 @@ hi default link markbarSectionName             Title
 
 hi default link markbarContext                 NormalNC
 hi default link markbarContextEndOfBuffer      EndOfBuffer
+hi default link markbarContextMarkHighlight    TermCursor
 
 let b:current_syntax = 'markbar'

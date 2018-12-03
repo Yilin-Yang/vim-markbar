@@ -369,11 +369,13 @@ function! markbar#MarkbarView#_setMarkbarBufferSettings(buffer_expr) abort dict
 
     " has no effect?
     " call setbufvar(a:buffer_expr,      '&buflisted',         0)
-    call setbufvar(a:buffer_expr,        '&buftype',  'nofile')
-    call setbufvar(a:buffer_expr,      '&bufhidden',    'hide')
-    call setbufvar(a:buffer_expr,       '&swapfile',         0)
-    call setbufvar(a:buffer_expr,       '&filetype', 'markbar')
-    call setbufvar(a:buffer_expr,         '&syntax', 'markbar')
+    call setbufvar(a:buffer_expr,       '&buftype',  'nofile')
+    call setbufvar(a:buffer_expr,     '&bufhidden',    'hide')
+    call setbufvar(a:buffer_expr,      '&swapfile',         0)
+    call setbufvar(a:buffer_expr,      '&filetype', 'markbar')
+    call setbufvar(a:buffer_expr,        '&syntax', 'markbar')
+    call setbufvar(a:buffer_expr,  '&conceallevel',         3)
+    call setbufvar(a:buffer_expr, '&concealcursor',       'n')
 
     call setbufvar(a:buffer_expr,      'is_markbar',         1)
 endfunction

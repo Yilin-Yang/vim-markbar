@@ -347,6 +347,43 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 *g:markbar_peekaboo_numbered_mark_arguments*
     `Default Value:` `g:markbar_file_mark_arguments`
 
+*g:markbar_enable_mark_highlighting*                     |(v:t_bool)|
+    `Default Value:` `v:true`
+
+    Whether to highlight the "target position" in a mark's context to which the
+    cursor would move if one were to jump to that mark from the markbar, i.e.
+    whether to indicate a mark's location in its shown context.
+
+*g:markbar_mark_marker*                                  |(v:t_string)|
+    `Default Value:` `➜`
+
+    vim-markbar uses a "mark marker" character to indicate that the character
+    to follow should have the |markbarContextMarkHighlight| highlighting
+    applied.  This character is hidden when viewing the markbar in normal
+    mode, though it will appear in other modes, and it will appear in text
+    yanked directly from lines of context in the markbar.
+
+    This character is never meant to be seen, and can therefore be anything
+    (except an empty string), though you shouldn't use "ordinary" glyphs (like
+    letters and numbers) because these will not conceal properly.
+
+    |g:markbar_mark_marker| can be more than one character in length, i.e.
+    `'➜➜➜'` would be a valid "mark marker."
+
+    It is suggested that this be set to some string of Unicode characters
+    that would never reasonably be seen in any text file one might edit in vim.
+    If you do, for whatever reason, regularly edit files that use the `'➜'` glyph,
+    then you should change this setting.
+
+    If you don't want the "mark marker" to appear at all (e.g. if you regularly
+    yank lines of context from the markbar, and you don't want to remove the
+    `'➜'` from that yanked text every time you paste it), then you should
+    disable this character's insertion by setting
+    |g:markbar_enable_mark_highlighting| to `v:false`.
+
+    If you do this regularly, but you do still want "target position"
+    highlighting, please open an Issue on GitHub!
+
 --------------------------------------------------------------------------------
 PEEKABOO-SPECIFIC OPTIONS                               *vim-markbar-peekaboo-options*
 
@@ -579,6 +616,12 @@ syntax file defines the following highlight groups:
 
     The '~' character that appears when a mark's context is cut off by the top
     or bottom of its parent file.
+
+|markbarContextMarkHighlight|               `Default Value (Linkage):` 'TermCursor'
+
+    The highlighting used to indicate the "target position" (in a mark's
+    shown context) to which the cursor would move on jumping to that mark from
+    the markbar.
 
 These can be customized by linking them to other preexisting highlight groups
 (as is done by default), or by explicitly defining a colorscheme for the

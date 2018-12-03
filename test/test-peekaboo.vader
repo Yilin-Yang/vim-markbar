@@ -1,6 +1,9 @@
 Include: clear-marks.vader
 
 Execute (Set Settings, Set Plugin Mappings):
+  let g:markbar_enable_mark_highlighting = v:false
+  let g:markbar_jump_to_exact_position = v:true
+
   let g:markbar_peekaboo_num_lines_context = 3
   let g:markbar_peekaboo_open_vertical = v:true
   let g:markbar_peekaboo_section_separation = 1
@@ -65,6 +68,49 @@ Do (Close Peekaboo Markbar):
   \<Esc>
 Then:
   Assert !exists('b:is_markbar')
+
+Execute (Test Mark Highlighting, Backtick):
+  let g:markbar_enable_mark_highlighting = v:true
+  normal `
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+    ~
+    first➜ line
+    second line
+
+  ['B]: 10lines.txt
+    fourth line
+    ➜fifth line
+    sixth line
+
+  ['C]: 10lines.txt
+    ninth line
+    ➜tenth line
+    ~
+  
+Execute (Test Mark Highlighting, Apostrophe):
+  let g:markbar_enable_mark_highlighting = v:true
+  normal '
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+    ~
+    ➜first line
+    second line
+
+  ['B]: 10lines.txt
+    fourth line
+    ➜fifth line
+    sixth line
+
+  ['C]: 10lines.txt
+    ninth line
+    ➜tenth line
+    ~
+  
+Execute (Disable Mark Highlighting):
+  let g:markbar_enable_mark_highlighting = v:false
 
 Do (Select Mark):
   '

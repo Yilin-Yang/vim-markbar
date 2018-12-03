@@ -93,7 +93,9 @@ function! markbar#StandardMarkbarController#_getMarkbarContents(buffer_no, marks
         \ a:buffer_no,
         \ a:marks,
         \ markbar#settings#MarkbarSectionSeparator(),
-        \ markbar#settings#ContextIndentBlock()
+        \ markbar#settings#ContextIndentBlock(),
+        \ markbar#settings#EnableMarkHighlighting(),
+        \ markbar#settings#JumpToExactPosition()
     \ )
 endfunction
 

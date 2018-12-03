@@ -487,6 +487,45 @@ function! markbar#settings#NumberedMarkArguments() abort
     return g:markbar_numbered_mark_arguments
 endfunction
 
+" RETURNS:  (v:t_bool)      Whether to highlight a mark's location inside
+"                           of its context.
+function! markbar#settings#EnableMarkHighlighting() abort
+    if !exists('g:markbar_enable_mark_highlighting')
+        let g:markbar_enable_mark_highlighting = v:true
+    endif
+    call s:AssertType(
+        \ g:markbar_enable_mark_highlighting,
+        \ v:t_bool,
+        \ 'g:markbar_enable_mark_highlighting'
+    \ )
+    return g:markbar_enable_mark_highlighting
+endfunction
+
+" RETURNS:  (v:t_string)    The character used to mark the location of the
+"                           mark inside a string of context from within the
+"                           markbar.
+" DETIALS:  Vim must restart in order for changes to this option to take effect.
+function! markbar#settings#MarkMarker() abort
+    if !exists('g:markbar_mark_marker')
+        let g:markbar_mark_marker = '➜'
+    endif
+    call s:AssertType(
+        \ g:markbar_mark_marker,
+        \ v:t_string,
+        \ 'g:markbar_mark_marker'
+    \ )
+    if !exists('g:markbar_mark_marker_NOWARN')
+        let l:silence_text =
+            \ '(Set g:markbar_mark_marker_NOWARN '
+            \ . 'to 1 to silence this warning.)'
+        if !len(g:markbar_mark_marker)
+            echoerr '(vim-markbar) WARNING: Zero-length "mark marker" will '
+                        \ . 'break syntax highlighting for mark contexts. '
+                \ . l:silence_text
+        endif
+    endif
+    return g:markbar_mark_marker
+endfunction
 
 "===============================================================================
 

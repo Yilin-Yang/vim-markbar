@@ -152,7 +152,9 @@ function! markbar#PeekabooMarkbarController#_getMarkbarContents(buffer_no, marks
         \ a:buffer_no,
         \ a:marks,
         \ markbar#settings#PeekabooMarkbarSectionSeparator(),
-        \ markbar#settings#PeekabooContextIndentBlock()
+        \ markbar#settings#PeekabooContextIndentBlock(),
+        \ markbar#settings#EnableMarkHighlighting(),
+        \ l:self['_jump_like_backtick']
     \ )
 endfunction
 

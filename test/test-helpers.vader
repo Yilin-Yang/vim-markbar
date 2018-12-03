@@ -60,3 +60,43 @@ Execute (Is[...]Mark: Number, nomagic):
   Assert  markbar#helpers#IsNumberedMark ('1')
   AssertEqual 0, &magic
   set magic
+
+Execute (SplitString: Empty):
+  let string = ''
+  AssertEqual ['', ''], markbar#helpers#SplitString(string, 3)
+
+Execute (SplitString: One Character, Split After End):
+  let string = 'a'
+  AssertEqual ['a', ''], markbar#helpers#SplitString(string, 3)
+
+Execute (SplitString: One Character, Split At 0):
+  let string = 'a'
+  AssertEqual ['', 'a'], markbar#helpers#SplitString(string, 0)
+
+Execute (SplitString: One Character, Split Before 0):
+  let string = 'a'
+  AssertEqual ['', 'a'], markbar#helpers#SplitString(string, -5)
+
+Execute (SplitString: Three Characters, Split Before 0):
+  let string = 'abc'
+  AssertEqual ['', 'abc'], markbar#helpers#SplitString(string, -1)
+
+Execute (SplitString: Three Characters, Split At 0):
+  let string = 'abc'
+  AssertEqual ['', 'abc'], markbar#helpers#SplitString(string, 0)
+
+Execute (SplitString: Three Characters, Split In Middle):
+  let string = 'abc'
+  AssertEqual ['a', 'bc'], markbar#helpers#SplitString(string, 1)
+
+Execute (SplitString: Three Characters, Split Before End):
+  let string = 'abc'
+  AssertEqual ['ab', 'c'], markbar#helpers#SplitString(string, 2)
+
+Execute (SplitString: Three Characters, Split At End):
+  let string = 'abc'
+  AssertEqual ['abc', ''], markbar#helpers#SplitString(string, 3)
+
+Execute (SplitString: Three Characters, Split After End):
+  let string = 'abc'
+  AssertEqual ['abc', ''], markbar#helpers#SplitString(string, 6)

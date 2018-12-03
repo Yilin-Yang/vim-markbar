@@ -128,6 +128,25 @@ function! markbar#helpers#BufferNo(mark) abort
     return l:mark_pos[0]
 endfunction
 
+" RETURNS:  (v:t_list)      A two-element list, containing:
+"                               0. All characters in `a:string` up to, but not
+"                               including, the given index.
+"                               1. All characters from the given index
+"                               (inclusive) till the end of the string.
+"
+"                           If no characters would fall in one substring or
+"                           the other, then that element will be the empty
+"                           string.
+function! markbar#helpers#SplitString(string, idx) abort
+    if type(a:string) != v:t_string
+        throw '(markbar#helpers#SplitString) Arg isn''t a string: '.a:string
+    endif
+    if a:idx <=# 0
+        return [ '', a:string ]
+    endif
+    return [ a:string[0:a:idx-1], a:string[a:idx:] ]
+endfunction
+
 " RETURNS:  (v:t_string)    The name of the file in which the requested mark
 "                           can be found. May be an empty string, if the given
 "                           mark exists in a scratch buffer.

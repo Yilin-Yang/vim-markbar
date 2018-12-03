@@ -6,6 +6,8 @@ Execute (Set Settings, Create Standard Markbar Controller):
   let g:standard_controller = 
     \ markbar#StandardMarkbarController#new(g:model, g:view)
 
+  let g:markbar_enable_mark_highlighting = v:false
+
   let g:markbar_num_lines_context = 3
   let g:markbar_open_vertical = v:true
 
@@ -287,5 +289,50 @@ Expect:
   ['C]: 10lines.txt
       ninth line
       tenth line
+      ~
+  
+Do (Set New Marks):
+  :edit! 10lines.txt\<cr>
+  1G5lmA5GmB10G$mC
+
+Execute (Test Mark Highlighting, Backtick-like):
+  let g:markbar_enable_mark_highlighting = v:true
+  call g:standard_controller.openMarkbar()
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first➜ line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      ➜fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth lin➜e
+      ~
+  
+Execute (Test Mark Highlighting, Apostrophe-like):
+  let g:markbar_enable_mark_highlighting = v:true
+  let g:markbar_jump_to_exact_position = v:false
+  call g:standard_controller.openMarkbar()
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      ➜first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      ➜fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      ➜tenth line
       ~
   
