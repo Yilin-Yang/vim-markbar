@@ -158,8 +158,7 @@ function! markbar#MarkbarView#getOpenMarkbars() abort dict
 endfunction
 
 " RETURNS:  (v:t_number)    The buffer number of the 'markbar buffer.'
-" DETAILS:  Creates a markbar buffer for the MarkbarState object if one does
-"           not yet exist.
+" DETAILS:  Creates a markbar buffer if one does not yet exist.
 function! markbar#MarkbarView#getMarkbarBuffer() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     if !bufexists(l:self['_markbar_buffer'])
@@ -174,8 +173,7 @@ endfunction
 
 " RETURNS:  (v:t_number)    The window ID of the 'markbar buffer', or -1 if
 "                           the window doesn't exist in the current tab page.
-" DETAILS:  Creates a markbar buffer for the MarkbarState object if one does
-"           not yet exist.
+" DETAILS:  Creates a markbar buffer if one does not yet exist.
 function! markbar#MarkbarView#getMarkbarWindow() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
     let l:markbar_buffer = l:self.getMarkbarBuffer()
