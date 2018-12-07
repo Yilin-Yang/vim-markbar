@@ -24,5 +24,5 @@ before_script:
 
 script:
   - cd test  # to make handling filepaths easier
-  - ./run_tests_nvim.sh --full
-  - ./run_tests_vim.sh --full
+  - ./run_tests_nvim.sh --international
+  - ./run_tests_vim.sh --international
