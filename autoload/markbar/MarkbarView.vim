@@ -247,8 +247,7 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
         " Mark not set
         execute bufwinnr(l:self['_markbar_buffer']) . 'wincmd w'
         echohl WarningMsg
-        echomsg 'Mark not set: ' . a:mark
-        echomsg 'Press any key to continue.'
+        echomsg 'Mark not set: '.a:mark.' (Press any key to continue.)'
         echohl None
         call getchar() " pause until user hits a key
         return
