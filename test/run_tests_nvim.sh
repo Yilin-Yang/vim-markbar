@@ -7,20 +7,27 @@
 #               https://github.com/neovim/neovim/issues/4842
 # PARAM:    TEST_INTERNATIONAL  If set to '-i' or '--international', re-run
 #                               tests in non-English locales.
+BASE_CMD="nvim --headless -Nnu .test_vimrc -i NONE"
+TEST_CMD="-c 'Vader! *vader'"
 for ARG in "$@"; do
     case $ARG in
         '-i' | '--international')
             TEST_INTERNATIONAL=1
+            ;;
+        '-v' | '--visible')
+            BASE_CMD="nvim -Nnu .test_vimrc -i NONE"
+            TEST_CMD="-c 'Vader *vader'"
             ;;
     esac
 done
 
 set -p
 export VADER_OUTPUT_FILE=/dev/stderr
-nvim --headless -Nnu .test_vimrc -i NONE -c 'Vader! *vader'
+echo "${BASE_CMD} ${TEST_CMD}"
+eval "${BASE_CMD} ${TEST_CMD}"
 
 if [ $TEST_INTERNATIONAL ]; then
     # test non-English locale
-    nvim --headless -Nnu .test_vimrc -i NONE -c 'language de_DE.utf8' -c 'Vader! *vader'
-    nvim --headless -Nnu .test_vimrc -i NONE -c 'language es_ES.utf8' -c 'Vader! *vader'
+    eval "${BASE_CMD} -c 'language de_DE.utf8' ${TEST_CMD}"
+    eval "${BASE_CMD} -c 'language es_ES.utf8' ${TEST_CMD}"
 fi
