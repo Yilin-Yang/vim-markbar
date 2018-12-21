@@ -107,7 +107,9 @@ function! markbar#helpers#IsRealBuffer(buffer_expr) abort
     if a:buffer_expr ==# '0' | return v:true | endif
     return bufexists(bufnr(a:buffer_expr))
         \  && !getbufvar(a:buffer_expr, 'is_markbar')
-        \  && !has_key(markbar#settings#IgnoreBufferCriteria(), &bufhidden)
+        \  && !has_key(
+                \ markbar#settings#IgnoreBufferCriteria(),
+                \ getbufvar(a:buffer_expr, '&bufhidden'))
 endfunction
 
 " RETURNS:  (v:t_number)    The buffer number of the buffer that contains the

@@ -1,39 +1,53 @@
 Execute (IsRealBuffer Markbar):
+  new
   let b:is_markbar = 1
+  let bufno=bufnr('%')
+  wincmd p
 Then:
-  let result = markbar#helpers#IsRealBuffer('%')
+  let result = markbar#helpers#IsRealBuffer(bufno)
   Assert 0 ==# result
 
 Execute (IsRealBuffer Not Markbar):
+  wincmd p
   unlet b:is_markbar
+  let bufno=bufnr('%')
+  wincmd p
 Then:
-  let result = markbar#helpers#IsRealBuffer('%')
+  let result = markbar#helpers#IsRealBuffer(bufno)
   Assert 1 ==# result
 
 Execute (IsRealBuffer bh=hide):
   new
   setlocal bufhidden=hide
+  let bufno=bufnr('%')
+  wincmd p
 Then:
-  let result = markbar#helpers#IsRealBuffer('%')
-  Assert 1 ==# markbar#helpers#IsRealBuffer('%')
+  let result = markbar#helpers#IsRealBuffer(bufno)
+  Assert 1 ==# result
 
 Execute (IsRealBuffer bh=delete):
   new
+  let bufno=bufnr('%')
   setlocal bufhidden=delete
+  wincmd p
 Then:
-  let result = markbar#helpers#IsRealBuffer('%')
+  let result = markbar#helpers#IsRealBuffer(bufno)
   Assert 0 ==# result
 
 Execute (IsRealBuffer bh=unload):
   new
+  let bufno=bufnr('%')
   setlocal bufhidden=unload
+  wincmd p
 Then:
-  let result = markbar#helpers#IsRealBuffer('%')
+  let result = markbar#helpers#IsRealBuffer(bufno)
   Assert 0 ==# result
 
 Execute (IsRealBuffer bh=wipe):
   new
+  let bufno=bufnr('%')
   setlocal bufhidden=wipe
+  wincmd p
 Then:
-  let result = markbar#helpers#IsRealBuffer('%')
+  let result = markbar#helpers#IsRealBuffer(bufno)
   Assert 0 ==# result
