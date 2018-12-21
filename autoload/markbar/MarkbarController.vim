@@ -96,7 +96,18 @@ function! markbar#MarkbarController#openMarkbar() abort dict
     let l:active_buffer  = l:model.getActiveBuffer()
     let l:markbar_buffer = l:view.getMarkbarBuffer()
 
-    call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
+    try
+        call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
+    catch /Buffer not cached/
+        " HACK: Assume that this buffer isn't a 'real' buffer;
+        "       instead, push the 'actual open buffer' on top of it
+        "       and let that be the 'active buffer'
+        call l:view.closeMarkbar()
+        let l:active_buffer = bufnr('%')
+        call l:model.pushNewBuffer(l:active_buffer)
+        call l:self._openMarkbarSplit()
+        call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
+    endtry
     call l:self._setMarkbarMappings()
     call l:self._setRefreshMarkbarAutocmds()
 endfunction
@@ -197,7 +208,7 @@ function! markbar#MarkbarController#_generateMarkbarContents(
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
     let l:markbar_model = l:self['_markbar_model']
     let l:marks =
-        \ l:markbar_model.getBufferCache(a:buffer_no, v:false)['marks_dict']
+        \ l:markbar_model.getBufferCache(a:buffer_no, v:true)['marks_dict']
     let l:globals =
         \ l:markbar_model.getBufferCache(
             \ markbar#constants#GLOBAL_MARKS())['marks_dict']
