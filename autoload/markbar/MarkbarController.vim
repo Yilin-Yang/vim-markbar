@@ -195,9 +195,12 @@ function! markbar#MarkbarController#_generateMarkbarContents(
     \ backtick_like
 \ ) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    let l:buffer_caches = l:self['_markbar_model']['_buffer_caches']
-    let l:marks   = l:buffer_caches[a:buffer_no]['_marks_dict']
-    let l:globals = l:buffer_caches[markbar#constants#GLOBAL_MARKS()]['_marks_dict']
+    let l:markbar_model = l:self['_markbar_model']
+    let l:marks =
+        \ l:markbar_model.getBufferCache(a:buffer_no, v:false)['marks_dict']
+    let l:globals =
+        \ l:markbar_model.getBufferCache(
+            \ markbar#constants#GLOBAL_MARKS())['marks_dict']
 
     let l:lines = [] " to return
 

@@ -15,7 +15,7 @@ Execute (MarkbarModel: Populate Local Cache):
   call g:markbar_model.updateCurrentAndGlobal()
 Then:
   let g:bufno_50lines = bufnr('%')
-  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_50lines)['_marks_dict']
+  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_50lines)['marks_dict']
   AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
   AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
   AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
@@ -32,7 +32,7 @@ Execute (MarkbarModel: Populate Global Cache):
 Then:
   " check globals
   let global_marks =
-    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['_marks_dict']
+    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['marks_dict']
   AssertEqual ['C', '30', '0'],   global_marks['C']['_data']
   AssertEqual ['D', '40', '0'],   global_marks['D']['_data']
   AssertEqual ['E', '50', '0'],   global_marks['E']['_data']
@@ -51,7 +51,7 @@ Execute (MarkbarModel: Add More Global Marks; Add Local Marks):
 
   call g:markbar_model.updateCurrentAndGlobal()
 Then:
-  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_30lines)['_marks_dict']
+  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_30lines)['marks_dict']
   AssertEqual ['e',  '1', '0'],   buffer_marks['e']['_data']
   AssertEqual ['d',  '5', '0'],   buffer_marks['d']['_data']
   AssertEqual ['c', '10', '0'],   buffer_marks['c']['_data']
@@ -59,7 +59,7 @@ Then:
   AssertEqual ['a', '20', '0'],   buffer_marks['a']['_data']
 
   " make sure that we didn't somehow overwrite these older ones
-  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_50lines)['_marks_dict']
+  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_50lines)['marks_dict']
   AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
   AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
   AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
@@ -67,7 +67,7 @@ Then:
   AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
 
   let global_marks =
-    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['_marks_dict']
+    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['marks_dict']
   AssertEqual ['A', '10', '0'],   global_marks['A']['_data']
   AssertEqual ['B', '20', '0'],   global_marks['B']['_data']
   AssertEqual ['C', '30', '0'],   global_marks['C']['_data']
@@ -93,7 +93,7 @@ Then:
   " Only check 'indicator' values, for brevity. If these are fine, and if the
   " `test-fetchlines.vader` tests pass, assume that context fetching itself is
   " fine.
-  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_50lines)['_marks_dict']
+  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_50lines)['marks_dict']
 
   let expected = [
       \ 'fourth line',
@@ -122,7 +122,7 @@ Execute (MarkbarModel: Delete Mark, Update Local Contexts, 30lines.txt):
   execute 'delmarks a'
   call g:markbar_model.updateCurrentAndGlobal()
 Then:
-  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_30lines)['_marks_dict']
+  let buffer_marks = g:markbar_model.getBufferCache(g:bufno_30lines)['marks_dict']
   Assert !has_key(buffer_marks, 'a')
 
 Execute (MarkbarModel: Update Globals in Offscreen, Unloaded Buffer):
@@ -131,7 +131,7 @@ Execute (MarkbarModel: Update Globals in Offscreen, Unloaded Buffer):
   call g:markbar_model.updateCurrentAndGlobal()
 Then:
   let global_marks =
-    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['_marks_dict']
+    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['marks_dict']
   " even after unloading the buffer, the plugin should still be able to fetch
   " contexts from the files on disk
   let expected = [

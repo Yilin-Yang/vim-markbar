@@ -5,10 +5,11 @@ function! markbar#BufferCache#new(...) abort
     let a:buffer_no = get(a:, 1, -1)
     let l:new = {
         \ 'TYPE': 'BufferCache',
-        \ '_marks_dict': {},
+        \ 'marks_dict': {},
         \ '_buffer_no': a:buffer_no,
     \ }
     let l:new['isGlobal']       = function('markbar#BufferCache#isGlobal')
+    let l:new['getMark']        = function('markbar#BufferCache#getMark')
     let l:new['updateCache']    = function('markbar#BufferCache#updateCache')
     let l:new['updateContexts'] = function('markbar#BufferCache#updateContexts')
     return l:new
@@ -21,6 +22,19 @@ function! markbar#BufferCache#AssertIsBufferCache(object) abort
     if a:object['_buffer_no'] <# 0
         throw "(markbar#BufferCache) Given BufferCache hasn't been initialized: " . a:object
     endif
+endfunction
+
+" RETURNS:  (markbar#MarkData)  The MarkData corresponding to the requested mark.
+function! markbar#BufferCache#getMark(mark) abort dict
+    call markbar#BufferCache#AssertIsBufferCache(l:self)
+    let l:is_quote = a:mark ==# "'" || a:mark ==# '`'
+    let l:mark = (l:is_quote) ? "'" : a:mark
+    try
+        let l:md = l:self['marks_dict'][l:mark]
+    catch /E716/ " Key not present in dictionary
+        throw '(markbar#BufferCache) Requested mark not found in cache: ' . a:mark
+    endtry
+    return l:md
 endfunction
 
 " EFFECTS:  Repopulate the internal marks database of this BufferCache with
@@ -47,7 +61,7 @@ function! markbar#BufferCache#updateCache(marks_output) abort dict
     endwhile
 
     " copy over existing mark names
-    let l:old_dict = l:self['_marks_dict']
+    let l:old_dict = l:self['marks_dict']
     for l:mark in keys(l:old_dict)
         if !has_key(l:new_marks_dict, l:mark) | continue | endif
         call l:new_marks_dict[l:mark].setName(
@@ -55,7 +69,7 @@ function! markbar#BufferCache#updateCache(marks_output) abort dict
         \ )
     endfor
 
-    let l:self['_marks_dict'] = l:new_marks_dict
+    let l:self['marks_dict'] = l:new_marks_dict
 endfunction
 
 " EFFECTS:  - Retrieve new contexts for the marks held in this buffer cache.
@@ -67,7 +81,7 @@ endfunction
 function! markbar#BufferCache#updateContexts(num_lines) abort dict
     call markbar#BufferCache#AssertIsBufferCache(l:self)
 
-    let l:marks_database = l:self['_marks_dict']
+    let l:marks_database = l:self['marks_dict']
 
     " remove orphaned contexts
     " for l:mark in keys(l:marks_to_contexts)

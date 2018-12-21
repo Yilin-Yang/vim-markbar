@@ -223,7 +223,9 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     if l:mark_is_quote
         " note that ['`] isn't actually stored as a distinct mark
         let l:targ_mark = deepcopy(
-            \ l:self['_markbar_model'].getBufferCache(l:active_buffer)['_marks_dict']["'"]
+            \ l:self['_markbar_model']
+                \.getBufferCache(l:active_buffer)
+                \.getMark("'")
         \ )
         let l:mark_line = l:targ_mark.getLineNo()
         let l:mark_col  = l:targ_mark.getColumnNo() + 1

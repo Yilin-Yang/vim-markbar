@@ -167,7 +167,7 @@ function! markbar#MarkbarModel#getMarkData(mark_char) abort dict
                 \ :
                 \ l:self.getActiveBuffer()
     let l:marks_dict =
-        \ l:self.getBufferCache(l:mark_buffer)['_marks_dict']
+        \ l:self.getBufferCache(l:mark_buffer)['marks_dict']
     if !has_key(l:marks_dict, a:mark_char)
         throw '(markbar#MarkbarModel) Could not find mark ' . a:mark_char
             \ . ' for buffer ' . l:mark_buffer
@@ -187,7 +187,10 @@ endfunction
 function! markbar#MarkbarModel#getBufferCache(buffer_no, ...) abort dict
     call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
     let a:no_init = get(a:000, 0, v:false)
-    if !has_key(l:self['_buffer_caches'], a:buffer_no) && !a:no_init
+    if !has_key(l:self['_buffer_caches'], a:buffer_no)
+        if a:no_init
+            throw '(markbar#MarkbarModel) Buffer not cached: '.a:buffer_no
+        endif
         let l:self['_buffer_caches'][a:buffer_no] =
             \ markbar#BufferCache#new(a:buffer_no)
     endif

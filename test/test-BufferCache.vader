@@ -22,7 +22,7 @@ Execute (BufferCache: Populate Local Cache):
   call cache_50lines.updateCache(markbar#helpers#GetLocalMarks())
 Then:
   let g:bufno_50lines = bufnr('%')
-  let buffer_marks = cache_50lines['_marks_dict']
+  let buffer_marks = cache_50lines['marks_dict']
   AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
   AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
   AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
@@ -39,7 +39,7 @@ Execute (BufferCache: Populate Global Cache):
   call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 Then:
   " check globals
-  let buffer_marks = global_cache['_marks_dict']
+  let buffer_marks = global_cache['marks_dict']
   AssertEqual ['C', '30', '0'],   buffer_marks['C']['_data']
   AssertEqual ['D', '40', '0'],   buffer_marks['D']['_data']
   AssertEqual ['E', '50', '0'],   buffer_marks['E']['_data']
@@ -61,7 +61,7 @@ Execute (BufferCache: Add More Global Marks; Add Local Marks):
   call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 
 Then:
-  let buffer_marks = cache_30lines['_marks_dict']
+  let buffer_marks = cache_30lines['marks_dict']
   AssertEqual ['e',  '1', '0'],   buffer_marks['e']['_data']
   AssertEqual ['d',  '5', '0'],   buffer_marks['d']['_data']
   AssertEqual ['c', '10', '0'],   buffer_marks['c']['_data']
@@ -69,14 +69,14 @@ Then:
   AssertEqual ['a', '20', '0'],   buffer_marks['a']['_data']
 
   " make sure that we didn't somehow overwrite these older ones
-  let buffer_marks = cache_50lines['_marks_dict']
+  let buffer_marks = cache_50lines['marks_dict']
   AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
   AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
   AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
   AssertEqual ['d', '35', '0'],   buffer_marks['d']['_data']
   AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
 
-  let buffer_marks = global_cache['_marks_dict']
+  let buffer_marks = global_cache['marks_dict']
   AssertEqual ['A', '10', '0'],   buffer_marks['A']['_data']
   AssertEqual ['B', '20', '0'],   buffer_marks['B']['_data']
   AssertEqual ['C', '30', '0'],   buffer_marks['C']['_data']
@@ -91,7 +91,7 @@ Then:
   " Only check 'indicator' values, for brevity. If these are fine, and if the
   " `test-fetchlines.vader` tests pass, assume that context fetching itself is
   " fine.
-  let buffer_marks = cache_50lines['_marks_dict']
+  let buffer_marks = cache_50lines['marks_dict']
 
   let expected = [
       \ 'fourth line',
@@ -113,14 +113,14 @@ Execute (BufferCache: Delete Mark, Update Local Contexts, 30lines.txt):
   execute 'delmarks a'
   call cache_30lines.updateCache(markbar#helpers#GetLocalMarks())
 Then:
-  Assert !has_key(cache_30lines['_marks_dict'], 'a')
+  Assert !has_key(cache_30lines['marks_dict'], 'a')
 
 Execute (BufferCache: Update Globals in Offscreen, Unloaded Buffer):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'bunload ' . g:bufno_50lines
   call global_cache.updateContexts(3)
 Then:
-  let global_marks = global_cache['_marks_dict']
+  let global_marks = global_cache['marks_dict']
   " even after unloading the buffer, the plugin should still be able to fetch
   " contexts from the files on disk
   let expected = [
