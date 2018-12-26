@@ -9,12 +9,14 @@
 #                               tests in non-English locales.
 BASE_CMD="vim -Nnu .test_vimrc -i NONE"
 TEST_CMD="-c 'Vader! test*vader'"
+export VISIBLE=0
 for ARG in "$@"; do
     case $ARG in
         '-i' | '--international')
             TEST_INTERNATIONAL=1
             ;;
         '-v' | '--visible')
+            export VISIBLE=1
             BASE_CMD="vim -Nnu .test_vimrc -i NONE"
             TEST_CMD="-c 'Vader test*vader'"
             ;;

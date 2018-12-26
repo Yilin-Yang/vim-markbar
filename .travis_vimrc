@@ -3,8 +3,10 @@
 " Taken from:
 "   https://github.com/junegunn/vader.vim
 "----------------------------------------
-set lines=64
-set columns=256
+if !$VISIBLE
+  set lines=64
+  set columns=256
+endif
 set nocompatible
 filetype off
 set runtimepath+=.
