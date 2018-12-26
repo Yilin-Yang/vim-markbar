@@ -20,12 +20,17 @@ Execute (Set Settings, Set Plugin Mappings):
   map Mt <Plug>ToggleMarkbar
 
 Execute (Set local working directory, then open/close markbar.):
-  tcd .
-  normal Mo
-  normal Mc
+  " only run if :tcd is supported
+  if exists(':tcd')
+    tcd .
+    normal Mo
+    normal Mc
+  endif
 
 Execute (Open a file from a different directory, in a different tab.):
-  tabedit ../plugin/vim-markbar.vim
-  tcd ..
-  normal Mo " in Issue #12, test would fail here
-  normal Mc
+  if exists(':tcd')
+    tabedit ../plugin/vim-markbar.vim
+    tcd ..
+    normal Mo " in Issue #12, test would fail here
+    normal Mc
+  endif
