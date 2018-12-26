@@ -97,14 +97,8 @@ function! markbar#MarkbarView#_openMarkbarSplit(
     let l:orientation = a:open_vertical ? 'vertical ' : ' '
     let l:size        = a:size
 
-    let l:command = !a:markbar ? 'new ' : 'split #' . a:markbar
-
-    try
-        execute 'keepalt silent ' . l:position . l:orientation . l:size . l:command
-    catch /E499/
-        execute 'keepalt silent ' . l:position . l:orientation . l:size
-            \ . 'split | buffer! ' . a:markbar
-    endtry
+    execute 'keepalt silent ' . l:position . l:orientation . l:size
+        \ . 'split | buffer! ' . a:markbar
 
     call l:self._setMarkbarBufferSettings(a:markbar)
 
