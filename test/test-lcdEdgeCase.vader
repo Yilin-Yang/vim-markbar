@@ -1,0 +1,31 @@
+Include: clear-marks.vader
+
+Execute (Set Settings, Set Plugin Mappings):
+  let g:markbar_enable_mark_highlighting = v:false
+  let g:markbar_jump_to_exact_position = v:true
+
+  let g:markbar_num_lines_context = 3
+  let g:markbar_open_vertical = v:true
+
+  let g:markbar_mark_name_format_string     = ''
+  let g:markbar_file_mark_format_string     = '%s'
+  let g:markbar_numbered_mark_format_string = ''
+
+  let g:markbar_mark_name_arguments     = []
+  let g:markbar_file_mark_arguments     = ['fname']
+  let g:markbar_numbered_mark_arguments = []
+
+  map Mo <Plug>OpenMarkbar
+  map Mc <Plug>CloseMarkbar
+  map Mt <Plug>ToggleMarkbar
+
+Execute (Set local working directory, then open/close markbar.):
+  lcd .
+  normal Mo
+  normal Mc
+
+Execute (Open a file from a different directory, in a different tab.):
+  tabedit ../plugin/vim-markbar.vim
+  lcd ..
+  normal Mo " in Issue #12, test would fail here
+  normal Mc
