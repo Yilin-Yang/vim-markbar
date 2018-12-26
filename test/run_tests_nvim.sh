@@ -8,7 +8,7 @@
 # PARAM:    TEST_INTERNATIONAL  If set to '-i' or '--international', re-run
 #                               tests in non-English locales.
 BASE_CMD="nvim --headless -Nnu .test_vimrc -i NONE"
-TEST_CMD="-c 'Vader! *vader'"
+TEST_CMD="-c 'Vader! test*vader'"
 for ARG in "$@"; do
     case $ARG in
         '-i' | '--international')
@@ -16,7 +16,7 @@ for ARG in "$@"; do
             ;;
         '-v' | '--visible')
             BASE_CMD="nvim -Nnu .test_vimrc -i NONE"
-            TEST_CMD="-c 'Vader *vader'"
+            TEST_CMD="-c 'Vader test*vader'"
             ;;
     esac
 done
