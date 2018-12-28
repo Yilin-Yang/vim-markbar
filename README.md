@@ -212,14 +212,6 @@ nmap <leader>a <Plug>OpenMarkbarPeekabooApostrophe
 nmap <leader>b <Plug>OpenMarkbarPeekabooBacktick
 ```
 
-As of the time of writing, the peekaboo markbar isn't fully compatible with
-operator-pending mode, visual mode, or select mode. For instance, setting `vmap
-' <Plug>OpenMarkbarPeekabooApostrophe` will allow you to _open_ the
-peekaboo markbar from visual mode, but doing so will cancel your visual selection.
-
-If you want to disable the peekaboo markbar entirely, you can set
-`g:markbar_enable_peekaboo` to `v:false`.
-
 #### "Select" and "Jump To" Mappings
 The plugin sets buffer-local "select" and "jump to" mappings for every possible
 mark on entering the peekaboo markbar. These mappings can be customized by
@@ -244,6 +236,22 @@ let g:markbar_peekaboo_select_prefix = ''
 " NOTE: this probably won't work in practice
 let g:markbar_peekaboo_jump_to_mark_modifiers = 'control,shift,alt'
 ```
+
+#### Known Issues
+As of the time of writing, the peekaboo markbar isn't fully compatible with
+operator-pending mode, visual mode, or select mode. For instance, setting `vmap
+' <Plug>OpenMarkbarPeekabooApostrophe` will allow you to _open_ the
+peekaboo markbar from visual mode, but doing so will cancel your visual selection.
+For this reason, the peekaboo markbar only opens from normal mode by default.
+
+If you don't want to open the peekaboo markbar for quick jumps (e.g.
+double-tapping `'` to go to "position before last jump"), then see
+`:help g:markbar_explicitly_remap_mark_mappings`. Setting this option to
+`v:true` will let you "short-circuit" the peekaboo markbar if you already know
+which mark to jump to.
+
+If you want to disable the peekaboo markbar entirely, you can set
+`g:markbar_enable_peekaboo` to `v:false`.
 
 ### Default Mark Name Customization
 Marks that have not been explicitly named by the user will show "default" names
