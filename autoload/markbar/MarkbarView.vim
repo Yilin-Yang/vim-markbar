@@ -48,6 +48,13 @@ function! markbar#MarkbarView#AssertIsMarkbarView(object) abort
     endif
 endfunction
 
+function! markbar#MarkbarView#MarkNotSet(mark) abort
+    echohl WarningMsg
+    echomsg 'Mark not set: '.a:mark.' (Press any key to continue.)'
+    echohl None
+    call getchar() " pause until user hits a key
+endfunction
+
 " BRIEF:    Open a markbar window for the currently active buffer.
 " DETAILS:  Does nothing if a markbar is already open.
 " PARAM:    open_position   (v:t_string)    The position modifier to apply to
@@ -216,13 +223,18 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     " save the 'correct' position of the [''] mark
     if l:mark_is_quote
         " note that ['`] isn't actually stored as a distinct mark
-        let l:targ_mark = deepcopy(
-            \ l:self['_markbar_model']
-                \.getBufferCache(l:active_buffer)
-                \.getMark("'")
-        \ )
-        let l:mark_line = l:targ_mark.getLineNo()
-        let l:mark_col  = l:targ_mark.getColumnNo() + 1
+        try
+            let l:targ_mark = deepcopy(
+                \ l:self['_markbar_model']
+                    \.getBufferCache(l:active_buffer)
+                    \.getMark("'")
+            \ )
+            let l:mark_line = l:targ_mark.getLineNo()
+            let l:mark_col  = l:targ_mark.getColumnNo() + 1
+        catch /mark not found in cache/
+            call markbar#MarkbarView#MarkNotSet(a:mark)
+            return
+        endtry
     endif
 
     execute bufwinnr(l:active_buffer) . 'wincmd w'
@@ -242,10 +254,7 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     catch /E20/
         " Mark not set
         execute bufwinnr(l:self['_markbar_buffer']) . 'wincmd w'
-        echohl WarningMsg
-        echomsg 'Mark not set: '.a:mark.' (Press any key to continue.)'
-        echohl None
-        call getchar() " pause until user hits a key
+        call markbar#MarkbarView#MarkNotSet(a:mark)
         return
     endtry
 
