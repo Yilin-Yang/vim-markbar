@@ -80,8 +80,6 @@ Execute (Test Custom Function References):
       \ . ' ' . a:string
   endfunction
 
-  " so that helpers#ParentFilename returns an actual value
-  " TODO: more modular ParentFilename implementation
   execute 'normal! :edit! foo.txt\<cr>'
   execute '1mark a'
 
@@ -93,5 +91,5 @@ Execute (Test Custom Function References):
   \ )
   let g:local_alph['_context'] = ['boo']
 
-  " TODO: more modular helpers#ParentFilename implementation
+  call g:controller.openMarkbar()
   AssertEqual 'a 1 2 [Vader-workbench] boo arg', g:controller._getDefaultMarkName(g:local_alph)

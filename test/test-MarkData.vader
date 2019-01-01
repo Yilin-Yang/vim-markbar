@@ -177,6 +177,26 @@ Then:
   AssertEqual '0', result.getColumnNo()
   Assert          !result.isGlobal()
 
+Execute (MarkData: Construct from 'Synthetic' Markstring):
+  normal! i12345
+  normal! viwy
+  let left_bracket =
+    \ markbar#MarkData#fromMarkString(markbar#helpers#MakeMarkString('['))
+  let right_bracket =
+    \ markbar#MarkData#fromMarkString(markbar#helpers#MakeMarkString(']'))
+Then:
+  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual '[',  left_bracket.getMark()
+  AssertEqual '1',  left_bracket.getLineNo()
+  AssertEqual '1',  left_bracket.getColumnNo()
+  Assert           !left_bracket.isGlobal()
+
+  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual ']',  right_bracket.getMark()
+  AssertEqual '1',  right_bracket.getLineNo()
+  AssertEqual '5',  right_bracket.getColumnNo()
+  Assert           !right_bracket.isGlobal()
+
 Execute (MarkData: Global File Mark):
   let markstring = "
     \ D      64    31 The quick brown fox jumps over the lazy dog\r\n

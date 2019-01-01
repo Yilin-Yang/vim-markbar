@@ -224,10 +224,14 @@ function! markbar#MarkbarController#_generateMarkbarContents(
             continue
         endif
 
-        let l:mark =
-            \ markbar#helpers#IsGlobalMark(l:mark_char) ?
-                \ l:globals[l:mark_char] : l:marks[l:mark_char]
-        let l:lines += [ l:self._getMarkHeading(l:mark) ]
+        try
+            let l:mark =
+                \ markbar#helpers#IsGlobalMark(l:mark_char) ?
+                    \ l:globals[l:mark_char] : l:marks[l:mark_char]
+            let l:lines += [ l:self._getMarkHeading(l:mark) ]
+        catch /E716/  " Key not in dictionary
+            continue
+        endtry
 
         if !a:highlight_mark
             for l:line in l:mark['_context']

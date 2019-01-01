@@ -50,32 +50,73 @@ function! markbar#MarkData#AssertIsMarkData(object) abort
     endif
 endfunction
 
+" RETURNS:  (v:t_string)    The default name for a local mark.
+" PARAM:    mark_data       (markbar#BasicMarkData)     The mark to name.
+function! markbar#MarkData#DefaultMarkName(mark_data) abort
+    call markbar#BasicMarkData#AssertIsBasicMarkData(a:mark_data)
+    let l:mark = a:mark_data['mark']
+    let l:format = printf(
+        \ '(l: %d, c: %d) ',
+        \ a:mark_data['line'],
+        \ a:mark_data['column'],
+        \ ) . '%s'
+    if l:mark ==# "'"
+        return printf(l:format, 'Last Jump')
+    elseif l:mark ==# '<'
+        return printf(l:format, 'Selection Start')
+    elseif l:mark ==# '>'
+        return printf(l:format, 'Selection End')
+    elseif l:mark ==# '"'
+        return printf(l:format, 'Left Buffer')
+    elseif l:mark ==# '^'
+        return printf(l:format, 'Left Insert Mode')
+    elseif l:mark ==# '.'
+        return printf(l:format, 'Last Change')
+    elseif l:mark ==# '['
+        return printf(l:format, 'Change/Yank Start')
+    elseif l:mark ==# ']'
+        return printf(l:format, 'Change/Yank End')
+    elseif l:mark ==# '('
+        return printf(l:format, 'Sentence Start')
+    elseif l:mark ==# ')'
+        return printf(l:format, 'Sentence End')
+    elseif l:mark ==# '{'
+        return printf(l:format, 'Paragraph Start')
+    elseif l:mark ==# '}'
+        return printf(l:format, 'Paragraph End')
+    endif
+    return printf(
+        \ 'l: %4d, c: %4d',
+        \ a:mark_data['line'],
+        \ a:mark_data['column'])
+endfunction
+
 function! markbar#MarkData#getMark() abort dict
-    call markbar#MarkData#AssertIsMarkData(self)
-    return self['_data'][0]
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    return l:self['_data'][0]
 endfunction
 
 function! markbar#MarkData#getLineNo() abort dict
-    call markbar#MarkData#AssertIsMarkData(self)
-    return self['_data'][1]
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    return l:self['_data'][1]
 endfunction
 
 function! markbar#MarkData#getColumnNo() abort dict
-    call markbar#MarkData#AssertIsMarkData(self)
-    return self['_data'][2]
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    return l:self['_data'][2]
 endfunction
 
 function! markbar#MarkData#getName() abort dict
-    call markbar#MarkData#AssertIsMarkData(self)
-    return self['_name']
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    return l:self['_name']
 endfunction
 
 function! markbar#MarkData#isGlobal() abort dict
-    call markbar#MarkData#AssertIsMarkData(self)
-    return markbar#helpers#IsGlobalMark( self.getMark() )
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    return markbar#helpers#IsGlobalMark( l:self.getMark() )
 endfunction
 
 function! markbar#MarkData#setName(new_name) abort dict
-    call markbar#MarkData#AssertIsMarkData(self)
-    let self['_name'] = a:new_name
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    let l:self['_name'] = a:new_name
 endfunction

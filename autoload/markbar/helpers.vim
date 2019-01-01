@@ -14,17 +14,37 @@ function! markbar#helpers#GetOpenBuffers() abort
     return l:buffers_list
 endfunction
 
+" RETURNS:  (v:t_string)    A 'synthetic' markstring, mimicking the output of
+"                           `:marks`, for the given mark (in the active buffer.)
+" PARAM:    mark    (v:t_string)    The mark to retrieve (single character.)
+function! markbar#helpers#MakeMarkString(mark) abort
+    " currently doesn't handle edge case where mark is `"`
+    let l:markpos = getpos("'".a:mark)
+    let l:fmt_str = ' %s %d %d %s'
+    let l:file_text = getline(l:markpos[1])
+    return printf(l:fmt_str, a:mark, l:markpos[1], l:markpos[2], l:file_text)
+endfunction
+
 " RETURNS:  (v:t_string)    All buffer-local marks active within the current
 "                           file as a 'raw' string.
 function! markbar#helpers#GetLocalMarks() abort
     let l:to_return = ''
     try
         redir => l:to_return
-        silent marks abcdefghijklmnopqrstuvwxyz<>'"^.(){}
+        " this prints *all* marks except (, ), {, }
+        " not sure if that's desired behavior, so this may be brittle
+        silent marks "
         redir end
+        let l:to_return .= "\n"
     catch /E283/
         let l:to_return = 'mark line  col file/text\n'
     endtry
+    for l:mark in ['(',')','{','}']
+        try
+            let l:to_return .= markbar#helpers#MakeMarkString(l:mark)."\n"
+        catch
+        endtry
+    endfor
     return l:to_return
 endfunction
 
@@ -39,6 +59,23 @@ function! markbar#helpers#GetGlobalMarks() abort
         let l:to_return = 'mark line  col file/text\n'
     endtry
     return l:to_return
+endfunction
+
+" RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a 'global'
+"                           mark, like `']`, `'(`, or `'^`.
+" PARAM:    mark    (v:t_string)    The single character identifying the mark,
+"                                   not including the leading single quote.
+function! markbar#helpers#IsSpecialMark(mark) abort
+    if len(a:mark) !=# 1
+        throw '(markbar#helpers#IsSpecialMark) Invalid mark char: ' . a:mark
+    endif
+
+    let l:old_ignore_case = &ignorecase
+    set noignorecase
+    let l:idx = match('''"(){}.[]<>^', '\V' . a:mark)
+    let &ignorecase = l:old_ignore_case
+
+    return l:idx !=# -1
 endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a global
@@ -146,7 +183,7 @@ function! markbar#helpers#SplitString(string, idx) abort
     if a:idx <=# 0
         return [ '', a:string ]
     endif
-    return [ a:string[0:a:idx-1], a:string[a:idx:] ]
+    return [ a:string[0:a:idx-1], a:string[a:idx :] ]
 endfunction
 
 " RETURNS:  (v:t_string)    The name of the file in which the requested mark

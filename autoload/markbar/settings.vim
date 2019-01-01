@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 function! s:VimLTypeToString(type) abort
     let l:type = a:type + 0  " cast to number
     let l:types = {
@@ -400,7 +402,7 @@ endfunction
 function! markbar#settings#MarkNameFormatString() abort
     if !exists('g:markbar_mark_name_format_string')
         let g:markbar_mark_name_format_string =
-            \ 'l: %4d, c: %4d'
+            \ '%s'
     endif
     call s:AssertType(
         \ g:markbar_mark_name_format_string,
@@ -415,7 +417,7 @@ endfunction
 function! markbar#settings#MarkNameArguments() abort
     if !exists('g:markbar_mark_name_arguments')
         let g:markbar_mark_name_arguments =
-            \ ['line', 'col']
+            \ [ function('markbar#MarkData#DefaultMarkName') ]
     endif
     call s:AssertType(
         \ g:markbar_mark_name_arguments,

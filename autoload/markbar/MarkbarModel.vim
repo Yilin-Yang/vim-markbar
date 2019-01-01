@@ -111,7 +111,7 @@ function! markbar#MarkbarModel#resetMark(mark) abort dict
     call l:mark_data.setName('')
 endfunction
 
-" BRIEF:    Delete the given mark.
+" BRIEF:    Delete the given mark, and remove it from the cache.
 " DETAILS:  Changes won't appear until the markbar has been repopulated.
 "           Must be invoked while the cursor is inside a markbar.
 " PARAM:    mark    (v:t_string)    The single character representing the
@@ -122,15 +122,33 @@ function! markbar#MarkbarModel#deleteMark(mark) abort dict
         throw '(markbar#MarkbarModel) Bad argument to deleteMark: ' . a:mark
     endif
 
+    let l:is_global = markbar#helpers#IsGlobalMark(a:mark)
+
+    " delete actual mark itself
     let l:markbar_buffer = bufnr('%')
     let l:cur_pos = getcurpos()
-    if !markbar#helpers#IsGlobalMark(a:mark)
+    if !l:is_global
         let l:active_buffer = l:self.getActiveBuffer()
         execute bufwinnr(l:active_buffer) . 'wincmd w'
     endif
-    execute 'delmarks ' . a:mark
+    try
+        execute 'delmarks ' . a:mark
+    catch /E475/  " Bad argument
+        " do nothing; it'll disappear from the markbar, and be repopulated
+        " when it's next opened.
+    catch /E471/  " Argument required
+        " user tried deleting the double quote
+    endtry
     execute bufwinnr(l:markbar_buffer) . 'wincmd w'
     call setpos('.', l:cur_pos)
+
+    " update the cache
+    let l:cache = l:self.getBufferCache(
+        \ l:is_global ? markbar#constants#GLOBAL_MARKS() : l:active_buffer)
+    try
+        unlet l:cache['marks_dict'][a:mark]
+    catch /E716/  " Key not present in dictionary
+    endtry
 endfunction
 
 " RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.

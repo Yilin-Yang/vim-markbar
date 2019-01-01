@@ -1,3 +1,4 @@
+scriptencoding utf-8
 " Vim syntax file
 " Language: markbar
 " Maintainer: Yilin Yang
@@ -17,9 +18,9 @@ syn region markbarSectionHeader
     \ start=/\m^\['.\]:/ end=/\m$/
     \ keepend contains=@markbarSectionHeaderElements
 
-syn match markbarSectionBrackets /[\[\]:]/ contained
+syn match markbarSectionBrackets /\%\(^\[\)\|\%\(\]:\)/ contained
 syn match markbarSectionLowercaseMark /'[a-z]/ contained
-syn match markbarSectionSpecialLocalMark /'[a-z<>'"^.(){}]/ contained
+syn match markbarSectionSpecialLocalMark /'[\[\]<>\.\^'"(){}]/ contained
 syn match markbarSectionNumberedMark /'[0-9]/ contained
 syn match markbarSectionUppercaseMark /'[A-Z]/ contained
 syn match markbarSectionName /\s.\+$/ contained
@@ -27,6 +28,7 @@ syn match markbarSectionName /\s.\+$/ contained
 syn cluster markbarSectionHeaderElements
     \ contains=markbarSectionBrackets,
              \ markbarSectionLowercaseMark,
+             \ markbarSectionSpecialLocalMark,
              \ markbarSectionNumberedMark,
              \ markbarSectionUppercaseMark,
              \ markbarSectionName
@@ -39,7 +41,9 @@ syn region markbarContext
 
 syn match markbarContextEndOfBuffer /\M~/ contained
 syn match markbarContextMarkHighlightMarker /➜/ contained conceal
-execute 'syn match markbarContextMarkHighlight /'. markbar#settings#MarkMarker() .'./ contained contains=markbarContextMarkHighlightMarker'
+execute 'syn match markbarContextMarkHighlight /'
+    \ . markbar#settings#MarkMarker()
+    \ . './ contained contains=markbarContextMarkHighlightMarker'
 
 syn cluster markbarContextElements
     \ contains=markbarContextEndOfBuffer,
