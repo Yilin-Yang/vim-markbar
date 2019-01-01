@@ -266,7 +266,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
 *g:markbar_mark_name_format_string*                      |(v:t_string)|
 *g:markbar_peekaboo_mark_name_format_string*
-    `Default Value:` `'l: %4d, c: %4d'`
+    `Default Value:` `'%s'`
 
     The format string used when setting "default names" for a local mark.
 
@@ -274,7 +274,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
 *g:markbar_mark_name_arguments*                          |(v:t_list)|
 *g:markbar_peekaboo_mark_name_arguments*
-    `Default Value:` `['line', 'col']`
+    `Default Value:` `[function('markbar#MarkData#DefaultMarkName')]`
 
     The values with which to populate |g:markbar_mark_name_format_string|.
 
@@ -318,8 +318,8 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     This dictionary is fully mutable and can be modified without side effects.
 
     As an example, one can replicate the default naming behavior of
-    vim-markbar given above by using a function reference in the following
-    way: >
+    vim-markbar given for file marks by using a function reference in the
+    following way: >
         function! LineAndCol(mark_data) abort
             return printf('l: %4d, c: %4d', mark_data['line'], mark_data['column'])
         endfunction
@@ -330,6 +330,10 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
         let g:markbar_mark_name_arguments = [ function('LineAndCol') ]
 <
     See `:help function()` for more details.
+
+    A more sophisticated example of the above can also be found in
+    `'autoload/markbar/MarkData.vim'`, in the function
+    `markbar#MarkData#DefaultMarkName()`.
 
 *g:markbar_file_mark_format_string*                      |(v:t_string)|
 *g:markbar_peekaboo_file_mark_format_string*
