@@ -19,7 +19,7 @@ printUsage() {
   printf "\t-h, --help           Print this helptext\n"
   printf "\t-i, --international  Re-run tests using non-English locales\n"
   printf "\t-f <PAT>, --file=<PAT>   Run only tests globbed (matched) by <PAT>\n"
-  printf "\t-v <PATH>, --vim_exe=<PATH>   Use the given (n)vim executable.\n"
+  printf "\t-e <PATH>, --vim_exe=<PATH>   Use the given (n)vim executable.\n"
   printf "\t                              Unaffected by --vim or --neovim"
   printf "\n"
 }

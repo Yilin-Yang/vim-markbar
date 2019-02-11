@@ -342,9 +342,15 @@ To run test cases:
 ```bash
 # from project root,
 cd test
-./run_tests_vim.sh   # to run test cases in vim
-./run_tests_nvim.sh  # to run test cases in neovim
+./run_tests.sh           # to run test cases in vim
+./run_tests.sh --neovim  # to run test cases in neovim
+
+# to run test cases in a visible, non-headless neovim instance,
+# using /usr/local/bin/nvim as the neovim executable
+./run_tests.sh --neovim -v -e /usr/local/bin/nvim
 ```
+
+See `./run_tests --help` for more options.
 
 If you're fixing a bug, try to replicate the bug (using the old, "broken" code)
 in a test case. If you're adding a new feature, try to write unit tests for the
