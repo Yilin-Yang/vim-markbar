@@ -1,0 +1,40 @@
+Execute (Declare Window Helpers):
+  ""
+  " Returns a list that describes the current window layout, and the current
+  " window. The zero-indexed element is the current window number; the
+  " remaining elements are the width and height of the window (as a
+  " two-element list, in that order) whose winnr is the index of that element
+  " in the list.
+  function! GetWinState() abort
+    let l:cur_win = winnr()
+    let l:last_win = winnr('$')
+    let l:win_state = [l:cur_win]
+    let l:i = 1 | while l:i <=# l:last_win
+      execute l:i . 'wincmd w'
+      call add(l:win_state, [winwidth(0), winheight(0)])
+    let l:i += 1 | endwhile
+    execute l:cur_win . 'wincmd w'
+    return l:win_state
+  endfunction
+
+  ""
+  " Compare the return values of GetWinState() for approximate equality,
+  " accepting exact matches for the current window number and approximate matches
+  " for window width and height, plus or minus a:threshold.
+  function! AssertWinStatesAboutEqual(lhs, rhs, threshold) abort
+    AssertEqual len(a:lhs), len(a:rhs), 
+      \ printf('Different number of windows open in: %s, %s', a:lhs, a:rhs)
+    AssertEqual a:lhs[0], a:rhs[0], 'Window numbers are different: '.a:lhs[0].', '.a:rhs[0]
+    function! AboutEqual(lhs, rhs, threshold) abort
+      return a:lhs >=# (a:rhs - a:threshold) && a:lhs <=# (a:rhs + a:threshold)
+    endfunction
+    let l:i = 1 | while l:i <# len(a:rhs)
+      let l:lwh = a:lhs[l:i]
+      let l:rwh = a:rhs[l:i]
+
+      Assert AboutEqual(l:lwh[0], l:rwh[0], a:threshold),
+          \ printf('Widths are too different: %s, %s', l:lwh[0], l:rwh[0])
+      Assert AboutEqual(l:lwh[1], l:rwh[1], a:threshold),
+          \ printf('Heights are too different: %s, %s', l:lwh[1], l:rwh[1])
+    let l:i += 1 | endwhile
+  endfunction

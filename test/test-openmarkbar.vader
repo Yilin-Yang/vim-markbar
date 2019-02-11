@@ -1,4 +1,5 @@
 Include: clear-marks.vader
+Include: WindowHelpers.vader
 
 Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_enable_mark_highlighting = v:false
@@ -204,6 +205,15 @@ Expect:
       tenth line
       ~
   
+Execute (Preserve Window Layout On Closing Markbar):
+  vsplit
+  vsplit
+  let g:saved_state = GetWinState()
+  normal Mo
+  normal Mc
+Then:
+  call AssertWinStatesAboutEqual(g:saved_state, GetWinState(), 1)
+
 Do (Iterate Through Marks with Next):
   Mo
   ggnnn

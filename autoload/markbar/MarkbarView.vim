@@ -63,7 +63,7 @@ function! markbar#MarkbarView#MarkNotSet(mark) abort
 endfunction
 
 " BRIEF:    Open a markbar window for the currently active buffer.
-" DETAILS:  Does nothing if a markbar is already open.
+" DETAILS:  Does nothing if a markbar is already open. Saves the window state.
 " PARAM:    open_position   (v:t_string)    The position modifier to apply to
 "                                           the opened markbar. See
 "                                           `:h topleft`, `:h botright`.
@@ -78,6 +78,7 @@ function! markbar#MarkbarView#openMarkbar(
     \ size
 \ ) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    call l:self._saveWinState()
     let l:markbar_buffer = l:self.getMarkbarBuffer()
     let l:markbar_window = l:self.getMarkbarWindow()
     if l:markbar_window ==# -1
@@ -122,13 +123,19 @@ endfunction
 " BRIEF:    Close any markbars open for the active buffer in the current tab.
 " RETURNS:  (v:t_bool)      `v:true` if a markbar was actually closed,
 "                           `v:false` otherwise.
-function! markbar#MarkbarView#closeMarkbar() abort dict
+" PARAM:    restore_view    (v:t_bool)  Whether to try to restore the previous
+"                                       stored window view after closing.
+function! markbar#MarkbarView#closeMarkbar(...) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    let a:restore_view = get(a:000, 0, 0)
     let l:markbar_buffers = l:self.getOpenMarkbars()
     if empty(l:markbar_buffers) | return v:false | endif
     for l:markbar in l:markbar_buffers
         execute bufwinnr(l:markbar) . 'close'
     endfor
+    if a:restore_view
+        call l:self._restoreWinState(1)
+    endif
     return v:true
 endfunction
 
@@ -244,7 +251,14 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
         endtry
     endif
 
-    execute bufwinnr(l:active_buffer) . 'wincmd w'
+    " try to return to the user's old window, if possible
+    if l:self._cur_winnr ># 0 && l:self._cur_winnr <=# winnr('$')
+        " the saved previous window number is still valid
+        execute l:self._cur_winnr . 'wincmd w'
+    else
+        " switch to a window that has this buffer open
+        execute bufwinnr(l:active_buffer) . 'wincmd w'
+    endif
     let l:jump_command = 'normal! '
     let l:jump_command .= a:goto_exact ? '`' : "'"
 

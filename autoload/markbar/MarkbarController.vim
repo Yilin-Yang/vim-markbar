@@ -112,14 +112,16 @@ function! markbar#MarkbarController#openMarkbar() abort dict
     call l:self._setRefreshMarkbarAutocmds()
 endfunction
 
-function! markbar#MarkbarController#closeMarkbar() abort dict
+function! markbar#MarkbarController#closeMarkbar(...) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    return l:self['_markbar_view'].closeMarkbar()
+    let a:should_restore = get(a:000, 0, 0)
+    return l:self['_markbar_view'].closeMarkbar(a:should_restore)
 endfunction
 
-function! markbar#MarkbarController#toggleMarkbar() abort dict
+function! markbar#MarkbarController#toggleMarkbar(...) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    if l:self['_markbar_view'].closeMarkbar() | return | endif
+    let a:should_restore = get(a:000, 0, 0)
+    if l:self['_markbar_view'].closeMarkbar(a:should_restore) | return | endif
     call l:self.openMarkbar()
 endfunction
 

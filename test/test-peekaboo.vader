@@ -69,6 +69,15 @@ Do (Close Peekaboo Markbar):
 Then:
   Assert !exists('b:is_markbar')
 
+Execute (Preserve Window Layout On Closing Peekaboo Markbar):
+  vsplit
+  vsplit
+  let g:saved_state = GetWinState()
+  normal '
+  execute "normal \<Esc>"
+Then:
+  call AssertWinStatesAboutEqual(g:saved_state, GetWinState(), 1)
+
 Execute (Test Mark Highlighting, Backtick):
   let g:markbar_enable_mark_highlighting = v:true
   normal `

@@ -179,7 +179,7 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
 
-    noremap <silent> <buffer> <Esc> :call b:ctrl.closeMarkbar()<cr>
+    noremap <silent> <buffer> <Esc> :call b:ctrl.closeMarkbar(1)<cr>
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PeekabooJumpToMarkMapping()
         \ . ' :call b:view._goToSelectedMark('

@@ -10,8 +10,8 @@ let g:standard_controller =
     \ markbar#StandardMarkbarController#new(g:markbar_model, g:markbar_view)
 
 noremap <silent> <Plug>OpenMarkbar      :call g:standard_controller.openMarkbar()<cr>
-noremap <silent> <Plug>CloseMarkbar     :call g:standard_controller.closeMarkbar()<cr>
-noremap <silent> <Plug>ToggleMarkbar    :call g:standard_controller.toggleMarkbar()<cr>
+noremap <silent> <Plug>CloseMarkbar     :call g:standard_controller.closeMarkbar(1)<cr>
+noremap <silent> <Plug>ToggleMarkbar    :call g:standard_controller.toggleMarkbar(1)<cr>
 
 if markbar#settings#EnablePeekabooMarkbar()
     let g:peekaboo_controller =
