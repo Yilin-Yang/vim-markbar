@@ -13,6 +13,11 @@ function! markbar#MarkbarView#new(model) abort
         \ 'TYPE': 'MarkbarView',
         \ '_markbar_model': a:model,
         \ '_markbar_buffer': -2,
+        \ '_cur_winnr': 1,
+        \ '_saved_view': {},
+        \ '_win_resize_cmd:': '',
+        \ '_saved_num_win': -1,
+        \ '_saved_tabpage_nr': -1,
         \ '_show_verbose_help': v:false,
     \ }
     " TODO: markbar buffer window id?
@@ -38,6 +43,8 @@ function! markbar#MarkbarView#new(model) abort
     let l:new['_getSpecificMarkHeadingLine'] = function('markbar#MarkbarView#_getSpecificMarkHeadingLine')
     let l:new['_setMarkbarBufferSettings']   = function('markbar#MarkbarView#_setMarkbarBufferSettings')
     let l:new['_setMarkbarWindowSettings']   = function('markbar#MarkbarView#_setMarkbarWindowSettings')
+    let l:new['_saveWinState']               = function('markbar#MarkbarView#_saveWinState')
+    let l:new['_restoreWinState']            = function('markbar#MarkbarView#_restoreWinState')
 
     return l:new
 endfunction
@@ -404,4 +411,49 @@ function! markbar#MarkbarView#_setMarkbarWindowSettings(buffer_expr) abort dict
     call setwinvar(l:winnr,          '&spell',         0)
 
     call setwinvar(l:winnr,      'is_markbar',         1)
+endfunction
+
+" BRIEF:    Save the current window number and window state.
+function! markbar#MarkbarView#_saveWinState() abort dict
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    let l:self._cur_winnr = winnr()
+    let l:self._saved_view = winsaveview()
+    let l:self._win_resize_cmd = winrestcmd()
+    let l:self._saved_num_win = winnr('$')
+    let l:self._saved_tabpage_nr = tabpagenr()
+endfunction
+
+" BRIEF:    Restore the last-saved window state, if it exists and is valid.
+" DETAILS:  Returns the cursor to the saved window number, restores the old
+"           view, and resizes all windows to their previously saved sizes.
+"           Only works if markbar is on the same tabpage, and the windows on
+"           the screen are the same as they were during the last call to
+"           `_saveWinState`.
+function! markbar#MarkbarView#_restoreWinState(fail_silent) abort dict
+    call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    if tabpagenr() !=# l:self._saved_tabpage_nr
+        if a:fail_silent
+            return
+        else
+            throw '(MarkbarView#_restoreWinState) Current tabpage '
+                \ . tabpagenr() . ' is different from saved: '
+                \ . l:self._saved_tabpage_nr
+        endif
+    elseif winnr('$') !=# l:self._saved_num_win
+        if a:fail_silent
+            return
+        else
+            throw '(MarkbarView#_restoreWinState) Number of windows '
+                \ . winnr('$') . ' is different from when winstate was saved: '
+                \ . l:self._saved_num_win
+        endif
+    endif
+    if l:self._cur_winnr <# 1 || empty(l:self._saved_view)
+            \ || empty(l:self._win_resize_cmd)
+        throw '(MarkbarView#_restoreWinState) Did not properly save window '
+            \ . 'state before this call. (FAILURE)'
+    endif
+    execute l:self._cur_winnr . 'wincmd w'
+    execute l:self._win_resize_cmd
+    call winrestview(l:self._saved_view)
 endfunction
