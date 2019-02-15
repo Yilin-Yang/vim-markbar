@@ -204,9 +204,9 @@ endfunction
 "                                       Defaults to `v:false`.
 function! markbar#MarkbarModel#getBufferCache(buffer_no, ...) abort dict
     call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
-    let a:no_init = get(a:000, 0, v:false)
+    let l:no_init = get(a:000, 0, v:false)
     if !has_key(l:self['_buffer_caches'], a:buffer_no)
-        if a:no_init
+        if l:no_init
             throw '(markbar#MarkbarModel) Buffer not cached: '.a:buffer_no
         endif
         let l:self['_buffer_caches'][a:buffer_no] =

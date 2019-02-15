@@ -16,19 +16,19 @@ function! markbar#BasicMarkData#new(...) abort
         \ 'context': 0,
     \ }
     if !a:0 | return l:new | endif
-    let a:orig_mark_data = get(a:, 1, v:false)
-    call markbar#MarkData#AssertIsMarkData(a:orig_mark_data)
-    let l:m = a:orig_mark_data.getMark()
+    let l:orig_mark_data = get(a:, 1, v:false)
+    call markbar#MarkData#AssertIsMarkData(l:orig_mark_data)
+    let l:m = l:orig_mark_data.getMark()
     let l:new['mark']     = l:m
-    let l:new['line']     = a:orig_mark_data.getLineNo()
-    let l:new['column']   = a:orig_mark_data.getColumnNo()
+    let l:new['line']     = l:orig_mark_data.getLineNo()
+    let l:new['column']   = l:orig_mark_data.getColumnNo()
     if markbar#helpers#IsGlobalMark(l:m) || markbar#helpers#IsNumberedMark(l:m)
         let l:new['filename'] = markbar#helpers#ParentFilename(l:new['mark'])
     else
         let l:last_active = g:markbar_model.getActiveBuffer()
         let l:new['filename'] = bufname(l:last_active)
     endif
-    let l:new['context']  = deepcopy(a:orig_mark_data['_context'])
+    let l:new['context']  = deepcopy(l:orig_mark_data['_context'])
     return l:new
 endfunction
 

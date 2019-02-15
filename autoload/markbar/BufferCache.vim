@@ -2,11 +2,11 @@
 " DETAILS:  BufferCache stores marks and contexts for a particular buffer.
 " PARAM:    buffer_no   (v:t_number)
 function! markbar#BufferCache#new(...) abort
-    let a:buffer_no = get(a:, 1, -1)
+    let l:buffer_no = get(a:, 1, -1)
     let l:new = {
         \ 'TYPE': 'BufferCache',
         \ 'marks_dict': {},
-        \ '_buffer_no': a:buffer_no,
+        \ '_buffer_no': l:buffer_no,
     \ }
     let l:new['isGlobal']       = function('markbar#BufferCache#isGlobal')
     let l:new['getMark']        = function('markbar#BufferCache#getMark')

@@ -127,13 +127,13 @@ endfunction
 "                                       stored window view after closing.
 function! markbar#MarkbarView#closeMarkbar(...) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    let a:restore_view = get(a:000, 0, 0)
+    let l:restore_view = get(a:000, 0, 0)
     let l:markbar_buffers = l:self.getOpenMarkbars()
     if empty(l:markbar_buffers) | return v:false | endif
     for l:markbar in l:markbar_buffers
         execute bufwinnr(l:markbar) . 'close'
     endfor
-    if a:restore_view
+    if l:restore_view
         call l:self._restoreWinState(1)
     endif
     return v:true
@@ -305,9 +305,8 @@ endfunction
 "                                   to 1.
 function! markbar#MarkbarView#_cycleToNextMark(...) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    let a:count = get(a:, 1, 1)
-    if a:count <=# 0 | throw '(MarkbarView#_cycleToNextMark) Bad count: ' . a:count | endif
-    let l:count = a:count + 0
+    let l:count = get(a:, 1, 1)
+    if l:count <=# 0 | throw '(MarkbarView#_cycleToNextMark) Bad count: ' . l:count | endif
     let l:i = 0
     while l:i <# l:count
         call l:self._moveCursorToLine(l:self._getNextMarkHeadingLine())
@@ -319,9 +318,8 @@ endfunction
 " PARAM:    count   (v:t_number)    Move back this many headings. Defaults to 1.
 function! markbar#MarkbarView#_cycleToPreviousMark(...) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    let a:count = get(a:, 1, 1)
-    if a:count <=# 0 | throw '(MarkbarView#_cycleToPreviousMark) Bad count: ' . a:count | endif
-    let l:count = a:count + 0
+    let l:count = get(a:, 1, 1)
+    if l:count <=# 0 | throw '(MarkbarView#_cycleToPreviousMark) Bad count: ' . l:count | endif
     let l:i = 0
     while l:i <# l:count
         call l:self._moveCursorToLine(l:self._getPreviousMarkHeadingLine())
