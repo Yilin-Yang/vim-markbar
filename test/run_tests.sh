@@ -116,7 +116,6 @@ while [[ $# -gt 0 ]]; do
     '--vim_exe='*)
       EXE_PATH="${ARG#*=}"
       GAVE_PATH=1
-      shift
       ;;
     '-e')
       EXE_PATH="$2"
@@ -134,7 +133,6 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
-export IS_TYPEVIM_DEBUG=1
 
 set -p
 export VADER_OUTPUT_FILE=/dev/stderr
@@ -171,5 +169,4 @@ else
     runTests "${BASE_CMD}" "${VADER_CMD}" "-c 'language es_ES.utf8'" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
   fi
 fi
-unset IS_TYPEVIM_DEBUG
 unset VISIBLE
