@@ -206,11 +206,15 @@ Expect:
       ~
   
 Execute (Preserve Window Layout On Closing Markbar):
+  " TODO get window layout restoration to work, no matter how
+  "      many splits are open
+  tabnew
   vsplit
   vsplit
+  split
   let g:saved_state = GetWinState()
-  normal Mo
-  normal Mc
+  normal Mt
+  normal Mt
 Then:
   call AssertWinStatesAboutEqual(g:saved_state, GetWinState(), 1)
 
@@ -362,3 +366,14 @@ Expect:
       tenth line
       ~
   
+Do (Delete File Mark, Then Return to Buffer):
+  :edit! 10lines.txt\<cr>
+  :let g:bufnr = bufnr('%')\<cr>
+  Mt
+  gg
+  n
+  d
+  n
+  \<cr>
+Then:
+  AssertEqual g:bufnr, bufnr('%')
