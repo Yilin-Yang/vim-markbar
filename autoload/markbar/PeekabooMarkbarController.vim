@@ -187,7 +187,7 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
         \ . ')<cr>'
     execute 'noremap <silent> <buffer> ? '
         \ . ':call b:view.toggleShowHelp()<cr>'
-        \ . ':call b:ctrl.openMarkbar()<cr>'
+        \ . ':call b:ctrl.refreshContents()<cr>'
 
     call l:self['_select_keys'].setCallback(
         \ { key, mods, prefix -> b:view._selectMark(key) }

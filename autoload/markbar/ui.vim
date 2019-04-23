@@ -21,7 +21,7 @@ function! markbar#ui#RefreshMarkbar(controller) abort
     if g:markbar_view.markbarIsOpenCurrentTab()
         call markbar#MarkbarController#AssertIsMarkbarController(a:controller)
         let l:cur_winnr = winnr()
-        call a:controller.openMarkbar()
+        call a:controller.refreshContents()
         execute l:cur_winnr . 'wincmd w'
     endif
 endfunction

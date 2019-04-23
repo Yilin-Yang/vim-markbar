@@ -125,15 +125,15 @@ function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#RenameMarkMapping()
         \ . ' :call b:model.renameMark(b:view._getCurrentMarkHeading())<cr>'
-        \ . ' :call b:ctrl.openMarkbar()<cr>'
+        \ . ' :call b:ctrl.refreshContents()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#ResetMarkMapping()
         \ . ' :call b:model.resetMark(b:view._getCurrentMarkHeading())<cr>'
-        \ . ' :call b:ctrl.openMarkbar()<cr>'
+        \ . ' :call b:ctrl.refreshContents()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#DeleteMarkMapping()
         \ . ' :call b:model.deleteMark(b:view._getCurrentMarkHeading())<cr>'
-        \ . ' :call b:ctrl.openMarkbar()<cr>'
+        \ . ' :call b:ctrl.refreshContents()<cr>'
 
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#NextMarkMapping()
@@ -144,5 +144,5 @@ function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
 
     execute 'noremap <silent> <buffer> ? '
         \ . ':call b:view.toggleShowHelp()<cr>'
-        \ . ':call b:ctrl.openMarkbar()<cr>'
+        \ . ' :call b:ctrl.refreshContents()<cr>'
 endfunction

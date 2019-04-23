@@ -63,7 +63,8 @@ function! markbar#MarkbarView#MarkNotSet(mark) abort
 endfunction
 
 " BRIEF:    Open a markbar window for the currently active buffer.
-" DETAILS:  Does nothing if a markbar is already open. Saves the window state.
+" DETAILS:  - Saves the window state.
+"           - Does nothing if a markbar is already open.
 " PARAM:    open_position   (v:t_string)    The position modifier to apply to
 "                                           the opened markbar. See
 "                                           `:h topleft`, `:h botright`.
@@ -78,7 +79,10 @@ function! markbar#MarkbarView#openMarkbar(
     \ size
 \ ) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    call l:self._saveWinState()
+    if !exists('b:is_markbar')
+        " only save the window state if we aren't already in the markbar
+        call l:self._saveWinState()
+    endif
     let l:markbar_buffer = l:self.getMarkbarBuffer()
     let l:markbar_window = l:self.getMarkbarWindow()
     if l:markbar_window ==# -1
@@ -426,8 +430,13 @@ function! markbar#MarkbarView#_setMarkbarWindowSettings(buffer_expr) abort dict
 endfunction
 
 " BRIEF:    Save the current window number and window state.
+" DETAILS:  If the current window is a markbar window, throw an exception.
 function! markbar#MarkbarView#_saveWinState() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
+    if exists('b:is_markbar')  " we're inside a markbar window
+      throw '(MarkbarView#_saveWinState) Tried to save winstate from '
+          \ . 'inside markbar!'
+    endif
     let l:self._cur_winnr = winnr()
     let l:self._saved_view = winsaveview()
     let l:self._win_resize_cmd = winrestcmd()

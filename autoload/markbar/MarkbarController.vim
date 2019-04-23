@@ -29,6 +29,8 @@ function! markbar#MarkbarController#new(model, view) abort
             \ function('markbar#MarkbarController#closeMarkbar'),
         \ 'toggleMarkbar':
             \ function('markbar#MarkbarController#toggleMarkbar'),
+        \ 'refreshContents':
+            \ function('markbar#MarkbarController#refreshContents'),
         \ '_getHelpText':
             \ function(
                 \ 'markbar#MarkbarController#__noImplementation',
@@ -87,27 +89,15 @@ endfunction
 "           - Set autocmds to refresh the markbar buffer if it remains open.
 function! markbar#MarkbarController#openMarkbar() abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    let l:model = l:self['_markbar_model']
-    let l:view  = l:self['_markbar_view']
 
-    call l:model.updateCurrentAndGlobal()
+    " note: need to update local marks while we're still outside
+    " the markbar buffer
+    call l:self._markbar_model.updateCurrentAndGlobal()
     call l:self._openMarkbarSplit()
 
-    let l:active_buffer  = l:model.getActiveBuffer()
-    let l:markbar_buffer = l:view.getMarkbarBuffer()
-
-    try
-        call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
-    catch /Buffer not cached/
-        " HACK: Assume that this buffer isn't a 'real' buffer;
-        "       instead, push the 'actual open buffer' on top of it
-        "       and let that be the 'active buffer'
-        call l:view.closeMarkbar()
-        let l:active_buffer = bufnr('%')
-        call l:model.pushNewBuffer(l:active_buffer)
-        call l:self._openMarkbarSplit()
-        call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
-    endtry
+    " TODO: update the setbufline implementation for vim so that the markbar
+    " doesn't need to be open in order for the contents to refresh
+    call l:self.refreshContents()
     call l:self._setMarkbarMappings()
     call l:self._setRefreshMarkbarAutocmds()
 endfunction
@@ -128,6 +118,29 @@ endfunction
 function! markbar#MarkbarController#__noImplementation(func_name, ...) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
     throw '(markbar#MarkbarController) Invoked pure virtual function ' . a:func_name
+endfunction
+
+" BRIEF:    Update cached marks; clear and repopulate the markbar buffer.
+function! markbar#MarkbarController#refreshContents() abort dict
+    let l:model = l:self._markbar_model
+    let l:view  = l:self._markbar_view
+
+    let l:active_buffer  = l:model.getActiveBuffer()
+    let l:markbar_buffer = l:view.getMarkbarBuffer()
+
+    call l:model.updateCurrentAndGlobal()
+    try
+        call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
+    catch /Buffer not cached/
+        " HACK: Assume that this buffer isn't a 'real' buffer;
+        "       instead, push the 'actual open buffer' on top of it
+        "       and let that be the 'active buffer'
+        call l:view.closeMarkbar()
+        let l:active_buffer = bufnr('%')
+        call l:model.pushNewBuffer(l:active_buffer)
+        call l:self._openMarkbarSplit()
+        call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
+    endtry
 endfunction
 
 " RETURNS:  (v:t_string)    The given mark, reformatted into a markbar
