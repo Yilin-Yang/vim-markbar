@@ -252,21 +252,21 @@ function! markbar#MarkbarController#_generateMarkbarContents(
             continue
         endtry
 
+        let l:full_context = l:mark.getContext()
         let l:num_lines_context = a:NumContext(l:mark)
-        let l:context = markbar#helpers#TrimContext(l:mark.getContext(),
-                                                  \ l:num_lines_context)
+        let [l:start, l:end] = markbar#helpers#TrimmedContextRange(
+            \ len(l:full_context), l:num_lines_context)
         if !a:highlight_mark
-            for l:line in l:context
-                call add(l:lines, a:indent_block . l:line)
-            endfor
+            let l:j = l:start | while l:j <# l:end
+                call add(l:lines, a:indent_block . l:full_context[l:j])
+            let l:j += 1 | endwhile
         else
             " insert the mark marker at the mark's line, column in the context
             let l:marker    = markbar#settings#MarkMarker()
-            let l:size      = len(l:context)
             let l:mark_line = l:mark.getMarkLineInContext()
 
-            let l:j = 0 | while l:j <# l:size
-                let l:line = l:context[l:j]
+            let l:j = l:start | while l:j <# l:end
+                let l:line = l:full_context[l:j]
                 if l:j ==# l:mark_line
                     let l:colno = (a:backtick_like) ?
                         \ l:mark.getColumnNo() : matchstrpos(l:line, '\S')[1]

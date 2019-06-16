@@ -1,10 +1,11 @@
 Include: clear-marks.vader
+Include: WindowHelpers.vader
 
 Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_enable_mark_highlighting = v:false
   let g:markbar_jump_to_exact_position = v:true
 
-  let g:markbar_peekaboo_num_lines_context = 3
+  let g:markbar_num_lines_context = 3
   let g:markbar_peekaboo_open_vertical = v:true
   let g:markbar_peekaboo_section_separation = 1
 

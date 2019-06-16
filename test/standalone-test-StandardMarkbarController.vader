@@ -322,3 +322,50 @@ Expect:
       ➜tenth line
       ~
   
+Do (Set Local Marks):
+  :edit! 10lines.txt\<cr>
+  2G0ma4G$mb
+Then (Reconfigure Num Lines of Context to Show):
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 2,
+      \ 'around_file': 0,
+      \ }
+  let g:markbar_jump_to_exact_position = v:true
+  call g:standard_controller.openMarkbar()
+Expect (Correct Numbers of Lines of Context):
+  " Press ? for help
+  ['a]: 
+      ➜second line
+      third line
+
+  ['b]: 
+      fourth lin➜e
+      fifth line
+
+  ['A]: 10lines.txt
+
+  ['B]: 10lines.txt
+
+  ['C]: 10lines.txt
+  
+Execute (Disable Mark Highlighting, Then Show Reconfigured Context Length):
+  " test an alternate code path
+  let g:markbar_enable_mark_highlighting = v:false
+  edit! 10lines.txt
+  call g:standard_controller.openMarkbar()
+Expect (Correct Numbers of Lines of Context):
+  " Press ? for help
+  ['a]: 
+      second line
+      third line
+
+  ['b]: 
+      fourth line
+      fifth line
+
+  ['A]: 10lines.txt
+
+  ['B]: 10lines.txt
+
+  ['C]: 10lines.txt
+  

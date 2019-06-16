@@ -326,35 +326,28 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
     return l:context
 endfunction
 
-" RETURNS:  A copy of `context`, with lines deleted from its start/end until
-"           it has the given `length`.
-"
-" DETAILS:  Call the returned list `new_context`. It is guaranteed that the
-"           item at `new_context[len(new_context) / 2]` was originally the
-"           item at `context[len(context) / 2]`.
-"
-"           Returns an unaltered copy of `context` if it is already `length`
-"           or shorter.
-function! markbar#helpers#TrimContext(context, length) abort
-    if type(a:context) !=# v:t_list
-        throw 'Expected context to be a list.'
+" RETURNS:  A list of two values, [start_idx, end_idx] (end-exclusive).
+"           Printing this range from a context list of original length
+"           `context_len` will produce `length` lines of context, with the
+"           mark's line being at the proper location in that printed context.
+function! markbar#helpers#TrimmedContextRange(context_len, length) abort
+    if type(a:context_len) !=# v:t_number
+        throw 'Expected context_len to be a number.'
     elseif type(a:length) !=# v:t_number
-        throw 'Expected context length to be a number.'
+        throw 'Expected target length to be a number.'
     elseif a:length <# 0
         throw 'Cannot give negative target length for trimmed context.'
     endif
 
-    let l:trimmed = copy(a:context)
+    if a:context_len <=# a:length
+        return [0, a:context_len]
+    endif
 
-    while len(l:trimmed) ># a:length
-        let l:is_odd_len = len(l:trimmed) % 2
-        if l:is_odd_len
-            unlet l:trimmed[0]
-        else
-            unlet l:trimmed[-1]
-        endif
-    endwhile
-    return l:trimmed
+    let l:to_remove = a:context_len - a:length
+    let l:from_front = l:to_remove / 2
+    let l:from_back = l:to_remove - l:from_front
+
+    return [l:from_front, a:context_len - l:from_back]
 endfunction
 
 " RETURNS:  A functor that takes a MarkData and returns the number of lines of

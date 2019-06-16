@@ -122,7 +122,12 @@ endfunction
 
 function! markbar#MarkData#getMarkLineInContext() abort dict
     call markbar#MarkData#AssertIsMarkData(l:self)
-    return len(l:self._context) / 2
+    let l:context_len = len(l:self._context)
+    if !l:context_len | return l:context_len | endif
+
+    let l:odd_num_lines = l:context_len % 2
+    " bump up by one if the context has even length
+    return l:context_len / 2 - ((l:odd_num_lines) ? 0 : 1)
 endfunction
 
 function! markbar#MarkData#isGlobal() abort dict
