@@ -311,7 +311,7 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
 
     let l:context_prefix = []
     while l:start <# 1
-        let l:context_prefix += ['~']
+        call add(l:context_prefix, '~')
         let l:start += 1
     endwhile
 
@@ -320,7 +320,7 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
         \ + markbar#helpers#FetchBufferLineRange(a:buffer_expr, l:start, l:end)
 
     while len(l:context) <# a:num_lines
-        let l:context += ['~']
+        call add(l:context, '~')
     endwhile
 
     return l:context

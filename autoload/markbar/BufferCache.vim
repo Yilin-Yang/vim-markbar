@@ -81,7 +81,7 @@ endfunction
 function! markbar#BufferCache#updateContexts(num_lines) abort dict
     call markbar#BufferCache#AssertIsBufferCache(l:self)
 
-    let l:marks_database = l:self['marks_dict']
+    let l:marks_database = l:self.marks_dict
 
     " remove orphaned contexts
     " for l:mark in keys(l:marks_to_contexts)
@@ -94,7 +94,7 @@ function! markbar#BufferCache#updateContexts(num_lines) abort dict
     " fetch updated mark contexts
     let l:i = 0
     let l:using_global_marks = l:self.isGlobal()
-    let l:buffer_no = l:self['_buffer_no']
+    let l:buffer_no = l:self._buffer_no
 
     for l:mark in keys(l:marks_database)
         let l:mark_data = l:marks_database[l:mark]
@@ -110,7 +110,7 @@ function! markbar#BufferCache#updateContexts(num_lines) abort dict
             \ l:line_no,
             \ a:num_lines
         \ )
-        let l:mark_data['_context'] = l:context
+        call l:mark_data.setContext(l:context)
     endfor
 endfunction
 

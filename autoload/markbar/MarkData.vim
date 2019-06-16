@@ -9,12 +9,16 @@ function! markbar#MarkData#new() abort
         \ '_context': [],
         \ '_name': ''
     \ }
-    let l:new['getColumnNo'] = function('markbar#MarkData#getColumnNo')
-    let l:new['getLineNo']   = function('markbar#MarkData#getLineNo')
-    let l:new['getMark']     = function('markbar#MarkData#getMark')
-    let l:new['getName']     = function('markbar#MarkData#getName')
-    let l:new['isGlobal']    = function('markbar#MarkData#isGlobal')
-    let l:new['setName']     = function('markbar#MarkData#setName')
+    let l:new.getColumnNo = function('markbar#MarkData#getColumnNo')
+    let l:new.getLineNo   = function('markbar#MarkData#getLineNo')
+    let l:new.getMark     = function('markbar#MarkData#getMark')
+    let l:new.getName     = function('markbar#MarkData#getName')
+    let l:new.getContext  = function('markbar#MarkData#getContext')
+    let l:new.getMarkLineInContext =
+            \ function('markbar#MarkData#getMarkLineInContext')
+    let l:new.isGlobal    = function('markbar#MarkData#isGlobal')
+    let l:new.setName     = function('markbar#MarkData#setName')
+    let l:new.setContext  = function('markbar#MarkData#setContext')
     return l:new
 endfunction
 
@@ -34,11 +38,11 @@ function! markbar#MarkData#fromMarkString(markstring) abort
         throw '(markbar#MarkData#FromMarkString) Bad argument type for: ' . a:markstring
     endif
     let l:new_markdata = markbar#MarkData#new()
-    let l:new_markdata['_data'] = matchlist(
+    let l:new_markdata._data = matchlist(
         \ a:markstring,
         \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)'
     \ )[1:3]
-    if empty(l:new_markdata['_data'])
+    if empty(l:new_markdata._data)
         throw '(markbar#MarkData) markstring parsing failed for: ' . a:markstring
     endif
     return l:new_markdata
@@ -54,11 +58,11 @@ endfunction
 " PARAM:    mark_data       (markbar#BasicMarkData)     The mark to name.
 function! markbar#MarkData#DefaultMarkName(mark_data) abort
     call markbar#BasicMarkData#AssertIsBasicMarkData(a:mark_data)
-    let l:mark = a:mark_data['mark']
+    let l:mark = a:mark_data.mark
     let l:format = printf(
         \ '(l: %d, c: %d) ',
-        \ a:mark_data['line'],
-        \ a:mark_data['column'],
+        \ a:mark_data.line,
+        \ a:mark_data.column,
         \ ) . '%s'
     if l:mark ==# "'"
         return printf(l:format, 'Last Jump')
@@ -87,28 +91,38 @@ function! markbar#MarkData#DefaultMarkName(mark_data) abort
     endif
     return printf(
         \ 'l: %4d, c: %4d',
-        \ a:mark_data['line'],
-        \ a:mark_data['column'])
+        \ a:mark_data.line,
+        \ a:mark_data.column)
 endfunction
 
 function! markbar#MarkData#getMark() abort dict
     call markbar#MarkData#AssertIsMarkData(l:self)
-    return l:self['_data'][0]
+    return l:self._data[0]
 endfunction
 
 function! markbar#MarkData#getLineNo() abort dict
     call markbar#MarkData#AssertIsMarkData(l:self)
-    return l:self['_data'][1]
+    return l:self._data[1]
 endfunction
 
 function! markbar#MarkData#getColumnNo() abort dict
     call markbar#MarkData#AssertIsMarkData(l:self)
-    return l:self['_data'][2]
+    return l:self._data[2]
 endfunction
 
 function! markbar#MarkData#getName() abort dict
     call markbar#MarkData#AssertIsMarkData(l:self)
-    return l:self['_name']
+    return l:self._name
+endfunction
+
+function! markbar#MarkData#getContext() abort dict
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    return l:self._context
+endfunction
+
+function! markbar#MarkData#getMarkLineInContext() abort dict
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    return len(l:self._context) / 2
 endfunction
 
 function! markbar#MarkData#isGlobal() abort dict
@@ -118,5 +132,15 @@ endfunction
 
 function! markbar#MarkData#setName(new_name) abort dict
     call markbar#MarkData#AssertIsMarkData(l:self)
-    let l:self['_name'] = a:new_name
+    let l:self._name = a:new_name
+endfunction
+
+" EFFECTS:  Update the context for a particular mark.
+" PARAM:    new_context (v:t_list)  List of strings, where each string is a
+"                                   line of context from around the mark.
+"                                   The string at index `len(new_context) / 2`
+"                                   should be the line that contains the mark.
+function! markbar#MarkData#setContext(new_context) abort dict
+    call markbar#MarkData#AssertIsMarkData(l:self)
+    let l:self._context = a:new_context
 endfunction
