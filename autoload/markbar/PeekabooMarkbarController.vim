@@ -148,9 +148,12 @@ endfunction
 "                                   appear at the top of the markbar.)
 function! markbar#PeekabooMarkbarController#_getMarkbarContents(buffer_no, marks) abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
+    let l:NumContext = markbar#helpers#NumContextFunctor(
+        \ markbar#settings#NumLinesContext(), v:true)
     return l:self._generateMarkbarContents(
         \ a:buffer_no,
         \ a:marks,
+        \ l:NumContext,
         \ markbar#settings#PeekabooMarkbarSectionSeparator(),
         \ markbar#settings#PeekabooContextIndentBlock(),
         \ markbar#settings#EnableMarkHighlighting(),

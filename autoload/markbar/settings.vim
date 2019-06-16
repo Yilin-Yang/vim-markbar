@@ -251,19 +251,53 @@ function! markbar#settings#MaximumActiveBufferHistory() abort
     return g:markbar_maximum_active_buffer_history
 endfunction
 
-" RETURNS:  (v:t_number)    The number of lines of context to retrieve around
-"                           marks, including the line that holds the mark.
+" RETURNS:  (v:t_dict)  Dict holding the number of lines of context to be
+"                       retrieved around different kinds of marks, including
+"                       the line that holds the mark.
+"
+" DETAILS:  Contains the following keys:
+"           - `around_local`: Number to grab around local marks.
+"           - `around_file`:  Number to grab around file marks.
+"           - `peekaboo_around_local`: Like above, but for the peekaboo
+"           markbar.
+"           - `peekaboo_around_file`: Like above, but for the peekaboo
+"           markbar.
 function! markbar#settings#NumLinesContext() abort
     if !exists('g:markbar_num_lines_context')
-        let g:markbar_num_lines_context = 5
+        let g:markbar_num_lines_context = s:DEFAULT_NUM_CONTEXT
     endif
-    call s:AssertType(
-        \ g:markbar_num_lines_context,
-        \ v:t_number,
-        \ 'g:markbar_num_lines_context'
-    \ )
+    if type(g:markbar_num_lines_context) ==# v:t_number
+        let l:num = g:markbar_num_lines_context
+        let g:markbar_num_lines_context = {
+            \ 'around_local': l:num,
+            \ 'around_file': l:num,
+            \ 'peekaboo_around_local': l:num,
+            \ 'peekaboo_around_file': l:num,
+        \ }
+    elseif type(g:markbar_num_lines_context) ==# v:t_dict
+        let l:dict = g:markbar_num_lines_context
+        if !has_key(l:dict, 'around_local')
+            let l:dict.around_local = s:DEFAULT_NUM_CONTEXT
+        endif
+        if !has_key(l:dict, 'around_file')
+            let l:dict.around_file = s:DEFAULT_NUM_CONTEXT
+        endif
+        if !has_key(l:dict, 'peekaboo_around_local')
+            let l:dict.peekaboo_around_local = l:dict.around_local
+        endif
+        if !has_key(l:dict, 'peekaboo_around_file')
+            let l:dict.peekaboo_around_file = l:dict.around_file
+        endif
+    else  " throw error message
+        call s:AssertType(
+            \ g:markbar_num_lines_context,
+            \ v:t_dict,
+            \ 'g:markbar_num_lines_context'
+        \ )
+    endif
     return g:markbar_num_lines_context
 endfunction
+let s:DEFAULT_NUM_CONTEXT = 5
 
 " RETURNS:  (v:t_string)    The keymapping used to 'jump to mark from markbar'
 "                           when the markbar is open.

@@ -325,3 +325,53 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
 
     return l:context
 endfunction
+
+" RETURNS:  A copy of `context`, with lines deleted from its start/end until
+"           it has the given `length`.
+"
+" DETAILS:  Call the returned list `new_context`. It is guaranteed that the
+"           item at `new_context[len(new_context) / 2]` was originally the
+"           item at `context[len(context) / 2]`.
+"
+"           Returns an unaltered copy of `context` if it is already `length`
+"           or shorter.
+function! markbar#helpers#TrimContext(context, length) abort
+    if type(a:context) !=# v:t_list
+        throw 'Expected context to be a list.'
+    elseif type(a:length) !=# v:t_number
+        throw 'Expected context length to be a number.'
+    elseif a:length <# 0
+        throw 'Cannot give negative target length for trimmed context.'
+    endif
+
+    let l:trimmed = copy(a:context)
+
+    while len(l:trimmed) ># a:length
+        let l:is_odd_len = len(l:trimmed) % 2
+        if l:is_odd_len
+            unlet l:trimmed[0]
+        else
+            unlet l:trimmed[-1]
+        endif
+    endwhile
+    return l:trimmed
+endfunction
+
+" RETURNS:  A functor that takes a MarkData and returns the number of lines of
+"           context to print for that MarkData.
+" PARAM:    config          (v:t_dict)  A markbar#settings#NumLinesContext dict.
+" PARAM:    is_peekaboo     (v:t_bool)  True if this is for the peekaboo
+"                                       markbar, false otherwise.
+function! markbar#helpers#NumContextFunctor(config, is_peekaboo) abort
+    return a:is_peekaboo ? function('s:NumContextPeekaboo', [a:config])
+                       \ : function('s:NumContextNormal',   [a:config])
+endfunction
+
+function! s:NumContextNormal(config, mark_data) abort
+    return a:mark_data.isGlobal() ? a:config.around_file : a:config.around_local
+endfunction
+
+function! s:NumContextPeekaboo(config, mark_data) abort
+    return a:mark_data.isGlobal() ? a:config.peekaboo_around_file
+                                \ : a:config.peekaboo_around_local
+endfunction

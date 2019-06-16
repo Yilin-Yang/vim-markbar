@@ -204,6 +204,9 @@ endfunction
 "                                   display, in order from left to right (i.e.
 "                                   first character is the mark that should
 "                                   appear at the top of the markbar.)
+" PARAM:    NumContext      (v:t_func)  Funcref. Takes a MarkData object and
+"                                       returns the number of lines of context
+"                                       to be printed for that object.
 " PARAM:    highlight_mark  (v:t_bool)  Whether to add the 'mark marker'
 "                                       character used to highlight the mark's
 "                                       location in the context.
@@ -215,6 +218,7 @@ endfunction
 function! markbar#MarkbarController#_generateMarkbarContents(
     \ buffer_no,
     \ marks,
+    \ NumContext,
     \ section_separator,
     \ indent_block,
     \ highlight_mark,
@@ -248,7 +252,9 @@ function! markbar#MarkbarController#_generateMarkbarContents(
             continue
         endtry
 
-        let l:context = l:mark.getContext()
+        let l:num_lines_context = a:NumContext(l:mark)
+        let l:context = markbar#helpers#TrimContext(l:mark.getContext(),
+                                                  \ l:num_lines_context)
         if !a:highlight_mark
             for l:line in l:context
                 call add(l:lines, a:indent_block . l:line)

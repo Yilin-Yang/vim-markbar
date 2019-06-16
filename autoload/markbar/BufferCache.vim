@@ -8,10 +8,10 @@ function! markbar#BufferCache#new(...) abort
         \ 'marks_dict': {},
         \ '_buffer_no': l:buffer_no,
     \ }
-    let l:new['isGlobal']       = function('markbar#BufferCache#isGlobal')
-    let l:new['getMark']        = function('markbar#BufferCache#getMark')
-    let l:new['updateCache']    = function('markbar#BufferCache#updateCache')
-    let l:new['updateContexts'] = function('markbar#BufferCache#updateContexts')
+    let l:new.isGlobal       = function('markbar#BufferCache#isGlobal')
+    let l:new.getMark        = function('markbar#BufferCache#getMark')
+    let l:new.updateCache    = function('markbar#BufferCache#updateCache')
+    let l:new.updateContexts = function('markbar#BufferCache#updateContexts')
     return l:new
 endfunction
 
@@ -30,7 +30,7 @@ function! markbar#BufferCache#getMark(mark) abort dict
     let l:is_quote = a:mark ==# "'" || a:mark ==# '`'
     let l:mark = (l:is_quote) ? "'" : a:mark
     try
-        let l:md = l:self['marks_dict'][l:mark]
+        let l:md = l:self.marks_dict[l:mark]
     catch /E716/ " Key not present in dictionary
         throw '(markbar#BufferCache) Requested mark not found in cache: ' . a:mark
     endtry
@@ -61,7 +61,7 @@ function! markbar#BufferCache#updateCache(marks_output) abort dict
     endwhile
 
     " copy over existing mark names
-    let l:old_dict = l:self['marks_dict']
+    let l:old_dict = l:self.marks_dict
     for l:mark in keys(l:old_dict)
         if !has_key(l:new_marks_dict, l:mark) | continue | endif
         call l:new_marks_dict[l:mark].setName(
@@ -69,7 +69,7 @@ function! markbar#BufferCache#updateCache(marks_output) abort dict
         \ )
     endfor
 
-    let l:self['marks_dict'] = l:new_marks_dict
+    let l:self.marks_dict = l:new_marks_dict
 endfunction
 
 " EFFECTS:  - Retrieve new contexts for the marks held in this buffer cache.
@@ -116,5 +116,5 @@ endfunction
 
 function! markbar#BufferCache#isGlobal() abort dict
     call markbar#BufferCache#AssertIsBufferCache(l:self)
-    return l:self['_buffer_no'] ==# markbar#constants#GLOBAL_MARKS()
+    return l:self._buffer_no ==# markbar#constants#GLOBAL_MARKS()
 endfunction

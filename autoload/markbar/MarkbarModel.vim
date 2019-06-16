@@ -233,10 +233,21 @@ function! markbar#MarkbarModel#updateCurrentAndGlobal() abort dict
     call markbar#MarkbarModel#AssertIsMarkbarModel(l:self)
     let l:cur_buffer_cache    = l:self.getBufferCache(bufnr('%'))
     let l:global_buffer_cache = l:self.getBufferCache(markbar#constants#GLOBAL_MARKS())
+
+    " retrieve the greatest number of lines of context that we may need
+    " for all marks, for simplicity
+    let l:max_num_context = 0
+    let l:num_lines_config = markbar#settings#NumLinesContext()
+    for l:num_lines in values(l:num_lines_config)
+        if l:num_lines ># l:max_num_context
+            let l:max_num_context = l:num_lines
+        endif
+    endfor
+
     call    l:cur_buffer_cache.updateCache(markbar#helpers#GetLocalMarks())
     call l:global_buffer_cache.updateCache(markbar#helpers#GetGlobalMarks())
-    call    l:cur_buffer_cache.updateContexts(markbar#settings#NumLinesContext())
-    call l:global_buffer_cache.updateContexts(markbar#settings#NumLinesContext())
+    call    l:cur_buffer_cache.updateContexts(l:num_lines)
+    call l:global_buffer_cache.updateContexts(l:num_lines)
 
     " TODO: grab the maximum possible numbers of lines of context, for
     " compact/normal?
