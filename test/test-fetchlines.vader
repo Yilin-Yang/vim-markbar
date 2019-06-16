@@ -82,14 +82,14 @@ Execute (Error Check: Non-Integer num_lines):
 Execute (Error Check: Zero-valued around_line):
   AssertThrow call markbar#helpers#FetchContext('*/2lines.txt', 0, 2)
 
-Execute (Error Check: Zero-valued num_lines):
-  AssertThrow call markbar#helpers#FetchContext('*/2lines.txt', 1, 0)
-
 Execute (Get One-Line Context):
   let result = markbar#helpers#FetchContext('*/2lines.txt', 2, 1)
 Then:
   let expected = ['second line']
   AssertEqual expected, result
+
+Execute (Get Zero-Sized Context):
+  AssertEqual [], markbar#helpers#FetchContext('*/10lines.txt', 1, 0)
 
 Execute (Get Even-Sized Context):
   let result = markbar#helpers#FetchContext('*/10lines.txt', 2, 4)

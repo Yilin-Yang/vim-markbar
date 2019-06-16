@@ -369,3 +369,30 @@ Expect (Correct Numbers of Lines of Context):
 
   ['C]: 10lines.txt
   
+Execute (Show Correct Num Lines When File Shows More than Local):
+  " test an alternate code path
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 0,
+      \ 'around_file': 2,
+      \ }
+  edit! 10lines.txt
+  call g:standard_controller.openMarkbar()
+Expect (Correct Numbers of Lines of Context):
+  " Press ? for help
+  ['a]: 
+
+  ['b]: 
+
+  ['A]: 10lines.txt
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      tenth line
+      ~
+  
+

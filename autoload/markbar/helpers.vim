@@ -290,8 +290,10 @@ endfunction
 function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abort
     if type(a:num_lines) !=# v:t_number
         throw '`a:num_lines` must be an integer. Gave value: ' . a:num_lines
-    elseif a:num_lines <# 1
-        throw 'Required that `a:num_lines >= 1`. Gave value: ' . a:num_lines
+    elseif a:num_lines ==# 0
+        return []
+    elseif a:num_lines <# 0
+        throw 'Required that `a:num_lines >= 0`. Gave value: ' . a:num_lines
     endif
 
     if a:around_line <# 1
