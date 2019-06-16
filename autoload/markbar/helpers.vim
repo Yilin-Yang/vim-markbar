@@ -290,8 +290,10 @@ endfunction
 function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abort
     if type(a:num_lines) !=# v:t_number
         throw '`a:num_lines` must be an integer. Gave value: ' . a:num_lines
-    elseif a:num_lines <# 1
-        throw 'Required that `a:num_lines >= 1`. Gave value: ' . a:num_lines
+    elseif a:num_lines ==# 0
+        return []
+    elseif a:num_lines <# 0
+        throw 'Required that `a:num_lines >= 0`. Gave value: ' . a:num_lines
     endif
 
     if a:around_line <# 1
@@ -311,7 +313,7 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
 
     let l:context_prefix = []
     while l:start <# 1
-        let l:context_prefix += ['~']
+        call add(l:context_prefix, '~')
         let l:start += 1
     endwhile
 
@@ -320,8 +322,51 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
         \ + markbar#helpers#FetchBufferLineRange(a:buffer_expr, l:start, l:end)
 
     while len(l:context) <# a:num_lines
-        let l:context += ['~']
+        call add(l:context, '~')
     endwhile
 
     return l:context
+endfunction
+
+" RETURNS:  A list of two values, [start_idx, end_idx] (end-exclusive).
+"           Printing this range from a context list of original length
+"           `context_len` will produce `length` lines of context, with the
+"           mark's line being at the proper location in that printed context.
+function! markbar#helpers#TrimmedContextRange(context_len, length) abort
+    if type(a:context_len) !=# v:t_number
+        throw 'Expected context_len to be a number.'
+    elseif type(a:length) !=# v:t_number
+        throw 'Expected target length to be a number.'
+    elseif a:length <# 0
+        throw 'Cannot give negative target length for trimmed context.'
+    endif
+
+    if a:context_len <=# a:length
+        return [0, a:context_len]
+    endif
+
+    let l:to_remove = a:context_len - a:length
+    let l:from_front = l:to_remove / 2
+    let l:from_back = l:to_remove - l:from_front
+
+    return [l:from_front, a:context_len - l:from_back]
+endfunction
+
+" RETURNS:  A functor that takes a MarkData and returns the number of lines of
+"           context to print for that MarkData.
+" PARAM:    config          (v:t_dict)  A markbar#settings#NumLinesContext dict.
+" PARAM:    is_peekaboo     (v:t_bool)  True if this is for the peekaboo
+"                                       markbar, false otherwise.
+function! markbar#helpers#NumContextFunctor(config, is_peekaboo) abort
+    return a:is_peekaboo ? function('s:NumContextPeekaboo', [a:config])
+                       \ : function('s:NumContextNormal',   [a:config])
+endfunction
+
+function! s:NumContextNormal(config, mark_data) abort
+    return a:mark_data.isGlobal() ? a:config.around_file : a:config.around_local
+endfunction
+
+function! s:NumContextPeekaboo(config, mark_data) abort
+    return a:mark_data.isGlobal() ? a:config.peekaboo_around_file
+                                \ : a:config.peekaboo_around_local
 endfunction

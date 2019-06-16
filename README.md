@@ -169,6 +169,14 @@ let g:markbar_context_indent_block = '  '
 " number of lines of context to retrieve per mark
 let g:markbar_num_lines_context = 3
 
+" ditto, but more granularly (any may be omitted)
+let g:markbar_num_lines_context = {
+    \ 'around_local': 3,          " for local marks, show 3 lines of context
+    \ 'around_file': 0,           " for file marks, show no context at all
+    \ 'peekaboo_around_local': 4, " like above, but for the peekaboo markbar
+    \ 'peekaboo_around_file': 2,
+\ }
+
 " markbar-local mappings
 let g:markbar_jump_to_mark_mapping  = 'G'
 let g:markbar_next_mark_mapping     = '/'

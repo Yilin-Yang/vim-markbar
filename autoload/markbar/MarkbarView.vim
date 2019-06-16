@@ -21,30 +21,30 @@ function! markbar#MarkbarView#new(model) abort
         \ '_show_verbose_help': v:false,
     \ }
     " TODO: markbar buffer window id?
-    let l:new['openMarkbar']                 = function('markbar#MarkbarView#openMarkbar')
-    let l:new['_openMarkbarSplit']           = function('markbar#MarkbarView#_openMarkbarSplit')
-    let l:new['closeMarkbar']                = function('markbar#MarkbarView#closeMarkbar')
-    let l:new['toggleShowHelp']              = function('markbar#MarkbarView#toggleShowHelp')
-    let l:new['markbarIsOpenCurrentTab']     = function('markbar#MarkbarView#markbarIsOpenCurrentTab')
-    let l:new['getOpenMarkbars']             = function('markbar#MarkbarView#getOpenMarkbars')
-    let l:new['getMarkbarBuffer']            = function('markbar#MarkbarView#getMarkbarBuffer')
-    let l:new['getMarkbarWindow']            = function('markbar#MarkbarView#getMarkbarWindow')
-    let l:new['getShouldShowHelp']           = function('markbar#MarkbarView#getShouldShowHelp')
-    let l:new['_moveCursorToLine']           = function('markbar#MarkbarView#_moveCursorToLine')
-    let l:new['_goToSelectedMark']           = function('markbar#MarkbarView#_goToSelectedMark')
-    let l:new['_goToMark']                   = function('markbar#MarkbarView#_goToMark')
-    let l:new['_selectMark']                 = function('markbar#MarkbarView#_selectMark')
-    let l:new['_cycleToNextMark']            = function('markbar#MarkbarView#_cycleToNextMark')
-    let l:new['_cycleToPreviousMark']        = function('markbar#MarkbarView#_cycleToPreviousMark')
-    let l:new['_getCurrentMarkHeading']      = function('markbar#MarkbarView#_getCurrentMarkHeading')
-    let l:new['_getCurrentMarkHeadingLine']  = function('markbar#MarkbarView#_getCurrentMarkHeadingLine')
-    let l:new['_getNextMarkHeadingLine']     = function('markbar#MarkbarView#_getNextMarkHeadingLine')
-    let l:new['_getPreviousMarkHeadingLine'] = function('markbar#MarkbarView#_getPreviousMarkHeadingLine')
-    let l:new['_getSpecificMarkHeadingLine'] = function('markbar#MarkbarView#_getSpecificMarkHeadingLine')
-    let l:new['_setMarkbarBufferSettings']   = function('markbar#MarkbarView#_setMarkbarBufferSettings')
-    let l:new['_setMarkbarWindowSettings']   = function('markbar#MarkbarView#_setMarkbarWindowSettings')
-    let l:new['_saveWinState']               = function('markbar#MarkbarView#_saveWinState')
-    let l:new['_restoreWinState']            = function('markbar#MarkbarView#_restoreWinState')
+    let l:new.openMarkbar                 = function('markbar#MarkbarView#openMarkbar')
+    let l:new._openMarkbarSplit           = function('markbar#MarkbarView#_openMarkbarSplit')
+    let l:new.closeMarkbar                = function('markbar#MarkbarView#closeMarkbar')
+    let l:new.toggleShowHelp              = function('markbar#MarkbarView#toggleShowHelp')
+    let l:new.markbarIsOpenCurrentTab     = function('markbar#MarkbarView#markbarIsOpenCurrentTab')
+    let l:new.getOpenMarkbars             = function('markbar#MarkbarView#getOpenMarkbars')
+    let l:new.getMarkbarBuffer            = function('markbar#MarkbarView#getMarkbarBuffer')
+    let l:new.getMarkbarWindow            = function('markbar#MarkbarView#getMarkbarWindow')
+    let l:new.getShouldShowHelp           = function('markbar#MarkbarView#getShouldShowHelp')
+    let l:new._moveCursorToLine           = function('markbar#MarkbarView#_moveCursorToLine')
+    let l:new._goToSelectedMark           = function('markbar#MarkbarView#_goToSelectedMark')
+    let l:new._goToMark                   = function('markbar#MarkbarView#_goToMark')
+    let l:new._selectMark                 = function('markbar#MarkbarView#_selectMark')
+    let l:new._cycleToNextMark            = function('markbar#MarkbarView#_cycleToNextMark')
+    let l:new._cycleToPreviousMark        = function('markbar#MarkbarView#_cycleToPreviousMark')
+    let l:new._getCurrentMarkHeading      = function('markbar#MarkbarView#_getCurrentMarkHeading')
+    let l:new._getCurrentMarkHeadingLine  = function('markbar#MarkbarView#_getCurrentMarkHeadingLine')
+    let l:new._getNextMarkHeadingLine     = function('markbar#MarkbarView#_getNextMarkHeadingLine')
+    let l:new._getPreviousMarkHeadingLine = function('markbar#MarkbarView#_getPreviousMarkHeadingLine')
+    let l:new._getSpecificMarkHeadingLine = function('markbar#MarkbarView#_getSpecificMarkHeadingLine')
+    let l:new._setMarkbarBufferSettings   = function('markbar#MarkbarView#_setMarkbarBufferSettings')
+    let l:new._setMarkbarWindowSettings   = function('markbar#MarkbarView#_setMarkbarWindowSettings')
+    let l:new._saveWinState               = function('markbar#MarkbarView#_saveWinState')
+    let l:new._restoreWinState            = function('markbar#MarkbarView#_restoreWinState')
 
     return l:new
 endfunction
@@ -147,7 +147,7 @@ endfunction
 " DETAILS:  Won't take effect until the markbar has been repopulated.
 function! markbar#MarkbarView#toggleShowHelp() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    let l:self['_show_verbose_help'] = !l:self['_show_verbose_help']
+    let l:self._show_verbose_help = !l:self._show_verbose_help
 endfunction
 
 " RETURNS:  (v:t_bool)  `v:true` if a markbar window is open in the current tab.
@@ -180,14 +180,14 @@ endfunction
 " DETAILS:  Creates a markbar buffer if one does not yet exist.
 function! markbar#MarkbarView#getMarkbarBuffer() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    if !bufexists(l:self['_markbar_buffer'])
+    if !bufexists(l:self._markbar_buffer)
         let l:bufname = markbar#settings#MarkbarBufferName()
         " escape special characters and create new
         let l:bufnr = bufnr(escape(l:bufname, '~*.$[]'), 1)
-        let l:self['_markbar_buffer'] = l:bufnr
+        let l:self._markbar_buffer = l:bufnr
         call l:self._setMarkbarBufferSettings(l:bufnr)
     endif
-    return l:self['_markbar_buffer']
+    return l:self._markbar_buffer
 endfunction
 
 " RETURNS:  (v:t_number)    The window ID of the 'markbar buffer', or -1 if
@@ -202,7 +202,7 @@ endfunction
 " RETURNS:  (v:t_bool)  Whether or not to show verbose help in the markbar.
 function! markbar#MarkbarView#getShouldShowHelp() abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
-    return l:self['_show_verbose_help']
+    return l:self._show_verbose_help
 endfunction
 
 " BRIEF:    Move the cursor to the given line number in the current buffer.
@@ -235,7 +235,7 @@ endfunction
 function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
     call markbar#MarkbarView#AssertIsMarkbarView(l:self)
 
-    let l:active_buffer = l:self['_markbar_model'].getActiveBuffer()
+    let l:active_buffer = l:self._markbar_model.getActiveBuffer()
     let l:mark_is_quote = a:mark ==# "'" || a:mark ==# '`'
 
     " save the 'correct' position of the [''] mark
@@ -243,7 +243,7 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
         " note that ['`] isn't actually stored as a distinct mark
         try
             let l:targ_mark = deepcopy(
-                \ l:self['_markbar_model']
+                \ l:self._markbar_model
                     \.getBufferCache(l:active_buffer)
                     \.getMark("'")
             \ )
@@ -278,7 +278,7 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
         endif
     catch /E20/
         " Mark not set
-        execute bufwinnr(l:self['_markbar_buffer']) . 'wincmd w'
+        execute bufwinnr(l:self._markbar_buffer) . 'wincmd w'
         call markbar#MarkbarView#MarkNotSet(a:mark)
         return
     endtry

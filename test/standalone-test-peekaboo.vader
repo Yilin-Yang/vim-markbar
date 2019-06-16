@@ -1,10 +1,11 @@
 Include: clear-marks.vader
+Include: WindowHelpers.vader
 
 Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_enable_mark_highlighting = v:false
   let g:markbar_jump_to_exact_position = v:true
 
-  let g:markbar_peekaboo_num_lines_context = 3
+  let g:markbar_num_lines_context = 3
   let g:markbar_peekaboo_open_vertical = v:true
   let g:markbar_peekaboo_section_separation = 1
 
@@ -33,7 +34,7 @@ Do (Close Peekaboo Markbar):
 Then:
   AssertEqual '', getbufvar('.', 'is_markbar')
 
-" If the 'open markbar' binding works while the 'toggle' binding doesn't, 
+" If the 'open markbar' binding works while the 'toggle' binding doesn't,
 " this should fail
 Do (Set Marks, Peekaboo Markbar Open):
   :edit! 10lines.txt\<cr>
@@ -249,3 +250,165 @@ Then:
 
   " check column number
   AssertEqual 6, cur_pos[2]
+
+Execute (Show More Marks, Change Num Lines Context):
+  let g:markbar_peekaboo_marks_to_display = 'abcABC'
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 2,
+      \ 'around_file': 0,
+      \ }
+
+Do (Set Local Marks):
+  :edit! 10lines.txt\<cr>
+  2G0ma4G$mb
+  '
+
+Expect (Num Context Defaults to Same as Ordinary Markbar):
+  " Press ? for help
+  ['a]: 
+    second line
+    third line
+
+  ['b]: 
+    fourth line
+    fifth line
+
+  ['A]: 10lines.txt
+
+  ['B]: 10lines.txt
+
+  ['C]: 10lines.txt
+  
+Execute (Show Correct Num Lines When File Shows More than Local):
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 0,
+      \ 'around_file': 2,
+      \ }
+  edit! 10lines.txt
+  normal '
+
+Expect (Correct Numbers of Lines of Context):
+  " Press ? for help
+  ['a]: 
+
+  ['b]: 
+
+  ['A]: 10lines.txt
+    first line
+    second line
+
+  ['B]: 10lines.txt
+    fifth line
+    sixth line
+
+  ['C]: 10lines.txt
+    tenth line
+    ~
+  
+Execute (Separately Configure Normal and Peekaboo):
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 0,
+      \ 'around_file': 2,
+      \ 'peekaboo_around_local': 5,
+      \ 'peekaboo_around_file': 8,
+      \ }
+  edit! 10lines.txt
+  normal '
+
+Expect (Correct Numbers of Lines of Context):
+  " Press ? for help
+  ['a]: 
+    ~
+    first line
+    second line
+    third line
+    fourth line
+
+  ['b]: 
+    second line
+    third line
+    fourth line
+    fifth line
+    sixth line
+
+  ['A]: 10lines.txt
+    ~
+    ~
+    ~
+    first line
+    second line
+    third line
+    fourth line
+    fifth line
+
+  ['B]: 10lines.txt
+    second line
+    third line
+    fourth line
+    fifth line
+    sixth line
+    seventh line
+    eighth line
+    ninth line
+
+  ['C]: 10lines.txt
+    seventh line
+    eighth line
+    ninth line
+    tenth line
+    ~
+    ~
+    ~
+    ~
+  
+Execute (Enable Mark Highlighting):
+  let g:markbar_enable_mark_highlighting = v:true
+  edit! 10lines.txt
+  normal `
+
+Expect (Correct Output, Backtick-Like):
+  " Press ? for help
+  ['a]: 
+    ~
+    first line
+    ➜second line
+    third line
+    fourth line
+
+  ['b]: 
+    second line
+    third line
+    fourth lin➜e
+    fifth line
+    sixth line
+
+  ['A]: 10lines.txt
+    ~
+    ~
+    ~
+    first➜ line
+    second line
+    third line
+    fourth line
+    fifth line
+
+  ['B]: 10lines.txt
+    second line
+    third line
+    fourth line
+    ➜fifth line
+    sixth line
+    seventh line
+    eighth line
+    ninth line
+
+  ['C]: 10lines.txt
+    seventh line
+    eighth line
+    ninth line
+    ➜tenth line
+    ~
+    ~
+    ~
+    ~
+  

@@ -89,9 +89,12 @@ endfunction
 
 function! markbar#StandardMarkbarController#_getMarkbarContents(buffer_no, marks) abort dict
     call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
+    let l:NumContext = markbar#helpers#NumContextFunctor(
+        \ markbar#settings#NumLinesContext(), v:false)
     return l:self._generateMarkbarContents(
         \ a:buffer_no,
         \ a:marks,
+        \ l:NumContext,
         \ markbar#settings#MarkbarSectionSeparator(),
         \ markbar#settings#ContextIndentBlock(),
         \ markbar#settings#EnableMarkHighlighting(),

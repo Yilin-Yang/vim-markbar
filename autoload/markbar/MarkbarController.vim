@@ -204,6 +204,9 @@ endfunction
 "                                   display, in order from left to right (i.e.
 "                                   first character is the mark that should
 "                                   appear at the top of the markbar.)
+" PARAM:    NumContext      (v:t_func)  Funcref. Takes a MarkData object and
+"                                       returns the number of lines of context
+"                                       to be printed for that object.
 " PARAM:    highlight_mark  (v:t_bool)  Whether to add the 'mark marker'
 "                                       character used to highlight the mark's
 "                                       location in the context.
@@ -215,18 +218,19 @@ endfunction
 function! markbar#MarkbarController#_generateMarkbarContents(
     \ buffer_no,
     \ marks,
+    \ NumContext,
     \ section_separator,
     \ indent_block,
     \ highlight_mark,
     \ backtick_like
 \ ) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    let l:markbar_model = l:self['_markbar_model']
+    let l:markbar_model = l:self._markbar_model
     let l:marks =
-        \ l:markbar_model.getBufferCache(a:buffer_no, v:true)['marks_dict']
+        \ l:markbar_model.getBufferCache(a:buffer_no, v:true).marks_dict
     let l:globals =
         \ l:markbar_model.getBufferCache(
-            \ markbar#constants#GLOBAL_MARKS())['marks_dict']
+            \ markbar#constants#GLOBAL_MARKS()).marks_dict
 
     let l:lines = [] " to return
 
@@ -248,19 +252,21 @@ function! markbar#MarkbarController#_generateMarkbarContents(
             continue
         endtry
 
+        let l:full_context = l:mark.getContext()
+        let l:num_lines_context = a:NumContext(l:mark)
+        let [l:start, l:end] = markbar#helpers#TrimmedContextRange(
+            \ len(l:full_context), l:num_lines_context)
         if !a:highlight_mark
-            for l:line in l:mark['_context']
-                let l:lines += [a:indent_block . l:line]
-            endfor
+            let l:j = l:start | while l:j <# l:end
+                call add(l:lines, a:indent_block . l:full_context[l:j])
+            let l:j += 1 | endwhile
         else
             " insert the mark marker at the mark's line, column in the context
             let l:marker    = markbar#settings#MarkMarker()
-            let l:context   = l:mark['_context']
-            let l:size      = len(l:context)
-            let l:mark_line = l:size / 2
+            let l:mark_line = l:mark.getMarkLineInContext()
 
-            let l:j = 0 | while l:j <# l:size
-                let l:line = l:context[l:j]
+            let l:j = l:start | while l:j <# l:end
+                let l:line = l:full_context[l:j]
                 if l:j ==# l:mark_line
                     let l:colno = (a:backtick_like) ?
                         \ l:mark.getColumnNo() : matchstrpos(l:line, '\S')[1]
@@ -268,11 +274,11 @@ function! markbar#MarkbarController#_generateMarkbarContents(
                     let l:line = l:parts[0].l:marker.l:parts[1]
                 endif
                 let l:next_line = a:indent_block . l:line
-                let l:lines += [l:next_line]
+                call add(l:lines, l:next_line)
             let l:j += 1 | endwhile
         endif
 
-        let l:lines += a:section_separator
+        call extend(l:lines, a:section_separator)
     endwhile
 
     return l:lines
