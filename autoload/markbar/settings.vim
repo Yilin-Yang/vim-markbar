@@ -295,9 +295,24 @@ function! markbar#settings#NumLinesContext() abort
             \ 'g:markbar_num_lines_context'
         \ )
     endif
+    for [l:key, l:Val] in items(g:markbar_num_lines_context)
+        if !has_key(s:ALLOWED_KEYS, l:key)
+            throw 'Unrecognized key: '.l:key
+        endif
+        call s:AssertType(l:Val, v:t_number, l:key)
+        if l:Val <# 0
+            throw 'num_lines_context must be non-negative, gave: '.l:Val
+        endif
+    endfor
     return g:markbar_num_lines_context
 endfunction
-let s:DEFAULT_NUM_CONTEXT = 5
+let s:DEFAULT_NUM_CONTEXT = 5 | lockvar! s:DEFAULT_NUM_CONTEXT
+let s:ALLOWED_KEYS = {
+    \ 'around_local': 1,
+    \ 'around_file': 1,
+    \ 'peekaboo_around_local': 1,
+    \ 'peekaboo_around_file': 1,
+    \ } | lockvar! s:ALLOWED_KEYS
 
 " RETURNS:  (v:t_string)    The keymapping used to 'jump to mark from markbar'
 "                           when the markbar is open.

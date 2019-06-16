@@ -208,13 +208,27 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
     There's probably no real reason to change this option.
 
-*g:markbar_num_lines_context*                            |(v:t_number)|
+*g:markbar_num_lines_context*                            |(varies)|
     `Default Value:` `5`
 
-    The number of lines of context that vim-markbar should grab "around" each
-    mark.
+    Configures the number of lines of context that vim-markbar should grab
+    "around" each mark, based on whether the mark is a local mark or a file
+    mark, and whether the mark is being shown in the peekaboo markbar.
 
-    This option is shared between the standard and peekaboo markbars.
+    If set to a number, all marks will be shown with that many lines of
+    context.
+
+    If more granular configuration is desired, this may be set to a dict
+    with the following keys, all of which are optional: >
+        let g:markbar_num_lines_context = {
+            \ 'around_local': 5,          " defaults to 5
+            \ 'around_file': 5,           " defaults to 5
+            \ 'peekaboo_around_local': 5, " defaults to 'around_local'
+            \ 'peekaboo_around_file': 5,  " defaults to 'around_file'
+        \ }
+<
+    If the dict contains unrecognized keys, vim-markbar will throw an
+    exception. Values must be non-negative integers.
 
 *g:markbar_jump_to_mark_mapping*                         |(v:t_string)|
 *g:markbar_peekaboo_jump_to_mark_mapping*
