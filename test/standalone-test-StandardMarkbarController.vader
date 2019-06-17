@@ -353,6 +353,7 @@ Execute (Disable Mark Highlighting, Then Show Reconfigured Context Length):
   let g:markbar_enable_mark_highlighting = v:false
   edit! 10lines.txt
   call g:standard_controller.openMarkbar()
+
 Expect (Correct Numbers of Lines of Context):
   " Press ? for help
   ['a]: 
@@ -377,6 +378,7 @@ Execute (Show Correct Num Lines When File Shows More than Local):
       \ }
   edit! 10lines.txt
   call g:standard_controller.openMarkbar()
+
 Expect (Correct Numbers of Lines of Context):
   " Press ? for help
   ['a]: 
@@ -395,4 +397,39 @@ Expect (Correct Numbers of Lines of Context):
       tenth line
       ~
   
+Execute (Separately Configure Normal and Peekaboo):
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 1,
+      \ 'around_file': 4,
+      \ 'peekaboo_around_local': 5,
+      \ 'peekaboo_around_file': 8,
+      \ }
+  edit! 10lines.txt
+  call g:standard_controller.openMarkbar()
 
+Expect (Correct Number of Lines of Context):
+  " Press ? for help
+  ['a]: 
+      second line
+
+  ['b]: 
+      fourth line
+
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+      third line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+      seventh line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+      ~
+  
