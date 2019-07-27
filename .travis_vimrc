@@ -13,6 +13,10 @@ set runtimepath+=.
 set runtimepath+=..
 set runtimepath+=vader.vim
 set runtimepath+=~/.vim/bundle/vader.vim
+if $WITH_TYPEVIM
+  set runtimepath+=vim-maktaba
+  set runtimepath+=TypeVim
+endif
 filetype plugin indent on
 syntax enable
 set autoread

@@ -216,13 +216,41 @@ endfunction
 " PARAM:    end     (v:t_number)    The last line to replace, exclusive.
 " PARAM:    lines   (v:t_list)      The 'new' lines to insert.
 function! markbar#helpers#SetBufferLineRange(buffer_expr, start, end, lines) abort
-    if !(exists('*nvim_buf_set_lines') || exists('*setbufline'))
+    if !(exists('*nvim_buf_set_lines') || exists('*deletebufline')
+            \ || g:markbar_typevim_exists)
         throw '(vim-markbar) vim version is too old! '
-            \ . '(Need nvim with `nvim_buf_set_lines`, or vim with `setbufline`.)'
+            \ . '(Need nvim with `nvim_buf_set_lines`, or vim with '
+            \ . '`deletebufline`, or the TypeVim plugin.)'
     endif
     let l:target_buf = bufnr(a:buffer_expr)
     if has('nvim')
         call nvim_buf_set_lines(l:target_buf, a:start - 1, a:end - 1, 0, a:lines)
+    elseif g:markbar_typevim_exists
+        " wrap the target buffer in a TypeVim buffer and use that to set the
+        " markbar contents
+
+        " this is ugly, but it lets users with older vim versions use markbar
+        " without making TypeVim a hard dependency
+        let l:should_replace = v:false
+        if !exists('s:buffer_wrapper')
+            let l:should_replace = v:true
+        else
+            try
+                let l:should_replace = s:buffer_wrapper.bufnr() ==# l:target_buf
+            catch /ERROR(NotFound)/
+                let l:should_replace = v:true
+            endtry
+        endif
+
+        if l:should_replace
+            let s:buffer_wrapper = typevim#Buffer#New({'bufnr': l:target_buf})
+        endif
+
+        if a:start == a:end  " insert lines
+            call s:buffer_wrapper.InsertLines(a:start, a:lines)
+        else
+            call s:buffer_wrapper.ReplaceLines(a:start, a:end - 1, a:lines)
+        endif
     else
         let l:num_lines = len(getbufline(l:target_buf, 1, '$'))
         if     !a:start       | let l:start = l:num_lines

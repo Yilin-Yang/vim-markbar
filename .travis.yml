@@ -20,9 +20,13 @@ before_script:
   - |
     sudo apt-get install -y neovim vim
     nvim --version
-  - git clone https://github.com/junegunn/vader.vim.git test/vader.vim
+  - |
+    git clone https://github.com/junegunn/vader.vim.git test/vader.vim
+    git clone https://github.com/Google/vim-maktaba.git test/vim-maktaba
+    git clone https://github.com/Yilin-Yang/TypeVim.git test/TypeVim
 
 script:
   - cd test  # to make handling filepaths easier
   - ./run_tests.sh --international --neovim
   - ./run_tests.sh --international
+  - WITH_TYPEVIM=1 ./run_tests.sh --international

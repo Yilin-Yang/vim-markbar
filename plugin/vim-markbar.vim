@@ -9,6 +9,13 @@ let g:markbar_view  = markbar#MarkbarView#new(g:markbar_model)
 let g:standard_controller =
     \ markbar#StandardMarkbarController#new(g:markbar_model, g:markbar_view)
 
+try
+    call typevim#Any()
+    let g:markbar_typevim_exists = v:true
+catch /E117/
+    let g:markbar_typevim_exists = v:false
+endtry
+
 noremap <silent> <Plug>OpenMarkbar      :call g:standard_controller.openMarkbar()<cr>
 noremap <silent> <Plug>CloseMarkbar     :call g:standard_controller.closeMarkbar(1)<cr>
 noremap <silent> <Plug>ToggleMarkbar    :call g:standard_controller.toggleMarkbar(1)<cr>
