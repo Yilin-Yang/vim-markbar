@@ -18,8 +18,6 @@ Execute (Open Buffers):
       \ . '" not available in PWD!'
   endif
 
-  let s:i = 0
-  while s:i <# len(s:test_files)
-    execute 'normal :edit! ' . s:test_files[s:i] . "\<cr>"
-    let s:i += 1
-  endwhile
+  for s:file in s:test_files
+    execute 'normal :edit! ' . s:file . "\<cr>"
+  endfor

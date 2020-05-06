@@ -42,6 +42,28 @@ function! markbar#settings#MarksToDisplay() abort
     return g:markbar_marks_to_display
 endfunction
 
+" RETURNS:  (v:t_bool)      Whether to open the fold(s) in which a mark is
+"                           located, if any.
+function! markbar#settings#foldopen() abort
+    if !exists('g:markbar_foldopen')
+        let g:markbar_foldopen = v:false
+        let l:foldopen_values = split(&foldopen, ',')
+        for l:open_on in l:foldopen_values
+            if l:open_on !=# 'mark'
+                continue
+            endif
+            let g:markbar_foldopen = v:true
+            break
+        endfor
+    endif
+    call s:AssertType(
+        \ g:markbar_foldopen,
+        \ v:t_bool,
+        \ 'g:markbar_foldopen'
+    \ )
+    return g:markbar_foldopen
+endfunction
+
 " RETURNS:  (v:t_bool)      Whether to open markbars as vertical splits
 "                           (`v:true`) or horizontal splits (`v:false`).
 function! markbar#settings#MarkbarOpenVertical() abort

@@ -111,6 +111,19 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
     Marks not listed in the string above are not listed in the markbar.
 
+*g:markbar_foldopen*                                     |(v:t_bool)|
+    `Default Value`: (set from the 'foldopen' option, see `:help fdo`)
+
+    Whether to expand folds when jumping to a mark located inside of a closed
+    |fold|. When enabled, mimics the behavior of `set foldopen=mark` by opening
+    "just enough" folds so that the mark's line is visible.
+
+    If 'foldopen' contains `"mark"` (which it should, by default), this
+    will default to `v:true`. Otherwise, this will default to `v:false`.
+
+    Note that this variable is not synchronized to 'foldopen': it will not
+    update if 'foldopen' is changed after *g:markbar_foldopen* is initialized.
+
 *g:markbar_open_vertical*                                |(v:t_bool)|
 *g:markbar_peekaboo_open_vertical*
     `Default Value:` `v:true`

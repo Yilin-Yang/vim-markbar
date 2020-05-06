@@ -1,0 +1,120 @@
+Include: load-test-files.vader
+
+Execute (Initialize, Declare Test Helpers):
+
+  function! FoldAtImpl(first_line, last_line) abort
+    execute printf('normal! %dGv%dG', a:first_line, a:last_line)
+    execute "normal! zfzo''"
+  endfunction
+
+  ""
+  " Create a fold spanning the two line numbers given as arguments, inclusive.
+  " The fold will be open after creation, and the cursor will be returned
+  " to its original position.
+  command! -nargs=+ FoldAt call FoldAtImpl(<f-args>)
+
+  function! MarkAtImpl(mark, line) abort
+    execute printf("normal! %dGm%s''", a:line, a:mark)
+  endfunction
+
+  ""
+  " Place a {mark} at the given {line}.
+  command! -nargs=+ MarkAt call MarkAtImpl(<f-args>)
+
+  const g:folds = sort([
+    \ {'foldlevel': 1, 'startline': 2, 'endline': 10},
+    \ {'foldlevel': 2, 'startline': 3, 'endline': 5},
+    \ {'foldlevel': 3, 'startline': 4, 'endline': 5},
+    \ {'foldlevel': 2, 'startline': 7, 'endline': 10},
+    \ {'foldlevel': 3, 'startline': 9, 'endline': 10},
+  \ ], {fold1, fold2 -> fold1.foldlevel - fold2.foldlevel})
+
+  ""
+  " Get a snapshot of folds in the current buffer, and whether or not they'd
+  " "prefer" to be closed or open. Returns a dict between `printf` strings
+  " formatted like `("%d,%d", startline, endline)` and 0, if that fold is open,
+  " and 1, if that fold was closed.
+  "
+  " For instance, given the following fold structure in a three-line buffer:
+  "
+  "     1    (CLOSED)
+  "     |--2 (OPEN)
+  "     |  |
+  "
+  " This function should return:
+  "
+  "     {'1,3': 1, '2,3': 0}
+  "
+  " It is required that `g:folds` be sorted from outermost folds to most deeply
+  " nested folds.
+  "
+  " This will (DESTRUCTIVELY) open all folds and move the cursor.
+  function! GetClosedState() abort
+    let l:ranges_to_closed = {}
+    for l:fold in g:folds
+      let l:ranges_to_closed[printf(
+          \ '%d,%d', l:fold.startline, l:fold.endline)] =
+              \ foldclosed(l:fold.startline) !=# -1
+      execute printf('normal! %dGzo', l:fold.startline)
+    endfor
+    return l:ranges_to_closed
+  endfunction
+
+  function! AssertClosedStateMatches(expected, actual) abort
+    let l:actual = copy(a:actual)
+    let l:expected = copy(a:expected)
+    for [l:range, l:is_closed] in items(l:actual)
+      if !has_key(l:expected, l:range)
+        echoerr printf("Fold from %s doesn't exist in expected: %s",
+            \ l:range, string(l:expected))
+      endif
+      if l:expected[l:range] !=# l:is_closed
+        echoerr printf("Fold from %s had close state %d, but should have had %d",
+            \ l:range, l:is_closed, l:expected[l:range])
+      endif
+      unlet l:actual[l:range]
+      unlet l:expected[l:range]
+    endfor
+    if len(l:expected)
+      echoerr printf('Some expected folds are missing in actual: %s',
+          \ string(l:expected))
+    endif
+  endfunction
+
+  " test cases for helpers
+  call AssertClosedStateMatches({'1,2':0}, {'1,2':0})
+  AssertThrows call AssertClosedStateMatches({'1,2':0}, {'1,2':1})
+  AssertThrows call AssertClosedStateMatches({'1,2':0, '1,3':1}, {'1,2':0})
+  AssertThrows call AssertClosedStateMatches({'1,2':0}, {'1,2':0, '1,3':1})
+
+
+Before (Open Test Buffer, Open All Folds Recursively):
+  edit! 10lines.txt
+  set foldmethod=manual
+  silent! normal! zM
+
+Execute (Set Up Folds and Marks):
+  " Build the following structure of folds:
+  " (line no)  (mark)   (fold)
+  "   1.                0
+  "   2.        a       1--
+  "   3.        b       | 2--
+  "   4.        c       | | |
+  "   5.                | | 3--
+  "   6.        d       |
+  "   7.                | 2--
+  "   8.        e       | | |
+  "   9.                | | 3--
+  "  10.        f       | | | |
+  for g:fold in g:folds
+    execute printf('FoldAt %d %d', g:fold.startline, g:fold.endline)
+  endfor
+
+  MarkAt a 2
+  MarkAt b 3
+  MarkAt c 4
+
+  MarkAt d 6
+
+  MarkAt e 8
+  MarkAt f 10

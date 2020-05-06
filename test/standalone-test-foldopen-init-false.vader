@@ -1,0 +1,9 @@
+Include: foldopen-helpers.vader
+" see foldopen-helpers.vader for comments and documentation
+" There is no test-foldopen-init-true because the default value of foldopen
+" should include mark.
+
+Execute (Remove "mark" from foldopen):
+  set foldopen=
+Then (g:markbar_foldopen should be false):
+  AssertEqual v:false, markbar#settings#foldopen()
