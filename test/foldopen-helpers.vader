@@ -21,13 +21,14 @@ Execute (Initialize, Declare Test Helpers):
   " Place a {mark} at the given {line}.
   command! -nargs=+ MarkAt call MarkAtImpl(<f-args>)
 
-  const g:folds = sort([
+  let g:folds = sort([
     \ {'foldlevel': 1, 'startline': 2, 'endline': 10},
     \ {'foldlevel': 2, 'startline': 3, 'endline': 5},
     \ {'foldlevel': 3, 'startline': 4, 'endline': 5},
     \ {'foldlevel': 2, 'startline': 7, 'endline': 10},
     \ {'foldlevel': 3, 'startline': 9, 'endline': 10},
   \ ], {fold1, fold2 -> fold1.foldlevel - fold2.foldlevel})
+  lockvar! g:folds
 
   ""
   " Get a snapshot of folds in the current buffer, and whether or not they'd
