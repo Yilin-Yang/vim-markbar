@@ -17,5 +17,6 @@ filetype plugin indent on
 syntax enable
 set autoread
 set hidden
+set foldcolumn=1
 
 map <Leader>m <Plug>ToggleMarkbar

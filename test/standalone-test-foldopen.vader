@@ -1,0 +1,38 @@
+Include: foldopen-helpers.vader
+" see foldopen-helpers.vader for comments and documentation
+
+Do (jumping to a closed, level 1 fold opens that fold):
+  'a
+Then:
+  let g:expected = {'4,5': 1, '9,10': 1, '7,10': 1, '2,10': 0, '3,5': 1}
+  call AssertClosedStateMatches(g:expected, GetClosedState())
+
+Do (jumping to a closed, level 2 fold in closed level 1 fold opens that fold):
+  'e
+Then:
+  let g:expected = {'4,5': 1, '9,10': 1, '7,10': 0, '2,10': 0, '3,5': 1}
+  call AssertClosedStateMatches(g:expected, GetClosedState())
+
+Do (jumping to a closed, level 2 fold above that fold in closed level 1 fold opens ONLY that fold):
+  'b
+Then:
+  let g:expected = {'4,5': 1, '9,10': 1, '7,10': 1, '2,10': 0, '3,5': 0}
+  call AssertClosedStateMatches(g:expected, GetClosedState())
+
+Do (jumping to a closed, level 3 fold in closed parent folds opens all three):
+  'c
+Then:
+  let g:expected = {'4,5': 0, '9,10': 1, '7,10': 1, '2,10': 0, '3,5': 0}
+  call AssertClosedStateMatches(g:expected, GetClosedState())
+
+Do (jumping to any fold won't open it if 'foldopen' doesn't contain false):
+  let g:markbar_foldopen = v:false\<cr>
+  'a
+  'b
+  'c
+  'd
+  'e
+  'f
+Then:
+  let g:expected = {'4,5': 1, '9,10': 1, '7,10': 1, '2,10': 1, '3,5': 1}
+  call AssertClosedStateMatches(g:expected, GetClosedState())

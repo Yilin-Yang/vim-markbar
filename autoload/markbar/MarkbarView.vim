@@ -283,6 +283,10 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
         return
     endtry
 
+    if markbar#settings#foldopen()
+        normal! zv
+    endif
+
     if markbar#settings#CloseAfterGoTo()
         call l:self.closeMarkbar()
     endif
