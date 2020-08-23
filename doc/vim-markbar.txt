@@ -122,7 +122,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     will default to `v:true`. Otherwise, this will default to `v:false`.
 
     Note that this variable is not synchronized to 'foldopen': it will not
-    update if 'foldopen' is changed after *g:markbar_foldopen* is initialized.
+    update if 'foldopen' is changed after |g:markbar_foldopen| is initialized.
 
 *g:markbar_open_vertical*                                |(v:t_bool)|
 *g:markbar_peekaboo_open_vertical*
