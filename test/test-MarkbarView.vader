@@ -27,7 +27,8 @@ Execute (Test Open Window):
   AssertEqual    1, getwinvar(g:winnr,    '&winfixwidth')
   AssertEqual    1, getwinvar(g:winnr,   '&winfixheight')
   AssertEqual    1, getwinvar(g:winnr,     '&cursorline')
-  AssertEqual    0, getwinvar(g:winnr,     '&foldcolumn')
+  " avoid type mismatch because &fdc is a string in neovim and a number in vim
+  Assert      0 ==# getwinvar(g:winnr,     '&foldcolumn')
   AssertEqual 'no', getwinvar(g:winnr,     '&signcolumn')
   AssertEqual    0, getwinvar(g:winnr, '&relativenumber')
   AssertEqual    0, getwinvar(g:winnr,         '&number')

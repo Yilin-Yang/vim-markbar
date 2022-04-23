@@ -270,7 +270,7 @@ Then:
 Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
   let g:mark = g:markbar_model.getMarkData('B')
-  call g:mark.setName('Covfefe the Strong')
+  call g:mark.setName('New Name')
   normal Mo
 Expect:
   " Press ? for help
@@ -279,7 +279,7 @@ Expect:
       first line
       second line
 
-  ['B]: Covfefe the Strong
+  ['B]: New Name
       fourth line
       fifth line
       sixth line

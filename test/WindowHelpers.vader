@@ -10,10 +10,8 @@ Execute (Declare Window Helpers):
     let l:last_win = winnr('$')
     let l:win_state = [l:cur_win]
     let l:i = 1 | while l:i <=# l:last_win
-      execute l:i . 'wincmd w'
-      call add(l:win_state, [winwidth(0), winheight(0)])
+      call add(l:win_state, [winwidth(l:i), winheight(l:i)])
     let l:i += 1 | endwhile
-    execute l:cur_win . 'wincmd w'
     return l:win_state
   endfunction
 
@@ -33,8 +31,10 @@ Execute (Declare Window Helpers):
       let l:rwh = a:rhs[l:i]
 
       Assert AboutEqual(l:lwh[0], l:rwh[0], a:threshold),
-          \ printf('Widths are too different: %s, %s', l:lwh[0], l:rwh[0])
+          \ printf('Widths are too different for window %d: %s, %s',
+              \ l:i, l:lwh[0], l:rwh[0])
       Assert AboutEqual(l:lwh[1], l:rwh[1], a:threshold),
-          \ printf('Heights are too different: %s, %s', l:lwh[1], l:rwh[1])
+          \ printf('Heights are too different for window %d: %s, %s',
+              \ l:i, l:lwh[1], l:rwh[1])
     let l:i += 1 | endwhile
   endfunction
