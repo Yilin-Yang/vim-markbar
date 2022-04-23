@@ -38,7 +38,7 @@ Then:
 " this should fail
 Do (Set Marks, Peekaboo Markbar Open):
   :edit! 10lines.txt\<cr>
-  1G5lmA5GmB10GmC
+  1G05lmA5G0mB10G0mC
   '
 Then:
   AssertEqual 0, &buflisted

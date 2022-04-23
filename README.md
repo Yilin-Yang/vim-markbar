@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Yilin-Yang/vim-markbar.svg?branch=master)](https://travis-ci.com/Yilin-Yang/vim-markbar)
+[![Build Status](https://app.travis-ci.com/Yilin-Yang/vim-markbar.svg?branch=master)](https://app.travis-ci.com/Yilin-Yang/vim-markbar)
 
 vim-markbar
 ================================================================================

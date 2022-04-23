@@ -198,7 +198,7 @@ Then:
 " Do (Rename Mark):
 "   :call g:standard_controller.openMarkbar()\<cr>
 "   7G
-"   rCovfefe the Strong\<cr>
+"   rNew Name\<cr>
 " Expect:
 "   " Press ? for help
 "   ['A]: 10lines.txt
@@ -206,7 +206,7 @@ Then:
 "       first line
 "       second line
 
-"   ['B]: Covfefe the Strong
+"   ['B]: New Name
 "       fourth line
 "       fifth line
 "       sixth line
@@ -220,7 +220,7 @@ Then:
 Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
   let g:mark = g:model.getMarkData('B')
-  call g:mark.setName('Covfefe the Strong')
+  call g:mark.setName('New Name')
   call g:standard_controller.openMarkbar()
 Expect:
   " Press ? for help
@@ -229,7 +229,7 @@ Expect:
       first line
       second line
 
-  ['B]: Covfefe the Strong
+  ['B]: New Name
       fourth line
       fifth line
       sixth line
@@ -279,7 +279,7 @@ Expect:
   
 Do (Set New Marks):
   :edit! 10lines.txt\<cr>
-  1G5lmA5GmB10G$mC
+  1G05lmA5G0mB10G$mC
 
 Execute (Test Mark Highlighting, Backtick-like):
   let g:markbar_enable_mark_highlighting = v:true
