@@ -13,7 +13,7 @@ function! markbar#MarkbarView#new(model) abort
         \ 'TYPE': 'MarkbarView',
         \ '_markbar_model': a:model,
         \ '_markbar_buffer': -2,
-        \ '_cur_winnr': 1,
+        \ '_cur_winid': 1,
         \ '_saved_view': {},
         \ '_win_resize_cmd:': '',
         \ '_saved_num_win': -1,
@@ -255,16 +255,12 @@ function! markbar#MarkbarView#_goToMark(mark, goto_exact) abort dict
         endtry
     endif
 
-    " try to return to the user's old window, if possible
-    if l:self._cur_winnr ># 0 && l:self._cur_winnr <=# winnr('$')
-        " the saved previous window number is still valid
-        execute l:self._cur_winnr . 'wincmd w'
-    else
-        " switch to a window that has this buffer open
-        execute bufwinnr(l:active_buffer) . 'wincmd w'
-    endif
-    let l:jump_command = 'normal! '
-    let l:jump_command .= a:goto_exact ? '`' : "'"
+    " if possible, return to the last active window
+    call win_gotoid(l:self._cur_winid)
+    " if last active window was closed somehow after the markbar opened, then
+    " the mark will be opened in the markbar window
+
+    let l:jump_command = 'normal! ' . (a:goto_exact ? '`' : "'")
 
     try
         if l:mark_is_quote
@@ -441,7 +437,7 @@ function! markbar#MarkbarView#_saveWinState() abort dict
       throw '(MarkbarView#_saveWinState) Tried to save winstate from '
           \ . 'inside markbar!'
     endif
-    let l:self._cur_winnr = winnr()
+    let l:self._cur_winid = win_getid()
     let l:self._saved_view = winsaveview()
     let l:self._win_resize_cmd = winrestcmd()
     let l:self._saved_num_win = winnr('$')
@@ -473,12 +469,12 @@ function! markbar#MarkbarView#_restoreWinState(fail_silent) abort dict
                 \ . l:self._saved_num_win
         endif
     endif
-    if l:self._cur_winnr <# 1 || empty(l:self._saved_view)
+    if l:self._cur_winid <# 1000 || empty(l:self._saved_view)
             \ || empty(l:self._win_resize_cmd)
         throw '(MarkbarView#_restoreWinState) Did not properly save window '
             \ . 'state before this call. (FAILURE)'
     endif
-    execute l:self._cur_winnr . 'wincmd w'
+    call win_gotoid(l:self._cur_winid)
     execute l:self._win_resize_cmd
     call winrestview(l:self._saved_view)
 endfunction
