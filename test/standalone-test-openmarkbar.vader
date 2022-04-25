@@ -267,6 +267,28 @@ Then:
   " check column number
   AssertEqual 6, cur_pos[2]
 
+Do (Go To Mark Opens In Correct Window with markbar_open_position = 'topleft'):
+  :let g:markbar_open_position = 'topleft'\<cr>
+  :let g:last_window = win_getid()\<cr>
+  Mo
+  2G\<cr>
+Then:
+  let g:markbar_open_position = 'botright'
+
+  AssertEqual g:last_window, win_getid(), "Jumped to mark in wrong window!"
+
+Do (Go To Mark Opens In Correct Window With 'topleft' Horizontal Markbar):
+  :let g:markbar_open_position = 'topleft'\<cr>
+  :let g:markbar_open_vertical = v:false\<cr>
+  :let g:last_window = win_getid()\<cr>
+  Mo
+  2G\<cr>
+Then:
+  let g:markbar_open_position = 'botright'
+  let g:markbar_open_vertical = v:true
+
+  AssertEqual g:last_window, win_getid(), "Jumped to mark in wrong window!"
+
 Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
   let g:mark = g:markbar_model.getMarkData('B')
