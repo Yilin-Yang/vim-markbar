@@ -91,17 +91,6 @@ function! s:MarkData.getContext() abort dict
     return l:self._context
 endfunction
 
-function! s:MarkData.getMarkLineNoInContext() abort dict
-    let l:context_len = len(l:self._context)
-    if !l:context_len
-        return l:context_len
-    endif
-
-    let l:odd_num_lines = l:context_len % 2
-    " bump up by one if the context has even length
-    return l:context_len / 2 - ((l:odd_num_lines) ? 0 : 1)
-endfunction
-
 function! s:MarkData.isGlobal() abort dict
     return markbar#helpers#IsGlobalMark(l:self.getMark())
 endfunction

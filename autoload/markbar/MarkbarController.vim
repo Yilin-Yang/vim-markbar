@@ -262,12 +262,12 @@ function! markbar#MarkbarController#_generateMarkbarContents(
             let l:j += 1 | endwhile
         else
             " insert the mark marker at the mark's line, column in the context
-            let l:marker    = markbar#settings#MarkMarker()
-            let l:mark_line = l:mark.getMarkLineInContext()
+            let l:marker = markbar#settings#MarkMarker()
+            let l:mark_line_idx = markbar#helpers#MarkLineNoInContext(l:full_context)
 
             let l:j = l:start | while l:j <# l:end
                 let l:line = l:full_context[l:j]
-                if l:j ==# l:mark_line
+                if l:j ==# l:mark_line_idx
                     let l:colno = (a:backtick_like) ?
                         \ l:mark.getColumnNo() : matchstrpos(l:line, '\S')[1]
                     let l:parts = markbar#helpers#SplitString(l:line, l:colno)

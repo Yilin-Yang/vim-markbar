@@ -278,9 +278,8 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
 endfunction
 
 " EFFECTS:  Retrieve the lines surrounding the requested line.
-" RETURNS:  (v:t_list)      The requested context from the requested
-"                           buffer as a list, one line per list element,
-"                           without trailing linebreaks.
+" RETURNS:  (v:t_list)  Context from the requested buffer as a list of strings,
+"                       one line per string, without trailing linebreaks.
 " PARAM:    buffer_expr (expr)          See `:help bufname()`.
 " PARAM:    around_line (v:t_number)    Fetch context from around this
 "                                       'target' line number.
@@ -326,6 +325,19 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
     endwhile
 
     return l:context
+endfunction
+
+" RETURNS: The mark's line index in the given context.
+function! markbar#helpers#MarkLineNoInContext(context) abort
+    call markbar#ensure#IsList(a:context)
+    let l:context_len = len(a:context)
+    if !l:context_len
+        return l:context_len
+    endif
+
+    let l:odd_num_lines = l:context_len % 2
+    " bump up by one if the context has even length
+    return l:context_len / 2 - ((l:odd_num_lines) ? 0 : 1)
 endfunction
 
 " RETURNS:  A list of two values, [start_idx, end_idx] (end-exclusive).
