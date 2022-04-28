@@ -26,7 +26,7 @@ function! markbar#MarkbarModel#get() abort
         \ 'TYPE': 'MarkbarModel',
         \ '_buffer_caches': {},
         \ '_active_buffer_stack':
-            \ markbar#ConditionalStack#new(
+            \ markbar#ConditionalStack#New(
                 \ function('markbar#helpers#IsRealBuffer'),
                 \ markbar#settings#MaximumActiveBufferHistory()
             \ ),
