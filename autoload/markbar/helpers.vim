@@ -14,6 +14,27 @@ function! markbar#helpers#GetOpenBuffers() abort
     return l:buffers_list
 endfunction
 
+" EFFECTS:  Strip leading whitespace and the columns header (i.e. the line
+"           that starts with 'mark line  col [...]') from the given string.
+" PARAM:    raw_marks   (v:t_string)    The raw `marks` command output to
+"                                       process.
+function! markbar#helpers#TrimMarksHeader(raw_marks) abort
+    call markbar#ensure#IsString(a:raw_marks)
+    let l:trimmed = substitute(
+        \ a:raw_marks,
+        \ markbar#constants#MARKS_COLUMNS_HEADER_SEARCH_PATTERN(),
+        \ '',
+        \ ''
+    \ )
+    " NOTE: this does not catch the edge case in which the column header
+    " string is, itself, contained in a valid 'file/text' cell.
+    if l:trimmed ==# a:raw_marks
+        throw 'Failed to trim leading whitespace and/or column header from '
+            \ . 'input string: ' . a:raw_marks
+    endif
+    return l:trimmed
+endfunction
+
 " RETURNS:  (v:t_string)    A 'synthetic' markstring, mimicking the output of
 "                           `:marks`, for the given mark (in the active buffer.)
 " PARAM:    mark    (v:t_string)    The mark to retrieve (single character.)
