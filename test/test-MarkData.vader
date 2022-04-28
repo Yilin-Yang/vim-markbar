@@ -3,91 +3,91 @@
 ################################################################################
 
 Execute (Empty Mark String):
-  let markstring = 'mark line  col file/text'
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:markstring = 'mark line  col file/text'
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  AssertEqual '', result
+  AssertEqual '', g:result
 
 Execute (LF-Terminated Empty Mark String):
-  let markstring = "mark line  col file/text\n"
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:markstring = "mark line  col file/text\n"
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  AssertEqual '', result
+  AssertEqual '', g:result
 
 Execute (CRLF-Terminated Empty Mark String):
-  let markstring = "mark line  col file/text\r\n"
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:markstring = "mark line  col file/text\r\n"
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  AssertEqual '', result
+  AssertEqual '', g:result
 
 Execute (Leading Whitespace Mark String):
-  let markstring = "
+  let g:markstring = "
     \  \n \n \n mark line  col file/text\n
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
   \ "
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  let expected = "
+  let g:expected = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
   \ "
-  AssertEqual expected, result
+  AssertEqual g:expected, g:result
 
 Execute (Single Item Mark String):
-  let markstring = "
+  let g:markstring = "
     \ mark line  col file/text\n
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
   \ "
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  let expected = "
+  let g:expected = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
   \ "
-  AssertEqual expected, result
+  AssertEqual g:expected, g:result
 
 Execute (CRLF-Terminated Single Item Mark String):
-  let markstring = "
+  let g:markstring = "
     \ mark line  col file/text\n
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
   \ "
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  let expected = "
+  let g:expected = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
   \ "
-  AssertEqual expected, result
+  AssertEqual g:expected, g:result
 
 Execute (Two Item Mark String):
-  let markstring = "
+  let g:markstring = "
     \ mark line  col file/text\n
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
     \ ]     24    0 Then:\n
   \ "
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  let expected = "
+  let g:expected = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
     \ ]     24    0 Then:\n
   \ "
-  AssertEqual expected, result
+  AssertEqual g:expected, g:result
 
 Execute (Three Item Mark String):
-  let markstring = "
+  let g:markstring = "
     \ mark line  col file/text\n
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
     \ ]     24    0 Then:\n
     \ .     23    0\n
   \ "
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  let expected = "
+  let g:expected = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
     \ ]     24    0 Then:\n
     \ .     23    0\n
   \ "
-  AssertEqual expected, result
+  AssertEqual g:expected, g:result
 
 Execute (Multiitem Mark String):
-  let markstring = "
+  let g:markstring = "
     \ mark line  col file/text\n
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
     \ [      1    0 The quick brown fox jumps over the lazy dog\n
@@ -95,19 +95,19 @@ Execute (Multiitem Mark String):
     \ ^     23    2\n
     \ .     23    0\n
   \ "
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  let expected = "
+  let g:expected = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\n
     \ [      1    0 The quick brown fox jumps over the lazy dog\n
     \ ]     24    0 Then:\n
     \ ^     23    2\n
     \ .     23    0\n
   \ "
-  AssertEqual expected, result
+  AssertEqual g:expected, g:result
 
 Execute (CRLF-Terminated Multiitem Mark String):
-  let markstring = "
+  let g:markstring = "
     \ mark line  col file/text\r\n
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
     \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
@@ -115,19 +115,19 @@ Execute (CRLF-Terminated Multiitem Mark String):
     \ ^     23    2\r\n
     \ .     23    0\r\n
   \ "
-  let result = markbar#textmanip#TrimMarksHeader(markstring)
+  let g:result = markbar#helpers#TrimMarksHeader(g:markstring)
 Then:
-  let expected = "
+  let g:expected = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
     \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
     \ ]     24    0 Then:\r\n
     \ ^     23    2\r\n
     \ .     23    0\r\n
   \ "
-  AssertEqual expected, result
+  AssertEqual g:expected, g:result
 
 Execute (Error-Check Already Trimmed):
-  let markstring = "
+  let g:markstring = "
     \ A     97    0 ~/plugin/vim-markbar/plugin/vim-markbar.vim\r\n
     \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
     \ ]     24    0 Then:\r\n
@@ -135,10 +135,10 @@ Execute (Error-Check Already Trimmed):
     \ .     23    0\r\n
   \ "
 Then:
-  AssertThrows markbar#textmanip#TrimMarksHeader(markstring)
+  AssertThrows markbar#helpers#TrimMarksHeader(g:markstring)
 
 Execute (Error-Check Already Trimmed Edge Case):
-  let markstring = "
+  let g:markstring = "
     \ [      1    0 The quick brown fox jumps over the lazy dog\r\n
     \ ]     24    0 Then:\r\n
     \ ^     23    2\r\n
@@ -146,7 +146,7 @@ Execute (Error-Check Already Trimmed Edge Case):
     \ .     23    0\r\n
   \ "
 Then:
-  AssertThrows markbar#textmanip#TrimMarksHeader(markstring)
+  AssertThrows markbar#helpers#TrimMarksHeader(g:markstring)
 
 
 ################################################################################
@@ -154,28 +154,28 @@ Then:
 ################################################################################
 
 Execute (MarkData: Local Mark):
-  let markstring = "
+  let g:markstring = "
     \ a     97    0 mark line  col file/text\r\n
   \ "
-  let result = markbar#MarkData#New(markstring)
+  let g:result = markbar#MarkData#New(g:markstring)
 Then:
-  AssertEqual 'MarkData', result['TYPE']
-  AssertEqual 'a',  result.getMark()
-  AssertEqual '97', result.getLineNo()
-  AssertEqual '0',  result.getColumnNo()
-  Assert           !result.isGlobal()
+  AssertEqual 'MarkData', g:result['TYPE']
+  AssertEqual 'a',  g:result.getMark()
+  AssertEqual '97', g:result.getLineNo()
+  AssertEqual '0',  g:result.getColumnNo()
+  Assert           !g:result.isGlobal()
 
 Execute (MarkData: Non-Alphabetic Mark):
-  let markstring = "
+  let g:markstring = "
     \ [      1    0 The quick brown fox jumps over the lazy dog\n
   \ "
-  let result = markbar#MarkData#New(markstring)
+  let g:result = markbar#MarkData#New(g:markstring)
 Then:
-  AssertEqual 'MarkData', result['TYPE']
-  AssertEqual '[', result.getMark()
-  AssertEqual '1', result.getLineNo()
-  AssertEqual '0', result.getColumnNo()
-  Assert          !result.isGlobal()
+  AssertEqual 'MarkData', g:result['TYPE']
+  AssertEqual '[', g:result.getMark()
+  AssertEqual '1', g:result.getLineNo()
+  AssertEqual '0', g:result.getColumnNo()
+  Assert          !g:result.isGlobal()
 
 Execute (MarkData: Construct from 'Synthetic' Markstring):
   normal! i12345
@@ -185,45 +185,45 @@ Execute (MarkData: Construct from 'Synthetic' Markstring):
   let right_bracket =
     \ markbar#MarkData#New(markbar#helpers#MakeMarkString(']'))
 Then:
-  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual '[',  left_bracket.getMark()
   AssertEqual '1',  left_bracket.getLineNo()
   AssertEqual '1',  left_bracket.getColumnNo()
   Assert           !left_bracket.isGlobal()
 
-  AssertEqual 'MarkData', result['TYPE']
+  AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual ']',  right_bracket.getMark()
   AssertEqual '1',  right_bracket.getLineNo()
   AssertEqual '5',  right_bracket.getColumnNo()
   Assert           !right_bracket.isGlobal()
 
 Execute (MarkData: Global File Mark):
-  let markstring = "
+  let g:markstring = "
     \ D      64    31 The quick brown fox jumps over the lazy dog\r\n
   \ "
-  let result = markbar#MarkData#New(markstring)
+  let g:result = markbar#MarkData#New(g:markstring)
 Then:
-  AssertEqual 'MarkData', result['TYPE']
-  AssertEqual 'D',  result.getMark()
-  AssertEqual '64', result.getLineNo()
-  AssertEqual '31', result.getColumnNo()
-  Assert            result.isGlobal()
+  AssertEqual 'MarkData', g:result['TYPE']
+  AssertEqual 'D',  g:result.getMark()
+  AssertEqual '64', g:result.getLineNo()
+  AssertEqual '31', g:result.getColumnNo()
+  Assert            g:result.isGlobal()
 
 Execute (MarkData: ShaDa Numeric Mark):
-  let markstring = "
+  let g:markstring = "
     \ 8      19   5 The quick brown fox jumps over the lazy dog\n
   \ "
-  let result = markbar#MarkData#New(markstring)
+  let g:result = markbar#MarkData#New(g:markstring)
 Then:
-  AssertEqual 'MarkData', result['TYPE']
-  AssertEqual '8',  result.getMark()
-  AssertEqual '19', result.getLineNo()
-  AssertEqual '5',  result.getColumnNo()
-  Assert            result.isGlobal()
+  AssertEqual 'MarkData', g:result['TYPE']
+  AssertEqual '8',  g:result.getMark()
+  AssertEqual '19', g:result.getLineNo()
+  AssertEqual '5',  g:result.getColumnNo()
+  Assert            g:result.isGlobal()
 
 Execute (MarkData: Error Check, Invalid Markstring):
-  let markstring = "
+  let g:markstring = "
     \ D      1  The quick brown fox jumps over the lazy dog\r\n
   \ "
 Then:
-  AssertThrows markbar#MarkData#New(markstring)
+  AssertThrows markbar#MarkData#New(g:markstring)

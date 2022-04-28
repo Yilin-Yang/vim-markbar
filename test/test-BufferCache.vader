@@ -2,12 +2,12 @@ Include: clear-marks.vader
 Include: load-test-files.vader
 
 Execute (BufferCache: isGlobal Test, True):
-  let temp_cache = markbar#BufferCache#new(markbar#constants#GLOBAL_MARKS())
+  let temp_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS())
 Then:
   Assert temp_cache.isGlobal()
 
 Execute (BufferCache: isGlobal Test, False):
-  let temp_cache = markbar#BufferCache#new(bufnr('%'))
+  let temp_cache = markbar#BufferCache#New(bufnr('%'))
 Then:
   Assert !temp_cache.isGlobal()
 
@@ -18,7 +18,7 @@ Execute (BufferCache: Populate Local Cache):
   execute '25mark c'
   execute '35mark d'
   execute '45mark e'
-  let cache_50lines = markbar#BufferCache#new(bufnr('%'))
+  let cache_50lines = markbar#BufferCache#New(bufnr('%'))
   call cache_50lines.updateCache(markbar#helpers#GetLocalMarks())
 Then:
   let g:bufno_50lines = bufnr('%')
@@ -35,7 +35,7 @@ Execute (BufferCache: Populate Global Cache):
   execute '30mark C'
   execute '40mark D'
   execute '50mark E'
-  let global_cache = markbar#BufferCache#new(markbar#constants#GLOBAL_MARKS())
+  let global_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS())
   call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 Then:
   " check globals
@@ -56,7 +56,7 @@ Execute (BufferCache: Add More Global Marks; Add Local Marks):
   execute '15mark b'
   execute '20mark a'
 
-  let cache_30lines = markbar#BufferCache#new(bufnr('%'))
+  let cache_30lines = markbar#BufferCache#New(bufnr('%'))
   call cache_30lines.updateCache(markbar#helpers#GetLocalMarks())
   call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 

@@ -210,7 +210,7 @@ function! markbar#MarkbarModel#getBufferCache(buffer_no, ...) abort dict
             throw '(markbar#MarkbarModel) Buffer not cached: '.a:buffer_no
         endif
         let l:self['_buffer_caches'][a:buffer_no] =
-            \ markbar#BufferCache#new(a:buffer_no)
+            \ markbar#BufferCache#New(a:buffer_no)
     endif
     " will throw E716 if not found and a:no_init == v:true
     return l:self['_buffer_caches'][a:buffer_no]
