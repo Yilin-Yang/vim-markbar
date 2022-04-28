@@ -4,16 +4,16 @@ Execute (Setup Controller):
   let g:controller = markbar#StandardMarkbarController#new(g:model, g:view)
 
 Execute (Make 'Synthetic' MarkData Objects, Set Marks):
-  let g:local_alph = markbar#MarkData#fromMarkString(
+  let g:local_alph = markbar#MarkData#New(
     \ 'a 1 2 foo'
   \ )
-  let g:local_punc = markbar#MarkData#fromMarkString(
+  let g:local_punc = markbar#MarkData#New(
     \ '. 3 4 foo'
   \ )
-  let g:file_mark = markbar#MarkData#fromMarkString(
+  let g:file_mark = markbar#MarkData#New(
     \ 'A 1 2 global.txt'
   \ )
-  let g:numeric_mark = markbar#MarkData#fromMarkString(
+  let g:numeric_mark = markbar#MarkData#New(
     \ '1 3 4 global.txt'
   \ )
 
@@ -86,7 +86,7 @@ Execute (Test Custom Function References):
   let g:markbar_mark_name_format_string = '%s'
   let g:markbar_mark_name_arguments     = [ function('Foo', ['arg']) ]
 
-  let g:local_alph = markbar#MarkData#fromMarkString(
+  let g:local_alph = markbar#MarkData#New(
     \ 'a 1 2 foo'
   \ )
   let g:local_alph['_context'] = ['boo']

@@ -115,7 +115,7 @@ endfunction
 " DETAILS:  See `:h vim-markbar-funcref`.
 function! markbar#PeekabooMarkbarController#_getDefaultNameFormat(mark) abort dict
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
-    call markbar#MarkData#AssertIsMarkData(a:mark)
+    call markbar#ensure#IsClass(a:mark, 'MarkData')
 
     let l:mark_char = a:mark.getMark()
     if !markbar#helpers#IsGlobalMark(l:mark_char)
