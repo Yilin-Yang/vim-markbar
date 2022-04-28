@@ -7,7 +7,9 @@ let s:BufferCache = {
 " EFFECTS:  Construct and return a BufferCache.
 " DETAILS:  BufferCache stores marks and contexts for a particular buffer in
 "           a dictionary `marks_dict`. `a_buf_cache['a']` returns a
-"           (markbar#MarkData) for mark `a`.
+"           (markbar#MarkData) for mark `a`. The dictionary is exposed
+"           directly because encapsulating it with getters and setters is
+"           more trouble than it's worth.
 " PARAM:    buffer_no   (v:t_number)    This BufferCache's buffer's |bufnr()|.
 function! markbar#BufferCache#New(buffer_no) abort
     call markbar#ensure#IsNumber(a:buffer_no)
