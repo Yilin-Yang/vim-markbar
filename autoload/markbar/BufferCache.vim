@@ -52,7 +52,7 @@ function! markbar#BufferCache#updateCache(marks_output) abort dict
     while l:i
         let l:i -= 1
         try
-            let l:markdata = markbar#MarkData#fromMarkString(l:markstrings[l:i])
+            let l:markdata = markbar#MarkData#New(l:markstrings[l:i])
             let l:new_marks_dict[ l:markdata.getMark() ] =
                 \ l:markdata
         catch /^(markbar#MarkData).*markstring parsing failed/

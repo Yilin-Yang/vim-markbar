@@ -157,7 +157,7 @@ Execute (MarkData: Local Mark):
   let markstring = "
     \ a     97    0 mark line  col file/text\r\n
   \ "
-  let result = markbar#MarkData#fromMarkString(markstring)
+  let result = markbar#MarkData#New(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
   AssertEqual 'a',  result.getMark()
@@ -169,7 +169,7 @@ Execute (MarkData: Non-Alphabetic Mark):
   let markstring = "
     \ [      1    0 The quick brown fox jumps over the lazy dog\n
   \ "
-  let result = markbar#MarkData#fromMarkString(markstring)
+  let result = markbar#MarkData#New(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
   AssertEqual '[', result.getMark()
@@ -181,9 +181,9 @@ Execute (MarkData: Construct from 'Synthetic' Markstring):
   normal! i12345
   normal! viwy
   let left_bracket =
-    \ markbar#MarkData#fromMarkString(markbar#helpers#MakeMarkString('['))
+    \ markbar#MarkData#New(markbar#helpers#MakeMarkString('['))
   let right_bracket =
-    \ markbar#MarkData#fromMarkString(markbar#helpers#MakeMarkString(']'))
+    \ markbar#MarkData#New(markbar#helpers#MakeMarkString(']'))
 Then:
   AssertEqual 'MarkData', result['TYPE']
   AssertEqual '[',  left_bracket.getMark()
@@ -201,7 +201,7 @@ Execute (MarkData: Global File Mark):
   let markstring = "
     \ D      64    31 The quick brown fox jumps over the lazy dog\r\n
   \ "
-  let result = markbar#MarkData#fromMarkString(markstring)
+  let result = markbar#MarkData#New(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
   AssertEqual 'D',  result.getMark()
@@ -213,7 +213,7 @@ Execute (MarkData: ShaDa Numeric Mark):
   let markstring = "
     \ 8      19   5 The quick brown fox jumps over the lazy dog\n
   \ "
-  let result = markbar#MarkData#fromMarkString(markstring)
+  let result = markbar#MarkData#New(markstring)
 Then:
   AssertEqual 'MarkData', result['TYPE']
   AssertEqual '8',  result.getMark()
@@ -226,4 +226,4 @@ Execute (MarkData: Error Check, Invalid Markstring):
     \ D      1  The quick brown fox jumps over the lazy dog\r\n
   \ "
 Then:
-  AssertThrows markbar#MarkData#fromMarkString(markstring)
+  AssertThrows markbar#MarkData#New(markstring)

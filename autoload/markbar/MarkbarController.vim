@@ -148,7 +148,7 @@ endfunction
 " PARAM:    mark    (MarkData)  The mark for which to produce a heading.
 function! markbar#MarkbarController#_getMarkHeading(mark) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    call markbar#MarkData#AssertIsMarkData(a:mark)
+    call markbar#ensure#IsClass(a:mark, 'MarkData')
     let l:suffix = ' '
     let l:user_given_name = a:mark.getName()
     if empty(l:user_given_name)
@@ -164,7 +164,7 @@ endfunction
 " PARAM:    mark    (markbar#MarkData)  The mark to be named.
 function! markbar#MarkbarController#_getDefaultMarkName(mark) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    call markbar#MarkData#AssertIsMarkData(a:mark)
+    call markbar#ensure#IsClass(a:mark, 'MarkData')
     let l:mark_char = a:mark.getMark()
     let l:format = l:self._getDefaultNameFormat(a:mark)
     let l:format_str = l:format[0]
