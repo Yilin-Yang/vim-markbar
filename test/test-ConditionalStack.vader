@@ -1,91 +1,106 @@
 Execute (Declare Validity Function, Helper Function):
-  function! IsEven(number)
+  function! IsEven(number) abort
     return !float2nr(fmod(a:number, 2))
   endfunction
 
-  function! ValidList(list)
-    let l:valid = len(a:list)
-    if len(a:list) | call remove(a:list, -1) | endif
-    return l:valid
+  function! ListIsNonempty(list) abort
+    return !empty(a:list)
   endfunction
 
-  function! NewStack()
-    return markbar#ConditionalStack#new(function('IsEven'), 4)
+  function! EmptyListContents(list) abort
+    call remove(a:list, 0, -1)
   endfunction
 
-  function! NewStackComplex()
-    return markbar#ConditionalStack#new(function('ValidList'), 4)
+  function! AssertThrewOnEmpty() abort
+    AssertEqual 'ConditionalStack is empty!', g:vader_exception
   endfunction
 
-Execute (ConditionalStack: Test Push, Succeed):
-  let stack = NewStack()
-  let success = stack.push(2)
-Then:
-  Assert success
-  AssertEqual 1, stack.size()
+  function! NewStack() abort
+    return markbar#ConditionalStack#New(function('IsEven'), 4)
+  endfunction
 
-Execute (ConditionalStack: Test Push, Fail):
-  let stack = NewStack()
-  let success = stack.push(1)
-Then:
-  Assert !success
-  AssertEqual 0, stack.size()
+  function! NewStackComplex() abort
+    return markbar#ConditionalStack#New(function('ListIsNonempty'), 4)
+  endfunction
 
-Execute (ConditionalStack: Test Push, Small Series):
-  let stack = NewStack()
-  call stack.push(2)
-  call stack.push(3)
-  call stack.push(2)
-Then:
-  AssertEqual 2, stack.size()
+Execute (ConditionalStack returns true on successful push()):
+  let g:stack = NewStack()
+  Assert g:stack.push(2), 'push() failed!'
+  AssertEqual 1, g:stack.size()
 
-Execute (ConditionalStack: Test Push, Shrink):
-  let stack = NewStack()
-  call stack.push(2)
-  call stack.push(2)
-  call stack.push(2)
-  call stack.push(2)
-  call stack.push(2)
-Then:
-  AssertEqual 3, stack.size()
+Execute (ConditionalStack returns false on unsuccessful push()):
+  let g:stack = NewStack()
+  Assert !g:stack.push(1), 'push() succeeded!'
+  AssertEqual 0, g:stack.size()
 
-Execute (ConditionalStack: Test Push, Pop Invalid, Top):
-  let stack = NewStackComplex()
-  call stack.push([1, 1, 1])
-  call stack.push([2, 2, 1])
-  call stack.push([1])
-  call stack.push([1])
-Then:
-  AssertEqual 4, stack.size()
-  AssertEqual [2], stack.top()
-  AssertEqual 2, stack.size()
+Execute (ConditionalStack.top() returns the top):
+  let g:stack = NewStack()
+  call g:stack.push(2)
+  AssertEqual 2, g:stack.top()
 
-Execute (ConditionalStack: Test Clean):
-  let stack = NewStackComplex()
-  call stack.push([1])
-  call stack.push([1, 1, 1])
-  call stack.push([2, 2, 1, 1])
-  call stack.push([1])
-Then:
-  AssertEqual 4, stack.size()
-  call stack.clean()
-  AssertEqual 2, stack.size()
-  AssertEqual [2], stack.top()
+Execute (ConditionalStack.top() throws when stack is empty):
+  let g:stack = NewStack()
+  AssertThrows call g:stack.top()
+  call AssertThrewOnEmpty()
 
-Execute (ConditionalStack: Test Extended Push):
-  let stack = NewStackComplex()
-  call stack.push([1])
-  call stack.push([1, 1, 1, 1, 1])
-  call stack.push([2, 2, 1, 1, 1])
-  call stack.push([1])
-  call stack.push([1])
-  call stack.push([4, 2, 1])
-  call stack.push([1])
-  call stack.push([3, 2, 1])
-  call stack.push([1])
-  call stack.push([1])
-  call stack.push([2, 2, 1])
+Execute (ConditionalStack doesn't push an invalid element):
+  let g:stack = NewStack()
+  call g:stack.push(2)
+  call g:stack.push(3)
+  call g:stack.push(2)
+  AssertEqual 2, g:stack.size()
+
+Execute (ConditionalStack shrinks when it becomes too large):
+  let g:stack = NewStack()
+  call g:stack.push(2)
+  call g:stack.push(2)
+  call g:stack.push(2)
+  call g:stack.push(2)
+  call g:stack.push(2)
 Then:
-  AssertEqual 3, stack.size()
-  AssertEqual [2], stack.top()
-  AssertEqual [[], [], [2]], stack['_data']
+  AssertEqual 3, g:stack.size()
+
+Execute (ConditionalStack.top() removes invalid elements LIFO):
+  let g:stack = NewStackComplex()
+  let g:elements = [
+    \ [1, 1, 1],
+    \ [2, 2, 2],
+    \ [1],
+    \ [1]
+  \ ]
+  call g:stack.push(g:elements[0])
+  call g:stack.push(g:elements[1])
+  call g:stack.push(g:elements[2])
+  call g:stack.push(g:elements[3])
+
+  AssertEqual 4, g:stack.size()
+  AssertEqual [1], g:stack.top()
+
+  call EmptyListContents(g:elements[0])
+  call EmptyListContents(g:elements[2])
+  call EmptyListContents(g:elements[3])
+  AssertEqual 4, g:stack.size()
+
+  AssertEqual [2, 2, 2], g:stack.top()
+  AssertEqual 2, g:stack.size()
+
+Execute (ConditionalStack.clean() removes all invalid elements):
+  let g:stack = NewStackComplex()
+  let g:elements = [
+    \ [1, 1, 1],
+    \ [2, 2, 2],
+    \ [1],
+    \ [1]
+  \ ]
+  call g:stack.push(g:elements[0])
+  call g:stack.push(g:elements[1])
+  call g:stack.push(g:elements[2])
+  call g:stack.push(g:elements[3])
+  AssertEqual 4, g:stack.size()
+Then:
+  call EmptyListContents(g:elements[0])
+  call EmptyListContents(g:elements[2])
+  call EmptyListContents(g:elements[3])
+  call g:stack.clean()
+  AssertEqual 1, g:stack.size()
+  AssertEqual [2, 2, 2], g:stack.top()
