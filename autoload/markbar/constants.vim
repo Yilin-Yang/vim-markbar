@@ -17,21 +17,24 @@ fu! markbar#constants#MARK_SPECIFIC_HEADING_SEARCH_PATTERN(mark)
 endf
 
 " BRIEF:    The null 'buffer number' used to index the global mark database.
-fu! markbar#constants#GLOBAL_MARKS()
+fu! markbar#constants#GLOBAL_MARKS_BUFNR()
     return 0
 endf
 
-" BFIEF:    String containing all possible mark characters, in no particular
-"           order.
+" BFIEF:    String containing all possible mark characters.
 fu! markbar#constants#ALL_MARKS_STRING()
     return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]<>''`"^.(){}'
 endf
 
-" BRIEF:    Same as ALL_MARKS_STRING, but with each character as an element in
-"           a list.
-fu! markbar#constants#ALL_MARKS_LIST()
-    if !exists('s:all_marks_list')
+" BRIEF:    Same as ALL_MARKS_STRING but each character is a key in a dict.
+fu! markbar#constants#ALL_MARKS_DICT()
+    if !exists('s:all_marks_dict')
+        let s:all_marks_dict = {}
         let s:all_marks_list = split(markbar#constants#ALL_MARKS_STRING(), '\zs')
+        for l:c in s:all_marks_list
+            let s:all_marks_dict[l:c] = v:null
+        endfor
+        lockvar! s:all_marks_dict
     endif
-    return s:all_marks_list
+    return s:all_marks_dict
 endf

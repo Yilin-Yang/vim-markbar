@@ -89,5 +89,5 @@ function! s:BufferCache.updateContexts(num_lines) abort dict
 endfunction
 
 function! s:BufferCache.isGlobal() abort dict
-    return l:self._buffer_no ==# markbar#constants#GLOBAL_MARKS()
+    return l:self._buffer_no ==# markbar#constants#GLOBAL_MARKS_BUFNR()
 endfunction

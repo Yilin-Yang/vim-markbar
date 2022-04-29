@@ -8,7 +8,7 @@
 " PARAM:    model   (markbar#MarkbarModel)  Reference to stored information
 "                                           about the markbar state.
 function! markbar#MarkbarView#new(model) abort
-    call markbar#MarkbarModel#AssertIsMarkbarModel(a:model)
+    call markbar#ensure#IsClass(a:model, 'MarkbarModel')
     let l:new = {
         \ 'TYPE': 'MarkbarView',
         \ '_markbar_model': a:model,

@@ -2,7 +2,7 @@ Include: clear-marks.vader
 Include: load-test-files.vader
 
 Execute (BufferCache: isGlobal Test, True):
-  let temp_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS())
+  let temp_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS_BUFNR())
 Then:
   Assert temp_cache.isGlobal()
 
@@ -35,7 +35,7 @@ Execute (BufferCache: Populate Global Cache):
   execute '30mark C'
   execute '40mark D'
   execute '50mark E'
-  let global_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS())
+  let global_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS_BUFNR())
   call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 Then:
   " check globals

@@ -16,7 +16,7 @@
 " PARAM:    view    (markbar#MarkbarView)   Reference to an object controlling
 "                                           the appearance of the markbar UI.
 function! markbar#MarkbarController#new(model, view) abort
-    call markbar#MarkbarModel#AssertIsMarkbarModel(a:model)
+    call markbar#ensure#IsClass(a:model, 'MarkbarModel')
     call markbar#MarkbarView#AssertIsMarkbarView(a:view)
     let l:new = {
         \ 'TYPE': 'MarkbarController',
@@ -90,8 +90,6 @@ endfunction
 function! markbar#MarkbarController#openMarkbar() abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
 
-    " note: need to update local marks while we're still outside
-    " the markbar buffer
     call l:self._markbar_model.updateCurrentAndGlobal()
     call l:self._openMarkbarSplit()
 
@@ -227,10 +225,10 @@ function! markbar#MarkbarController#_generateMarkbarContents(
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
     let l:markbar_model = l:self._markbar_model
     let l:marks =
-        \ l:markbar_model.getBufferCache(a:buffer_no, v:true).marks_dict
+        \ l:markbar_model.getBufferCache(a:buffer_no).marks_dict
     let l:globals =
         \ l:markbar_model.getBufferCache(
-            \ markbar#constants#GLOBAL_MARKS()).marks_dict
+            \ markbar#constants#GLOBAL_MARKS_BUFNR()).marks_dict
 
     let l:lines = [] " to return
 

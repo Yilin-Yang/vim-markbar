@@ -4,7 +4,7 @@ endif
 let g:vim_markbar_autoloaded = 1
 
 " BRIEF:    The entire vim-markbar state, not including user settings.
-let g:markbar_model = markbar#MarkbarModel#get()
+let g:markbar_model = markbar#MarkbarModel#Get()
 let g:markbar_view  = markbar#MarkbarView#new(g:markbar_model)
 let g:standard_controller =
     \ markbar#StandardMarkbarController#new(g:markbar_model, g:markbar_view)

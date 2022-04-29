@@ -48,9 +48,17 @@ function! markbar#ensure#IsBoolean(Object)
 endfunction
 
 function! markbar#ensure#IsClass(Object, classname) abort
-    if type(a:Object) ==# v:t_dict && a:Object.TYPE ==# a:classname
+    if type(a:Object) ==# v:t_dict && get(a:Object, 'TYPE', '') ==# a:classname
         return
     endif
     throw printf('Object is not of type %s: %s',
         \ a:classname, string(a:Object))
+endfunction
+
+" BRIEF:    Ensure that a string is a valid mark identifier.
+function! markbar#ensure#IsMarkName(Object) abort
+    call markbar#ensure#IsString(a:Object)
+    if !has_key(markbar#constants#ALL_MARKS_DICT(), a:Object)
+        throw printf('Invalid mark name: %s', a:Object)
+    endif
 endfunction
