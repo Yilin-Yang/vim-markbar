@@ -61,6 +61,23 @@ Execute (Is[...]Mark: Number, nomagic):
   AssertEqual 0, &magic
   set magic
 
+Execute (markbar#helpers#IsMarkName() accepts valid mark names):
+  for g:c in split(markbar#constants#ALL_MARKS_STRING(), '\zs')
+    call markbar#ensure#IsMarkName(g:c)
+  endfor
+
+Execute (markbar#helpers#IsMarkName() rejects invalid mark names):
+  function! AssertThrowsInvalidMarkName(name) abort
+    " vader's AssertThrows can't capture a:name from the a: scope
+    let g:name = a:name
+    AssertThrows call markbar#ensure#IsMarkName(g:name)
+    AssertEqual printf('Invalid mark name: %s', a:name), g:vader_exception
+  endfunction
+
+  for g:c in ['!', '@', '#', '$', '%', '&', '*', 'foo']
+    call AssertThrowsInvalidMarkName(g:c)
+  endfor
+
 Execute (SplitString: Empty):
   let string = ''
   AssertEqual ['', ''], markbar#helpers#SplitString(string, 3)

@@ -3,7 +3,7 @@ Include: load-test-files.vader
 
 Execute (MarkbarModel: Global Settings):
   let g:markbar_num_lines_context = 3
-  let g:markbar_model = markbar#MarkbarModel#get()
+  let g:markbar_model = markbar#MarkbarModel#Get()
 
 Execute (MarkbarModel: Populate Local Cache):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"
@@ -32,7 +32,7 @@ Execute (MarkbarModel: Populate Global Cache):
 Then:
   " check globals
   let global_marks =
-    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['marks_dict']
+    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS_BUFNR())['marks_dict']
   AssertEqual ['C', '30', '0'],   global_marks['C']['_data']
   AssertEqual ['D', '40', '0'],   global_marks['D']['_data']
   AssertEqual ['E', '50', '0'],   global_marks['E']['_data']
@@ -67,7 +67,7 @@ Then:
   AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
 
   let global_marks =
-    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['marks_dict']
+    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS_BUFNR())['marks_dict']
   AssertEqual ['A', '10', '0'],   global_marks['A']['_data']
   AssertEqual ['B', '20', '0'],   global_marks['B']['_data']
   AssertEqual ['C', '30', '0'],   global_marks['C']['_data']
@@ -131,7 +131,7 @@ Execute (MarkbarModel: Update Globals in Offscreen, Unloaded Buffer):
   call g:markbar_model.updateCurrentAndGlobal()
 Then:
   let global_marks =
-    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS())['marks_dict']
+    \ g:markbar_model.getBufferCache(markbar#constants#GLOBAL_MARKS_BUFNR())['marks_dict']
   " even after unloading the buffer, the plugin should still be able to fetch
   " contexts from the files on disk
   let expected = [

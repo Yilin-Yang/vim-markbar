@@ -1,7 +1,7 @@
 Include: clear-marks.vader
 
 Execute (Set Settings, Create Standard Markbar Controller):
-  let g:model = markbar#MarkbarModel#get()
+  let g:model = markbar#MarkbarModel#Get()
   let g:view = markbar#MarkbarView#new(g:model)
   let g:standard_controller = 
     \ markbar#StandardMarkbarController#new(g:model, g:view)
