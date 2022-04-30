@@ -6,10 +6,6 @@
 "           Where possible, shared functionality between derived classes has
 "           been factored up into this base class.
 "
-"           Some functions are declared pure virtual; these functions are
-"           expected to exhibit special behavior based on the derived class,
-"           and lack base class implementations.
-
 " BRIEF:    Construct a MarkbarController object.
 " PARAM:    model   (markbar#MarkbarModel)  Reference to the current markbar
 "                                           state.
@@ -17,7 +13,7 @@
 "                                           the appearance of the markbar UI.
 function! markbar#MarkbarController#new(model, view) abort
     call markbar#ensure#IsClass(a:model, 'MarkbarModel')
-    call markbar#MarkbarView#AssertIsMarkbarView(a:view)
+    call markbar#ensure#IsClass(a:view, 'MarkbarView')
     let l:new = {
         \ 'TYPE': 'MarkbarController',
         \ 'DYNAMIC_TYPE': [],
@@ -100,16 +96,14 @@ function! markbar#MarkbarController#openMarkbar() abort dict
     call l:self._setRefreshMarkbarAutocmds()
 endfunction
 
-function! markbar#MarkbarController#closeMarkbar(...) abort dict
+function! markbar#MarkbarController#closeMarkbar() abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    let l:should_restore = get(a:000, 0, 0)
-    return l:self['_markbar_view'].closeMarkbar(l:should_restore)
+    return l:self['_markbar_view'].closeMarkbar()
 endfunction
 
-function! markbar#MarkbarController#toggleMarkbar(...) abort dict
+function! markbar#MarkbarController#toggleMarkbar() abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
-    let l:should_restore = get(a:000, 0, 0)
-    if l:self['_markbar_view'].closeMarkbar(l:should_restore) | return | endif
+    if l:self['_markbar_view'].closeMarkbar() | return | endif
     call l:self.openMarkbar()
 endfunction
 
@@ -217,14 +211,8 @@ endfunction
 "                                       the line. Does nothing if
 "                                       `a:highlight_mark` is false.
 function! markbar#MarkbarController#_generateMarkbarContents(
-    \ buffer_no,
-    \ marks,
-    \ NumContext,
-    \ section_separator,
-    \ indent_block,
-    \ highlight_mark,
-    \ backtick_like
-\ ) abort dict
+    \ buffer_no, marks, NumContext, section_separator, indent_block,
+    \ highlight_mark, backtick_like) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
     let l:markbar_model = l:self._markbar_model
     let l:marks =

@@ -182,10 +182,10 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
     let b:view  = l:self['_markbar_view']
     let b:model = l:self['_markbar_model']
 
-    noremap <silent> <buffer> <Esc> :call b:ctrl.closeMarkbar(1)<cr>
+    noremap <silent> <buffer> <Esc> :call b:ctrl.closeMarkbar()<cr>
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PeekabooJumpToMarkMapping()
-        \ . ' :call b:view._goToSelectedMark('
+        \ . ' :call b:view.goToSelectedMark('
             \ . 'markbar#settings#JumpToExactPosition()'
         \ . ')<cr>'
     execute 'noremap <silent> <buffer> ? '
@@ -193,10 +193,10 @@ function! markbar#PeekabooMarkbarController#_setMarkbarMappings() abort dict
         \ . ':call b:ctrl.refreshContents()<cr>'
 
     call l:self['_select_keys'].setCallback(
-        \ { key, mods, prefix -> b:view._selectMark(key) }
+        \ { key, mods, prefix -> b:view.selectMark(key) }
     \ )
     call l:self['_jump_to_keys'].setCallback(
-        \ { key, mods, prefix -> b:view._goToMark(key, l:self['_jump_like_backtick']) }
+        \ { key, mods, prefix -> b:view.goToMark(key, l:self['_jump_like_backtick']) }
     \ )
 
     call l:self['_select_keys' ].setMappings('noremap <silent> <buffer>')

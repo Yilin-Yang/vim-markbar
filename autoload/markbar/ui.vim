@@ -5,7 +5,7 @@ function! markbar#ui#SetEchoHeaderAutocmds() abort
         augroup vim_markbar_echo_header
             au!
             autocmd CursorHold,CursorMoved *
-                \ echo getline(g:markbar_view._getCurrentMarkHeadingLine())
+                \ echo getline(g:markbar_view.getCurrentMarkHeadingLine())
         augroup end
     else
         augroup vim_markbar_echo_header
