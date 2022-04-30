@@ -77,6 +77,14 @@ Do (Close Markbar):
 Then:
   Assert !exists('b:is_markbar')
 
+Do (Reclosing already closed markbar doesn't move cursor):
+  :edit! 10lines.txt\<cr>
+  7G05l
+  :let g:cur_pos = getcurpos()\<cr>
+  Mc
+Then:
+  AssertEqual g:cur_pos, getcurpos()
+
 Do (Re-Open Closed Markbar (E499 Check)):
   Mo
 Expect:

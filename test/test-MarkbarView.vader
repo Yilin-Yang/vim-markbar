@@ -4,7 +4,7 @@ Execute (Initialize MarkbarModel):
   let g:markbar_model = markbar#MarkbarModel#Get()
 
 Execute (Test Initialize Markbar Buffer):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   let g:open_markbar_args = ['botright', v:true, 35]
   let g:buffer = g:markbar_view.getMarkbarBuffer()
 Then:
@@ -18,7 +18,7 @@ Then:
   AssertEqual 1,         getbufvar(g:buffer, 'is_markbar')
 
 Execute (Test Open Window):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   AssertEqual 0,         getbufvar(g:buffer, '&buflisted')
 
@@ -37,7 +37,7 @@ Execute (Test Open Window):
   AssertEqual    1, getwinvar(g:winnr,      'is_markbar')
 
 Execute (Test Open Window, Switch Out, Already Open):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   let g:cur_window = winnr()
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   let g:correct_num_windows = len(tabpagebuflist())
@@ -48,7 +48,7 @@ Then:
   Assert b:is_markbar
 
 Execute (Test Close Window):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   let g:correct_num_windows = len(tabpagebuflist())
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   call g:markbar_view.closeMarkbar()
@@ -57,7 +57,7 @@ Then:
   Assert !exists('b:is_markbar')
 
 Execute (Test Close Window, None Open):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   let g:correct_num_windows = len(tabpagebuflist())
   call g:markbar_view.closeMarkbar()
 Then:
@@ -65,59 +65,59 @@ Then:
   Assert !exists('b:is_markbar')
 
 Execute (Test markbarIsOpenCurrentTab, True):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
 Then:
   Assert g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test markbarIsOpenCurrentTab, Different Tab):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   tabnew
 Then:
   Assert !g:markbar_view.markbarIsOpenCurrentTab()
 
 Execute (Test markbarIsOpenCurrentTab, None Open):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   call g:markbar_view.closeMarkbar()
 Then:
   Assert !g:markbar_view.markbarIsOpenCurrentTab()
 
-Execute (Test getMarkbarWindow, No Markbar Buffer):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
-  let g:winnr = markbar_view.getMarkbarWindow()
+Execute (Test getMarkbarWinID, No Markbar Buffer):
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
+  let g:winid = markbar_view.getMarkbarWinID()
 Then:
-  AssertEqual -1, g:winnr
+  AssertEqual -1, g:winid
 
-Execute (Test getMarkbarWindow, Markbar Exists But Not Open):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+Execute (Test getMarkbarWinID, Markbar Exists But Not Open):
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   call g:markbar_view.closeMarkbar()
-  let g:winnr = markbar_view.getMarkbarWindow()
+  let g:winid = markbar_view.getMarkbarWinID()
 Then:
-  AssertEqual -1, g:winnr
+  AssertEqual -1, g:winid
 
-Execute (Test getMarkbarWindow, Markbar Exists In Different Tab):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+Execute (Test getMarkbarWinID, Markbar Exists In Different Tab):
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   tabnew
-  let g:winnr = markbar_view.getMarkbarWindow()
+  let g:winid = markbar_view.getMarkbarWinID()
 Then:
-  AssertEqual -1, g:winnr
+  AssertEqual -1, g:winid
 
-Execute (Test getMarkbarWindow, Markbar Exists in Current Tab):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
-  let g:old_winnr = winnr()
+Execute (Test getMarkbarWinID, Markbar Exists in Current Tab):
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
+  let g:old_winid = win_getid()
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
-  execute g:old_winnr . 'wincmd w'
-  let g:winnr = markbar_view.getMarkbarWindow()
+  call win_gotoid(g:old_winid)
+  let g:winid = markbar_view.getMarkbarWinID()
 Then:
-  execute g:winnr . 'wincmd w'
+  call win_gotoid(g:winid)
   Assert b:is_markbar
 
 Execute (Test _saveWinState, _restoreWinState):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   tabnew
   vsplit
   resize 10
@@ -128,16 +128,16 @@ Execute (Test _saveWinState, _restoreWinState):
   let g:saved_state = GetWinState()
   call call(g:markbar_view['openMarkbar'], g:open_markbar_args)
   call g:markbar_view.closeMarkbar()
-  call g:markbar_view._restoreWinState(0)
+  call g:markbar_view._restoreWinState()
 Then:
   call AssertWinStatesAboutEqual(g:saved_state, GetWinState(), 3)
 
 Execute (Test Error Handling for _restoreWinState):
-  let g:markbar_view = markbar#MarkbarView#new(g:markbar_model)
+  let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)
   call g:markbar_view._saveWinState()
   tabnew
   AssertThrows call g:markbar_view._restoreWinState(0), 'Did not throw on wrong tabpage'
-  call g:markbar_view._restoreWinState(1)  " should do nothing
+  call g:markbar_view._restoreWinState()  " should do nothing
 
   vsplit
   split
@@ -145,7 +145,7 @@ Execute (Test Error Handling for _restoreWinState):
 
   q
   AssertThrows call g:markbar_view._restoreWinState(0), 'Did not throw on different num windows'
-  call g:markbar_view._restoreWinState(1)  " should do nothing
+  call g:markbar_view._restoreWinState()  " should do nothing
   
 
 " NOTE: uses g:markbar_view from last test case, since these functions
@@ -186,7 +186,7 @@ Given (Fake Markbar Buffer):
 
 Execute (Get Current Mark, None Selected):
   normal! gg
-  AssertEqual '', g:markbar_view._getCurrentMarkHeading()
+  AssertEqual '', g:markbar_view.getCurrentMarkHeading()
 
 Execute (Get Next Mark):
   normal! gg
@@ -194,8 +194,8 @@ Execute (Get Next Mark):
 
 Execute (Get Current Mark, Cursor Over Section Header):
   normal! 2G
-  AssertEqual 2,   g:markbar_view._getCurrentMarkHeadingLine()
-  AssertEqual 'A', g:markbar_view._getCurrentMarkHeading()
+  AssertEqual 2,   g:markbar_view.getCurrentMarkHeadingLine()
+  AssertEqual 'A', g:markbar_view.getCurrentMarkHeading()
 
 Execute (Get Next Mark, From Section Header):
   normal! 2G
@@ -203,8 +203,8 @@ Execute (Get Next Mark, From Section Header):
 
 Execute (Get Current Mark, From Mark Context):
   normal! 10G
-  AssertEqual 8,  g:markbar_view._getCurrentMarkHeadingLine()
-  AssertEqual 'B', g:markbar_view._getCurrentMarkHeading()
+  AssertEqual 8,  g:markbar_view.getCurrentMarkHeadingLine()
+  AssertEqual 'B', g:markbar_view.getCurrentMarkHeading()
 
 Execute (Get Next Mark, From Mark Context):
   normal! 10G
@@ -223,24 +223,24 @@ Execute (Get Previous Mark, From Section Header):
   AssertEqual 8, g:markbar_view._getPreviousMarkHeadingLine()
 
 Execute (Select Mark):
-  call g:markbar_view._selectMark('A')
+  call g:markbar_view.selectMark('A')
   AssertEqual 2, getpos('.')[1]
 
-  call g:markbar_view._selectMark('B')
+  call g:markbar_view.selectMark('B')
   AssertEqual 8, getpos('.')[1]
 
-  call g:markbar_view._selectMark('C')
+  call g:markbar_view.selectMark('C')
   AssertEqual 14, getpos('.')[1]
 
-  call g:markbar_view._selectMark('D')
+  call g:markbar_view.selectMark('D')
   AssertEqual 20, getpos('.')[1]
 
-  call g:markbar_view._selectMark('E')
+  call g:markbar_view.selectMark('E')
   AssertEqual 26, getpos('.')[1]
 
 Execute (Set Up Cycle Keymappings):
-  nnoremap n :<C-U>call g:markbar_view._cycleToNextMark(v:count1)<cr>
-  nnoremap N :<C-U>call g:markbar_view._cycleToPreviousMark(v:count1)<cr>
+  nnoremap n :<C-U>call g:markbar_view.cycleToNextMark(v:count1)<cr>
+  nnoremap N :<C-U>call g:markbar_view.cycleToPreviousMark(v:count1)<cr>
 
 Do (Iterate Through Marks with Next):
   ggnnnnn

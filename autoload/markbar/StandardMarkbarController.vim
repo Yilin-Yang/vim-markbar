@@ -121,29 +121,29 @@ function! markbar#StandardMarkbarController#_setMarkbarMappings() abort dict
     let b:model = l:self['_markbar_model']
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#JumpToMarkMapping()
-        \ . ' :call b:view._goToSelectedMark('
+        \ . ' :call b:view.goToSelectedMark('
             \ . 'markbar#settings#JumpToExactPosition()'
         \ . ')<cr>'
 
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#RenameMarkMapping()
-        \ . ' :call b:model.renameMark(b:view._getCurrentMarkHeading())<cr>'
+        \ . ' :call b:model.renameMark(b:view.getCurrentMarkHeading())<cr>'
         \ . ' :call b:ctrl.refreshContents()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#ResetMarkMapping()
-        \ . ' :call b:model.resetMark(b:view._getCurrentMarkHeading())<cr>'
+        \ . ' :call b:model.resetMark(b:view.getCurrentMarkHeading())<cr>'
         \ . ' :call b:ctrl.refreshContents()<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#DeleteMarkMapping()
-        \ . ' :call b:model.deleteMark(b:view._getCurrentMarkHeading())<cr>'
+        \ . ' :call b:model.deleteMark(b:view.getCurrentMarkHeading())<cr>'
         \ . ' :call b:ctrl.refreshContents()<cr>'
 
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#NextMarkMapping()
-        \ . ' :<C-U>call b:view._cycleToNextMark(v:count1)<cr>'
+        \ . ' :<C-U>call b:view.cycleToNextMark(v:count1)<cr>'
     execute 'noremap <silent> <buffer> '
         \ . markbar#settings#PreviousMarkMapping()
-        \ . ' :<C-U>call b:view._cycleToPreviousMark(v:count1)<cr>'
+        \ . ' :<C-U>call b:view.cycleToPreviousMark(v:count1)<cr>'
 
     execute 'noremap <silent> <buffer> ? '
         \ . ':call b:view.toggleShowHelp()<cr>'
