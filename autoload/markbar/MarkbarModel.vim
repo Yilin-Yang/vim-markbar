@@ -86,7 +86,7 @@ function! s:MarkbarModel.deleteMark(mark) abort dict
     let l:cur_pos = getcurpos()
     if !l:is_global
         let l:active_buffer = l:self.getActiveBuffer()
-        execute bufwinnr(l:active_buffer) . 'wincmd w'
+        execute win_gotoid(bufwinid(l:active_buffer))
     endif
     try
         execute 'delmarks ' . a:mark
@@ -96,7 +96,7 @@ function! s:MarkbarModel.deleteMark(mark) abort dict
     catch /E471/  " Argument required
         " user tried deleting the double quote
     endtry
-    execute bufwinnr(l:markbar_buffer) . 'wincmd w'
+    execute win_gotoid(bufwinid(l:markbar_buffer))
     call setpos('.', l:cur_pos)
 
     " update the cache
