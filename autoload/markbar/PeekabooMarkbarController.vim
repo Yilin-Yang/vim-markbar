@@ -30,19 +30,19 @@ function! markbar#PeekabooMarkbarController#new(model, view) abort
     let l:new['_shouldNotOpen'] =
         \ function('markbar#PeekabooMarkbarController#_shouldNotOpen')
 
-    let l:select_keys = markbar#KeyMapper#newWithUniformModifiers(
+    let l:select_keys = markbar#KeyMapper#NewWithSameModsPrefixes(
         \ markbar#constants#ALL_MARKS_STRING(),
         \ markbar#settings#PeekabooSelectModifiers(),
         \ markbar#settings#PeekabooSelectPrefix(),
-        \ v:false
+        \ v:null
     \ )
     let l:new['_select_keys'] = l:select_keys
 
-    let l:jump_to_keys = markbar#KeyMapper#newWithUniformModifiers(
+    let l:jump_to_keys = markbar#KeyMapper#NewWithSameModsPrefixes(
         \ markbar#constants#ALL_MARKS_STRING(),
         \ markbar#settings#PeekabooJumpToMarkModifiers(),
         \ markbar#settings#PeekabooJumpToMarkPrefix(),
-        \ v:false
+        \ v:null
     \ )
     let l:new['_jump_to_keys'] = l:jump_to_keys
 
