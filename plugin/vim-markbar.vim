@@ -14,10 +14,10 @@ noremap <silent> <Plug>CloseMarkbar     :call g:standard_controller.closeMarkbar
 noremap <silent> <Plug>ToggleMarkbar    :call g:standard_controller.toggleMarkbar()<cr>
 
 if markbar#settings#EnablePeekabooMarkbar()
-    let g:peekaboo_controller =
+    let g:markbar_peekaboo_controller =
         \ markbar#PeekabooMarkbarController#new(g:markbar_model, g:markbar_view)
-    noremap <silent> <Plug>OpenMarkbarPeekabooApostrophe    :call g:peekaboo_controller.apostrophe()<cr>
-    noremap <silent> <Plug>OpenMarkbarPeekabooBacktick      :call g:peekaboo_controller.backtick()<cr>
+    noremap <silent> <Plug>OpenMarkbarPeekabooApostrophe    :call g:markbar_peekaboo_controller.apostrophe()<cr>
+    noremap <silent> <Plug>OpenMarkbarPeekabooBacktick      :call g:markbar_peekaboo_controller.backtick()<cr>
 
     if markbar#settings#SetDefaultPeekabooMappings()
         execute 'nmap <silent> '.markbar#settings#PeekabooApostropheMapping()
@@ -35,20 +35,16 @@ if markbar#settings#ExplicitlyRemapMarkMappings()
         execute 'normal! ' . a:prefix . a:key
     endfunction
 
-    let g:markbar_apostrophe_remapper = markbar#KeyMapper#newWithUniformModifiers(
-        \ markbar#constants#ALL_MARKS_STRING(),
-        \ '',
-        \ "'",
-        \ function('<SID>MarkbarGoToMark')
-    \ )
+    let g:markbar_apostrophe_remapper =
+        \ markbar#KeyMapper#NewWithSameModsPrefixes(
+            \ markbar#constants#ALL_MARKS_STRING(), '', "'",
+            \ function('<SID>MarkbarGoToMark'))
     call g:markbar_apostrophe_remapper.setMappings('noremap <silent>')
 
-    let g:markbar_backtick_remapper = markbar#KeyMapper#newWithUniformModifiers(
-        \ markbar#constants#ALL_MARKS_STRING(),
-        \ '',
-        \ '`',
-        \ function('<SID>MarkbarGoToMark')
-    \ )
+    let g:markbar_backtick_remapper =
+        \ markbar#KeyMapper#NewWithSameModsPrefixes(
+            \ markbar#constants#ALL_MARKS_STRING(), '', '`',
+            \ function('<SID>MarkbarGoToMark'))
     call g:markbar_backtick_remapper.setMappings('noremap <silent>')
 endif
 

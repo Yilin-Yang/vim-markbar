@@ -1,34 +1,70 @@
 Execute (KeyMapper: Construct):
-  function! WriteGlobalVariable(key, mods, prefix) abort
-    let g:keymapper_testvar = [a:key, a:mods, a:prefix]
+  function! WriteCallbackArgs(key, mods, prefix) abort
+    let g:called_back_with = [a:key, a:mods, a:prefix]
   endfunction
-  let keymapper = markbar#KeyMapper#new([
-      \ ['a', 'shift',   ''],
-      \ ['b', '',        ''],
-      \ ['a', 'control', ''],
-      \ ['b', '',     '<space>'],
+  let g:keymapper = markbar#KeyMapper#New([
+      \ ['a', 'Shift',       ''],
+      \ ['b', '',            ''],
+      \ ['b', '',            "'"],
+      \ ['b', '',            '"'],
+      \ ['a', 'cONTRol',     ''],
+      \ ['b', '',            '<spaCe>'],
+      \ ['b', 'control,alt', ''],
+      \ ['b', '',            'A'],
     \ ],
-    \ function('WriteGlobalVariable')
+    \ function('WriteCallbackArgs')
   \ )
 Execute (KeyMapper: Set Keymappings):
-  call keymapper.setMappings('nmap <silent>')
+  call g:keymapper.setMappings('nmap <silent>')
 
 Do (Check '<S-a>'):
   A
 Then:
-  AssertEqual ['a', 'shift', ''], g:keymapper_testvar
+  AssertEqual ['a', 'Shift', ''], g:called_back_with
 
 Do (Check 'a'):
   b
 Then:
-  AssertEqual ['b', '', ''], g:keymapper_testvar
+  AssertEqual ['b', '', ''], g:called_back_with
+
+Do (Check "'b"):
+  'b
+Then:
+  AssertEqual ['b', '', "'"], g:called_back_with
+
+Do (Check '"b'):
+  "b
+Then:
+  AssertEqual ['b', '', '"'], g:called_back_with
 
 Do (Check '<C-a>'):
   \<C-a>
 Then:
-  AssertEqual ['a', 'control', ''], g:keymapper_testvar
+  AssertEqual ['a', 'cONTRol', ''], g:called_back_with
 
 Do (Check '<Space>b'):
   \<Space>b
 Then:
-  AssertEqual ['b', '', '<space>'], g:keymapper_testvar
+  AssertEqual ['b', '', '<spaCe>'], g:called_back_with
+
+Execute (Check '<C-A-b>):
+  execute "normal \<C-A-b>"
+Then:
+  AssertEqual ['b', 'control,alt', ''], g:called_back_with
+
+Do (Check 'Ab'):
+  Ab
+Then:
+  AssertEqual ['b', '', 'A'], g:called_back_with
+
+Execute (setCallback changes callback):
+  let g:called_back_with = v:null
+  function! NewCallback(key, mods, prefix) abort
+    let g:new_called_back_with = [a:key, a:mods, a:prefix]
+  endfunction
+  call g:keymapper.setCallback(function('NewCallback'))
+  call g:keymapper.setMappings('nmap <silent>')
+  normal A
+Then:
+  AssertEqual ['a', 'Shift', ''], g:new_called_back_with
+  AssertEqual v:null, g:called_back_with
