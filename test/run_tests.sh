@@ -82,7 +82,7 @@ BASE_CMD_VIM="-Nnu .test_vimrc -i NONE"
 RUN_VIM=1
 RUN_GIVEN=0
 GAVE_PATH=0
-export VISIBLE=0
+export NOT_VISIBLE=1
 VADER_CMD="-c 'Vader! *'"
 GLOB_ORDINARY='test-*.vader'
 GLOB_STANDALONE='standalone-test-*.vader'
@@ -93,7 +93,7 @@ while [[ $# -gt 0 ]]; do
       TEST_INTERNATIONAL=1
       ;;
     '-v' | '--visible')
-      export VISIBLE=1
+      export NOT_VISIBLE=0
       BASE_CMD_NVIM="nvim -Nnu .test_vimrc -i NONE"
       BASE_CMD_VIM="vim -Nnu .test_vimrc -i NONE"
       VADER_CMD="-c 'Vader *'"
@@ -143,7 +143,7 @@ if [ $RUN_VIM -ne 0 ]; then
   else
     BASE_CMD="${VIM_PATH_DEFAULT} ${BASE_CMD_VIM}"
   fi
-  if [ $VISIBLE -eq 0 ]; then
+  if [ $NOT_VISIBLE -eq 1 ]; then
     VADER_CMD="$VADER_CMD > /dev/null"
   fi
 else
@@ -169,4 +169,4 @@ else
     runTests "${BASE_CMD}" "${VADER_CMD}" "-c 'language es_ES.utf8'" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
   fi
 fi
-unset VISIBLE
+unset NOT_VISIBLE
