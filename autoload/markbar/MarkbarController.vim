@@ -130,12 +130,15 @@ function! markbar#MarkbarController#refreshContents() abort dict
     try
         call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
     catch /Buffer not cached/
-        " HACK: Assume that this buffer isn't a 'real' buffer;
-        "       instead, push the 'actual open buffer' on top of it
-        "       and let that be the 'active buffer'
+        " We're in the markbar, but the last active buffer wasn't cached.
+        " This can happen if the user creates and loads a |session-file|
+        " with the cursor inside a markbar.
+        " Close the markbar, cache whatever buffer the cursor moves to, then
+        " reopen a markbar for that buffer.
+        " TODO: it's practically impossible to write a test for this?
         call l:view.closeMarkbar()
-        let l:active_buffer = bufnr('%')
-        call l:model.pushNewBuffer(l:active_buffer)
+        call l:model.pushNewBuffer(bufnr('%'))
+        call l:model.updateCurrentAndGlobal()
         call l:self._openMarkbarSplit()
         call l:self._populateWithMarkbar(l:active_buffer, l:markbar_buffer)
     endtry

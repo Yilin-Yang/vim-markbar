@@ -154,12 +154,24 @@ endfunction
 " RETURNS:  (markbar#BufferCache)   BufferCache for the requested buffer.
 " DETAILS:  Initializes a BufferCache for the buffer if one doesn't exist.
 " PARAM:    buffer_no   (v:t_number)    The bufnr() of the requested buffer.
-function! s:MarkbarModel.getBufferCache(buffer_no) abort dict
+function! s:MarkbarModel._getOrInitBufferCache(buffer_no) abort dict
     call markbar#ensure#IsNumber(a:buffer_no)
     let l:cache = get(l:self._buffer_caches, a:buffer_no, 0)
     if empty(l:cache)
         let l:cache = markbar#BufferCache#New(a:buffer_no)
         let l:self._buffer_caches[a:buffer_no] = l:cache
+    endif
+    return l:cache
+endfunction
+
+" RETURNS:  (markbar#BufferCache)   BufferCache for the requested buffer.
+" DETAILS:  Throws an exception if a matching BufferCache isn't found.
+" PARAM:    buffer_no   (v:t_number)    The bufnr() of the requested buffer.
+function! s:MarkbarModel.getBufferCache(buffer_no) abort dict
+    call markbar#ensure#IsNumber(a:buffer_no)
+    let l:cache = get(l:self._buffer_caches, a:buffer_no, 0)
+    if empty(l:cache)
+        throw printf('Buffer not cached: %s', a:buffer_no)
     endif
     return l:cache
 endfunction
@@ -174,18 +186,20 @@ function! s:MarkbarModel.evictBufferCache(buffer_no) abort dict
 endfunction
 
 " DETAILS:  Update BufferCaches for the current buffer and for global marks.
+"           Creates BufferCaches for the current buffer and global marks if
+"           they don't yet exist.
 function! s:MarkbarModel.updateCurrentAndGlobal() abort dict
-    let l:cur_buffer_cache = l:self.getBufferCache(bufnr('%'))
-    "                                              ^ This is bufnr('%') and not
-    " getActiveBuffer() because helpers#GetLocalMarks() pulls |:marks| output
-    " for the currently focused window, which might e.g.  be the markbar
-    " window, which _active_buffer_stack.top() wouldn't return as a 'real
-    " buffer'.
+    let l:cur_buffer_cache = l:self._getOrInitBufferCache(bufnr('%'))
+    "                                                     ^ This is bufnr('%')
+    " and not getActiveBuffer() because helpers#GetLocalMarks() pulls |:marks|
+    " output for the currently focused window, which might e.g.  be the
+    " markbar window, which _active_buffer_stack.top() wouldn't return as a
+    " 'real buffer'.
     "
     " If getActiveBuffer() and bufnr('%') were different, then
     " cur_buffer_cache.updateCache might e.g. clobber the last active buffer's
     " BufferCache with the (probably nonexistent) marks for the markbar window.
-    let l:global_buffer_cache = l:self.getBufferCache(
+    let l:global_buffer_cache = l:self._getOrInitBufferCache(
         \ markbar#constants#GLOBAL_MARKS_BUFNR())
 
     " retrieve the greatest number of lines of context that we may need
