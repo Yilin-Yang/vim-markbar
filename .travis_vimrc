@@ -3,7 +3,7 @@
 " Taken from:
 "   https://github.com/junegunn/vader.vim
 "----------------------------------------
-if !$VISIBLE
+if $NOT_VISIBLE
   set lines=64
   set columns=256
 endif
