@@ -403,3 +403,25 @@ function! s:NumContextPeekaboo(config, mark_data) abort
     return a:mark_data.isGlobal() ? a:config.peekaboo_around_file
                                 \ : a:config.peekaboo_around_local
 endfunction
+
+
+let s:viml_type_to_string = {
+    \ 0: 'v:t_number',
+    \ 1: 'v:t_string',
+    \ 2: 'v:t_func',
+    \ 3: 'v:t_list',
+    \ 4: 'v:t_dict',
+    \ 5: 'v:t_float',
+    \ 6: 'v:t_bool',
+    \ 7: 'v:null',
+\ }
+
+" RETURNS:  String like 'v:t_number' corresponding to the given |type()| value.
+function! markbar#helpers#VimLTypeToString(type_val) abort
+    call markbar#ensure#IsNumber(a:type_val)
+    let l:string = get(s:viml_type_to_string, a:type_val, v:null)
+    if l:string is v:null
+        throw printf('Nonexistent variable |type()| with val: %d', a:type_val)
+    endif
+    return l:string
+endfunction
