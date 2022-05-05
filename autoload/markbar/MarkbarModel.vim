@@ -50,7 +50,7 @@ endfunction
 "           Changes won't appear until the markbar has been repopulated.
 " PARAM:    mark    (v:t_string)    Single character representing the mark.
 function! s:MarkbarModel.renameMark(mark) abort dict
-    call markbar#ensure#IsMarkName(a:mark)
+    call markbar#ensure#IsMarkChar(a:mark)
 
     let l:mark_data = l:self.getMarkData(a:mark)
 
@@ -66,7 +66,7 @@ endfunction
 " DETAILS:  Changes won't appear until the markbar has been repopulated.
 " PARAM:    mark    (v:t_string)    Single character representing the mark.
 function! s:MarkbarModel.resetMark(mark) abort dict
-    call markbar#ensure#IsMarkName(a:mark)
+    call markbar#ensure#IsMarkChar(a:mark)
     let l:mark_data = l:self.getMarkData(a:mark)
     call l:mark_data.setName('')
 endfunction
@@ -77,7 +77,7 @@ endfunction
 " PARAM:    mark    (v:t_string)    The single character representing the
 "                                   mark.
 function! s:MarkbarModel.deleteMark(mark) abort dict
-    call markbar#ensure#IsMarkName(a:mark)
+    call markbar#ensure#IsMarkChar(a:mark)
 
     let l:is_global = markbar#helpers#IsGlobalMark(a:mark)
 

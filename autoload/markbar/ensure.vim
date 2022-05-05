@@ -56,7 +56,7 @@ function! markbar#ensure#IsClass(Object, classname) abort
 endfunction
 
 " BRIEF:    Ensure that a string is a valid mark identifier.
-function! markbar#ensure#IsMarkName(Object) abort
+function! markbar#ensure#IsMarkChar(Object) abort
     call markbar#ensure#IsString(a:Object)
     if !has_key(markbar#constants#ALL_MARKS_DICT(), a:Object)
         throw printf('Invalid mark name: %s', a:Object)
