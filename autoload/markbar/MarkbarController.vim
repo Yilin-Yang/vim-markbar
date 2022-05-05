@@ -172,7 +172,7 @@ function! markbar#MarkbarController#_getDefaultMarkName(mark) abort dict
     for l:Arg in l:format_arg " capital 'Arg' to handle funcrefs
         let l:cmd .= ', '
         if type(l:Arg) == v:t_func
-            let l:cmd .= string(l:Arg(markbar#BasicMarkData#new(a:mark)))
+            let l:cmd .= string(l:Arg(markbar#BasicMarkData#New(a:mark)))
         elseif l:Arg ==# 'line'
             let l:cmd .= a:mark.getLineNo()
         elseif l:Arg ==# 'col'
