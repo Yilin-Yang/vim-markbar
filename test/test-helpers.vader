@@ -117,3 +117,26 @@ Execute (SplitString: Three Characters, Split At End):
 Execute (SplitString: Three Characters, Split After End):
   let string = 'abc'
   AssertEqual ['abc', ''], markbar#helpers#SplitString(string, 6)
+
+Execute (VimLTypeToString names |type()| values correctly):
+  let g:nos_and_names = [
+      \ [0, 'v:t_number'],
+      \ [1, 'v:t_string'],
+      \ [2, 'v:t_func'],
+      \ [3, 'v:t_list'],
+      \ [4, 'v:t_dict'],
+      \ [5, 'v:t_float'],
+      \ [6, 'v:t_bool'],
+      \ [7, 'v:null'],
+    \ ]
+    for [g:no, g:name] in g:nos_and_names
+      AssertEqual g:name, markbar#helpers#VimLTypeToString(g:no)
+    endfor
+
+Execute (VimLTypeToString rejects invalid inputs):
+  AssertThrows call markbar#helpers#VimLTypeToString(v:null)
+  AssertEqual 'Object is not an integer: v:null', g:vader_exception
+  AssertThrows call markbar#helpers#VimLTypeToString('abc')
+  AssertEqual "Object is not an integer: 'abc'", g:vader_exception
+  AssertThrows call markbar#helpers#VimLTypeToString(23)
+  AssertEqual 'Nonexistent variable |type()| with val: 23', g:vader_exception

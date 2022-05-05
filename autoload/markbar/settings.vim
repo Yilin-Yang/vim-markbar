@@ -1,28 +1,10 @@
 scriptencoding utf-8
 
-function! s:VimLTypeToString(type) abort
-    let l:type = a:type + 0  " cast to number
-    let l:types = {
-        \ 0: 'v:t_number',
-        \ 1: 'v:t_string',
-        \ 2: 'v:t_func',
-        \ 3: 'v:t_list',
-        \ 4: 'v:t_dict',
-        \ 5: 'v:t_float',
-        \ 6: 'v:t_bool',
-        \ 7: 'v:null',
-    \ }
-    if !has_key(l:types, l:type)
-        throw '(vim-markbar) Nonexistent variable type with val: ' . a:type
-    endif
-    return l:types[a:type]
-endfunction
-
-function! s:AssertType(variable, expected, variable_name) abort
-    if type(a:variable) !=# a:expected
-        throw '(vim-markbar) Variable ' . a:variable_name
-            \ . ' should have type: ' . s:VimLTypeToString(a:expected)
-            \ . ' but instead has type: ' . s:VimLTypeToString(type(a:variable))
+function! s:AssertType(given, expected, setting) abort
+    if type(a:given) !=# a:expected
+        throw printf('(vim-markbar) Setting %s should have type %s but instead has type: %s',
+            \ a:setting, markbar#helpers#VimLTypeToString(a:expected),
+            \ markbar#helpers#VimLTypeToString(type(a:given)))
     endif
 endfunction
 
