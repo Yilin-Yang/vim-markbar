@@ -160,7 +160,7 @@ Execute (MarkData: Local Mark):
   let g:result = markbar#MarkData#New(g:markstring)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
-  AssertEqual 'a',  g:result.getMark()
+  AssertEqual 'a',  g:result.getMarkChar()
   AssertEqual '97', g:result.getLineNo()
   AssertEqual '0',  g:result.getColumnNo()
   Assert           !g:result.isGlobal()
@@ -172,7 +172,7 @@ Execute (MarkData: Non-Alphabetic Mark):
   let g:result = markbar#MarkData#New(g:markstring)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
-  AssertEqual '[', g:result.getMark()
+  AssertEqual '[', g:result.getMarkChar()
   AssertEqual '1', g:result.getLineNo()
   AssertEqual '0', g:result.getColumnNo()
   Assert          !g:result.isGlobal()
@@ -186,13 +186,13 @@ Execute (MarkData: Construct from 'Synthetic' Markstring):
     \ markbar#MarkData#New(markbar#helpers#MakeMarkString(']'))
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
-  AssertEqual '[',  left_bracket.getMark()
+  AssertEqual '[',  left_bracket.getMarkChar()
   AssertEqual '1',  left_bracket.getLineNo()
   AssertEqual '1',  left_bracket.getColumnNo()
   Assert           !left_bracket.isGlobal()
 
   AssertEqual 'MarkData', g:result['TYPE']
-  AssertEqual ']',  right_bracket.getMark()
+  AssertEqual ']',  right_bracket.getMarkChar()
   AssertEqual '1',  right_bracket.getLineNo()
   AssertEqual '5',  right_bracket.getColumnNo()
   Assert           !right_bracket.isGlobal()
@@ -204,7 +204,7 @@ Execute (MarkData: Global File Mark):
   let g:result = markbar#MarkData#New(g:markstring)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
-  AssertEqual 'D',  g:result.getMark()
+  AssertEqual 'D',  g:result.getMarkChar()
   AssertEqual '64', g:result.getLineNo()
   AssertEqual '31', g:result.getColumnNo()
   Assert            g:result.isGlobal()
@@ -216,7 +216,7 @@ Execute (MarkData: ShaDa Numeric Mark):
   let g:result = markbar#MarkData#New(g:markstring)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
-  AssertEqual '8',  g:result.getMark()
+  AssertEqual '8',  g:result.getMarkChar()
   AssertEqual '19', g:result.getLineNo()
   AssertEqual '5',  g:result.getColumnNo()
   Assert            g:result.isGlobal()

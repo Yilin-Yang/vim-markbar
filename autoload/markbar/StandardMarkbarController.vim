@@ -67,7 +67,7 @@ function! markbar#StandardMarkbarController#_getDefaultNameFormat(mark) abort di
     call markbar#StandardMarkbarController#AssertIsStandardMarkbarController(l:self)
     call markbar#ensure#IsClass(a:mark, 'MarkData')
 
-    let l:mark_char = a:mark.getMark()
+    let l:mark_char = a:mark.getMarkChar()
     if !markbar#helpers#IsGlobalMark(l:mark_char)
         let l:format_str = markbar#settings#MarkNameFormatString()
         let l:format_arg = markbar#settings#MarkNameArguments()

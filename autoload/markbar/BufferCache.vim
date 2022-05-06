@@ -45,7 +45,7 @@ function! s:BufferCache.updateCache(marks_output) abort dict
         let l:i -= 1
         try
             let l:markdata = markbar#MarkData#New(l:markstrings[l:i])
-            let l:new_marks_dict[l:markdata.getMark()] = l:markdata
+            let l:new_marks_dict[l:markdata.getMarkChar()] = l:markdata
         catch /markstring parsing failed/
             " drop this markdata
         endtry

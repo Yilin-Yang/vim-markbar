@@ -71,7 +71,7 @@ function! markbar#MarkData#DefaultMarkName(mark_data) abort
         \ a:mark_data.column)
 endfunction
 
-function! s:MarkData.getMark() abort dict
+function! s:MarkData.getMarkChar() abort dict
     return l:self._data[0]
 endfunction
 
@@ -92,7 +92,7 @@ function! s:MarkData.getContext() abort dict
 endfunction
 
 function! s:MarkData.isGlobal() abort dict
-    return markbar#helpers#IsGlobalMark(l:self.getMark())
+    return markbar#helpers#IsGlobalMark(l:self.getMarkChar())
 endfunction
 
 function! s:MarkData.setName(new_name) abort dict

@@ -151,7 +151,7 @@ function! markbar#MarkbarController#_getMarkHeading(mark) abort dict
     else
         let l:suffix .= l:user_given_name
     endif
-    return "['" . a:mark.getMark() . ']:' . l:suffix
+    return "['" . a:mark.getMarkChar() . ']:' . l:suffix
 endfunction
 
 " RETURNS:  (v:t_string)    The 'default name' for the given mark, as
@@ -160,7 +160,7 @@ endfunction
 function! markbar#MarkbarController#_getDefaultMarkName(mark) abort dict
     call markbar#MarkbarController#AssertIsMarkbarController(l:self)
     call markbar#ensure#IsClass(a:mark, 'MarkData')
-    let l:mark_char = a:mark.getMark()
+    let l:mark_char = a:mark.getMarkChar()
     let l:format = l:self._getDefaultNameFormat(a:mark)
     let l:format_str = l:format[0]
     let l:format_arg = l:format[1]
