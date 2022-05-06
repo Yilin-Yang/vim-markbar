@@ -176,11 +176,11 @@ endfunction
 "                                   not including the leading single quote.
 function! markbar#helpers#BufferNo(mark) abort
     if len(a:mark) !=# 1
-        throw '(markbar#helpers#BufferNo) Invalid mark: ' . a:mark
+        throw 'Invalid mark: ' . a:mark
     endif
     let l:mark_pos = getpos("'" . a:mark)
     if l:mark_pos ==# [0, 0, 0, 0]
-        throw '(markbar#helpers#BufferNo) Mark not found: ' . a:mark
+        throw 'Mark not found: ' . a:mark
     elseif l:mark_pos[0] ==# 0
         " current buffer
         return bufnr('%')
@@ -205,16 +205,6 @@ function! markbar#helpers#SplitString(string, idx) abort
         return [ '', a:string ]
     endif
     return [ a:string[0:a:idx-1], a:string[a:idx :] ]
-endfunction
-
-" RETURNS:  (v:t_string)    The name of the file in which the requested mark
-"                           can be found. May be an empty string, if the given
-"                           mark exists in a scratch buffer.
-" PARAM:    mark    (v:t_string)    The single character identifying the mark,
-"                                   not including the leading single quote.
-function! markbar#helpers#ParentFilename(mark) abort
-    let l:buf_no = markbar#helpers#BufferNo(a:mark)
-    return bufname(l:buf_no)
 endfunction
 
 " EFFECTS:  - Replace the line range in the given buffer with the given lines.

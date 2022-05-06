@@ -105,3 +105,8 @@ endfunction
 function! s:MarkData.setContext(new_context) abort dict
     let l:self._context = a:new_context
 endfunction
+
+" RETURNS:  (v:t_string)    Name of the file in which this mark is found.
+function! s:MarkData.getFilename() abort dict
+    return bufname(markbar#helpers#BufferNo(l:self.getMarkChar()))
+endfunction
