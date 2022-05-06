@@ -9,8 +9,17 @@ let s:MarkbarModel = {
 
 " BRIEF:    vim-markbar's accumulated data. Info for MarkbarView to display.
 " DETAILS:  The 'model' in Model-View-Controller. Stores BufferCache objects
-"           for each open buffer and automatically updates them using
-"           autocmds. Exposes the current model state.
+"           for each open buffer. Tracks the user's most recent active buffer.
+"           Exposes the current model state.
+"
+"           To track the most recent active buffer: pushNewBuffer()
+"           pushes new |bufnr|s onto an internal stack, which is accessed
+"           through getActiveBuffer().
+"
+"           updateCurrentAndGlobal() actually updates stored BufferCache
+"           objects. This is done by parsing the output of the |:marks|
+"           command, which returns local marks for the currently open buffer,
+"           as well as 'global' marks, like uppercase marks.
 "
 "           MarkbarModel is a singleton. Successive calls to `Get` will return
 "           a reference to the MarkbarModel already constructed (if one
