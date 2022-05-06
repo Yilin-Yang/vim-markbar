@@ -1,0 +1,94 @@
+Execute (Initialize):
+  let g:format_options = {
+          \ 'marks_to_display': '',
+          \ 'verbose_help_text': ['" this is verbose help text', '" foobar'],
+          \ 'short_help_text': ['" this is short help text'],
+          \ 'show_verbose_help': v:false,
+          \ 'num_lines_context': 3,
+          \ 'section_separator': [],
+          \ 'indent_block': '  ',
+          \ 'enable_mark_highlighting': v:false,
+          \ 'mark_marker': markbar#settings#MarkMarker(),
+          \ 'jump_like_backtick': v:true,
+          \ 'local_mark_name_format_str': '%s',
+          \ 'local_mark_name_arguments':
+              \ [function('markbar#MarkData#DefaultMarkName')],
+          \ 'file_mark_name_format_str': '%s [l: %d, c: %d]',
+          \ 'file_mark_name_arguments': ['fname', 'line', 'col'],
+          \ 'numbered_mark_name_format_str': '%s [l: %d, c: %d]',
+          \ 'numbered_mark_name_arguments': ['fname', 'line', 'col'],
+      \ }
+  let g:format = markbar#MarkbarFormat#New(g:format_options)
+  let g:generator = markbar#MarkbarTextGenerator#New(g:format)
+
+Given:
+  
+Execute (MarkbarTextGenerator prints short help text):
+  let g:bufnr = bufnr('%')
+  let g:local_marks = {}
+  let g:global_marks = {}
+  function PrintMarkbarText() abort
+    call markbar#helpers#ReplaceBuffer(g:bufnr,
+      \ g:generator.getText(g:local_marks, g:global_marks))
+  endfunction
+
+  call PrintMarkbarText()
+Expect:
+  " this is short help text
+
+Execute (MarkbarTextGenerator prints long help text):
+  call g:generator.format.setOption('show_verbose_help', v:true)
+  call PrintMarkbarText()
+Expect:
+  " this is verbose help text
+  " foobar
+
+Execute (MarkbarTextGenerator prints no marks with empty 'marks_to_display'):
+  function! SynthesizeMark(mark_char, line_no, col_no, filename, context) abort
+    let l:mark = markbar#MarkData#New(
+        \ printf('%s %d %d foo bar foo', a:mark_char, a:line_no, a:col_no))
+    call l:mark.setContext(a:context)
+    let l:mark.getFilename = function({a -> a}, [a:filename])
+    return l:mark
+  endfunction
+
+  let g:local_marks['a'] = SynthesizeMark('a', 1, 2, 'curbuf', [
+      \ 'One line before',
+      \ 'The line holding mark a',
+      \ 'One line after',
+    \ ])
+  let g:local_marks["'"] = SynthesizeMark("'", 2, 3, 'curbuf', [
+      \ 'one line before',
+      \ 'before latest jump',
+      \ 'one line after',
+    \ ])
+  let g:global_marks['A'] = SynthesizeMark('A', 5, 6, 'A_file.txt', [
+      \ 'A_file, one line before',
+      \ 'mark A',
+      \ 'A_file, one line after',
+    \ ])
+  let g:global_marks['1'] = SynthesizeMark('1', 6, 7, '1_file.txt', [
+      \ '1_file, one line before',
+      \ 'mark 1',
+      \ '1_file, one line after',
+    \ ])
+
+  call PrintMarkbarText()
+Expect:
+  " this is verbose help text
+  " foobar
+
+Execute (MarkbarTextGenerator prints marks 1 and ' in that order):
+  call g:generator.format.setOption('marks_to_display', "1'")
+  call PrintMarkbarText()
+Expect:
+  " this is verbose help text
+  " foobar
+  ['1]: 1_file.txt [l: 6, c: 7]
+    1_file, one line before
+    mark 1
+    1_file, one line after
+  ['']: (l: 2, c: 3) Last Jump
+    one line before
+    before latest jump
+    one line after
