@@ -204,7 +204,7 @@ function! markbar#settings#MarkbarSectionSeparator() abort
     let l:separator = []
     let l:i = 0
     while l:i <# g:markbar_section_separation
-        let l:separator += ['']
+        call add(l:separator, '')
         let l:i += 1
     endwhile
     return l:separator
@@ -862,7 +862,7 @@ function! markbar#settings#PeekabooMarkbarSectionSeparator() abort
     let l:separator = []
     let l:i = 0
     while l:i <# g:markbar_peekaboo_section_separation
-        let l:separator += ['']
+        call add(l:separator, '')
         let l:i += 1
     endwhile
     return l:separator

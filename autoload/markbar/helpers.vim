@@ -9,7 +9,7 @@ function! markbar#helpers#GetOpenBuffers() abort
     let l:buffers_str_list = split(l:buffers_str, '\r\{0,1}\n')
     let l:buffers_list = []
     for l:str in l:buffers_str_list
-        let l:buffers_list += [ matchstr(l:str, '[0-9]\+') + 0 ]
+        call add(l:buffers_list, matchstr(l:str, '[0-9]\+') + 0)
     endfor
     return l:buffers_list
 endfunction
