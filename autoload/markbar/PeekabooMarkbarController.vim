@@ -117,7 +117,7 @@ function! markbar#PeekabooMarkbarController#_getDefaultNameFormat(mark) abort di
     call markbar#PeekabooMarkbarController#AssertIsPeekabooMarkbarController(l:self)
     call markbar#ensure#IsClass(a:mark, 'MarkData')
 
-    let l:mark_char = a:mark.getMark()
+    let l:mark_char = a:mark.getMarkChar()
     if !markbar#helpers#IsGlobalMark(l:mark_char)
         let l:format_str = markbar#settings#PeekabooMarkNameFormatString()
         let l:format_arg = markbar#settings#PeekabooMarkNameArguments()

@@ -8,7 +8,7 @@
 "           guaranteed to have a stable API between plugin versions.
 function! markbar#BasicMarkData#New(orig_mark_data) abort
     let l:new = {'TYPE': 'BasicMarkData'}
-    let l:m = a:orig_mark_data.getMark()
+    let l:m = a:orig_mark_data.getMarkChar()
     let l:new.mark     = l:m
     let l:new.line     = a:orig_mark_data.getLineNo()
     let l:new.column   = a:orig_mark_data.getColumnNo()
