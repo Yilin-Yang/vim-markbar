@@ -120,3 +120,8 @@ Execute (MarkbarFormat stores new options when they're given all at once):
   for [g:option, g:value] in items(g:format_options)
     AssertEqual g:value, g:format.getOption(g:option)
   endfor
+
+Execute (Clean Up):
+  " if this isn't run standalone, g:format_options will remain locked into
+  " subsequent vader tests
+  unlockvar! g:format_options
