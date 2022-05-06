@@ -1,0 +1,122 @@
+Execute (MarkbarFormat rejects too many options):
+  let g:format_options = {
+          \ 'marks_to_display': '',
+          \ 'verbose_help_text': [],
+          \ 'short_help_text': [],
+          \ 'show_verbose_help': v:false,
+          \ 'num_lines_context': 5,
+          \ 'section_separator': [],
+          \ 'indent_block': '  ',
+          \ 'enable_mark_highlighting': v:false,
+          \ 'mark_marker': markbar#settings#MarkMarker(),
+          \ 'jump_like_backtick': v:true,
+          \ 'local_mark_name_format_str': '%s',
+          \ 'local_mark_name_arguments':
+              \ [function('markbar#MarkData#DefaultMarkName')],
+          \ 'file_mark_name_format_str': '%s [l: %4d, c: %4d]',
+          \ 'file_mark_name_arguments': ['fname', 'line', 'col'],
+          \ 'numbered_mark_name_format_str': '%s [l: %4d, c: %4d]',
+          \ 'numbered_mark_name_arguments': ['fname', 'line', 'col'],
+      \ }
+
+  let g:format_options.foo = 'bar'
+  AssertThrows call markbar#MarkbarFormat#New(g:format_options)
+  AssertEqual 'Too many rendering options in dict', g:vader_exception
+
+Execute (MarkbarFormat rejects too few options):
+  unlet g:format_options.foo
+  let g:num_lines_context = g:format_options.num_lines_context
+  unlet g:format_options.num_lines_context
+  AssertThrows call markbar#MarkbarFormat#New(g:format_options)
+  AssertEqual 'Missing option "num_lines_context" in dict', g:vader_exception
+
+Execute (MarkbarFormat constructs successfully with a good options dict):
+  let g:format_options.num_lines_context = g:num_lines_context
+  let g:format = markbar#MarkbarFormat#New(g:format_options)
+  " changes to internal MarkbarFormat state shouldn't modify the dict it
+  " was given
+  lockvar! g:format_options
+
+Execute (MarkbarFormat stores the options it was given when constructed):
+  for [g:option, g:value] in items(g:format_options)
+    AssertEqual g:value, g:format.getOption(g:option)
+  endfor
+
+Execute (MarkbarFormat rejects bad option names):
+  AssertThrows call g:format.setOption('foo', 'bar')
+  AssertEqual 'Invalid option: foo', g:vader_exception
+
+  AssertThrows call g:format.getOption('foo')
+  AssertEqual 'Invalid option: foo', g:vader_exception
+
+  AssertThrows call g:format.getOption('Marks_to_display')
+  AssertEqual 'Invalid option: Marks_to_display', g:vader_exception
+
+Execute (MarkbarFormat rejects bad option types):
+  let g:bad_format_options = {
+          \ 'marks_to_display': 0,
+          \ 'verbose_help_text': {},
+          \ 'short_help_text': {},
+          \ 'show_verbose_help': 0,
+          \ 'num_lines_context': '5',
+          \ 'section_separator': '',
+          \ 'indent_block': ['  '],
+          \ 'enable_mark_highlighting': 'v:false',
+          \ 'mark_marker': [markbar#settings#MarkMarker()],
+          \ 'jump_like_backtick': 1,
+          \ 'local_mark_name_format_str': 123,
+          \ 'local_mark_name_arguments':
+              \ {'foo': function('markbar#MarkData#DefaultMarkName')},
+          \ 'file_mark_name_format_str': ['%s [l: %4d, c: %4d]'],
+          \ 'file_mark_name_arguments': 'fname',
+          \ 'numbered_mark_name_format_str': 456,
+          \ 'numbered_mark_name_arguments': v:null,
+      \ }
+  AssertThrows call g:format.setOptions(g:bad_format_options)
+  AssertNotEqual -1, match(g:vader_exception, 'Option.*has wrong type'),
+      \ 'Threw wrong exception: '.g:vader_exception
+
+  for [g:option, g:value] in items(g:bad_format_options)
+    AssertThrows call g:format.setOption(g:option, g:value)
+    AssertEqual printf('Option "%s" has wrong type %s, should be %s', g:option,
+        \ markbar#helpers#VimLTypeToString(type(g:value)),
+        \ markbar#helpers#VimLTypeToString(type(g:format_options[g:option]))),
+        \ g:vader_exception
+  endfor
+Then (...and doesn't change state when given bad values):
+  for [g:option, g:value] in items(g:format_options)
+    AssertEqual g:value, g:format.getOption(g:option)
+  endfor
+
+Execute (MarkbarFormat stores new options when they're given one-by-one):
+  let g:new_format_options = {
+          \ 'marks_to_display': 'abc',
+          \ 'verbose_help_text': ['abc'],
+          \ 'short_help_text': ['def'],
+          \ 'show_verbose_help': v:true,
+          \ 'num_lines_context': 4,
+          \ 'section_separator': ['', ''],
+          \ 'indent_block': '',
+          \ 'enable_mark_highlighting': v:true,
+          \ 'mark_marker': '-->',
+          \ 'jump_like_backtick': v:false,
+          \ 'local_mark_name_format_str': '%s %s',
+          \ 'local_mark_name_arguments':
+              \ ['line', 'col'],
+          \ 'file_mark_name_format_str': '[l: %4d, c: %4d]',
+          \ 'file_mark_name_arguments': ['line', 'col'],
+          \ 'numbered_mark_name_format_str': '%s [l: %4d]',
+          \ 'numbered_mark_name_arguments': ['fname', 'line'],
+      \ }
+  for [g:option, g:value] in items(g:new_format_options)
+    AssertNotEqual g:value, g:format.getOption(g:option)
+    call g:format.setOption(g:option, g:value)
+    AssertEqual g:value, g:format.getOption(g:option)
+  endfor
+
+Execute (MarkbarFormat stores new options when they're given all at once):
+  " restore old options
+  call g:format.setOptions(g:format_options)
+  for [g:option, g:value] in items(g:format_options)
+    AssertEqual g:value, g:format.getOption(g:option)
+  endfor
