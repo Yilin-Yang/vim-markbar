@@ -13,7 +13,7 @@ function! markbar#BasicMarkData#New(orig_mark_data) abort
     let l:new.line     = a:orig_mark_data.getLineNo()
     let l:new.column   = a:orig_mark_data.getColumnNo()
     if markbar#helpers#IsGlobalMark(l:m) || markbar#helpers#IsNumberedMark(l:m)
-        let l:new.filename = markbar#helpers#ParentFilename(l:new.mark)
+        let l:new.filename = a:orig_mark_data.getFilename()
     else
         let l:last_active = g:markbar_model.getActiveBuffer()
         let l:new.filename = bufname(l:last_active)

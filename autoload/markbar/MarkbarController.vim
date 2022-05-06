@@ -179,7 +179,7 @@ function! markbar#MarkbarController#_getDefaultMarkName(mark) abort dict
             let l:cmd .= a:mark.getColumnNo()
         elseif l:Arg ==# 'fname'
             " include quotes when concatenating onto l:cmd
-            let l:cmd .= string(markbar#helpers#ParentFilename(l:mark_char))
+            let l:cmd .= string(a:mark.getFilename())
         else
             throw '(MarkbarController#_getDefaultName) Unrecognized format argument: '
                 \ . l:Arg
