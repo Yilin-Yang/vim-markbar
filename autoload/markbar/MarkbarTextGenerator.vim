@@ -40,9 +40,11 @@ function! s:MarkbarTextGenerator.getText(local_marks, global_marks) abort dict
             continue
         endif
 
+        let l:is_global_mark = markbar#helpers#IsGlobalMark(l:mark_char)
+
         try
             let l:mark =
-                \ markbar#helpers#IsGlobalMark(l:mark_char) ?
+                \  l:is_global_mark ?
                     \ a:global_marks[l:mark_char] : a:local_marks[l:mark_char]
             call add(l:lines, l:self.getMarkHeading(l:mark))
         catch /E716/  " Key not in dictionary
@@ -50,8 +52,12 @@ function! s:MarkbarTextGenerator.getText(local_marks, global_marks) abort dict
         endtry
 
         let l:full_context = l:mark.getContext()
-        let l:num_lines_context = l:self.format.getOption('num_lines_context')
         let l:indent_block = l:self.format.getOption('indent_block')
+
+        " get number of lines of context
+        let l:num_lines_context = l:is_global_mark ?
+                \ l:self.format.getOption('num_lines_context_around_global') :
+                \ l:self.format.getOption('num_lines_context_around_local')
 
         let [l:start, l:end] = markbar#helpers#TrimmedContextRange(
             \ len(l:full_context), l:num_lines_context)
