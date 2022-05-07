@@ -17,7 +17,7 @@ function! markbar#MarkbarTextGenerator#New(markbar_format) abort
 endfunction
 
 " RETURNS:  (v:t_list)  Text content for the markbar as a list of strings.
-" PARAM:    locals      `marks-dict` for local marks from a markbar#BufferCache.
+" PARAM:    locals      `marks_dict` for local marks from a markbar#BufferCache.
 " PARAM:    globals     Ditto, but for global marks.
 function! s:MarkbarTextGenerator.getText(local_marks, global_marks) abort dict
     call markbar#ensure#IsDictionary(a:local_marks)
