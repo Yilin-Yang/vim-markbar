@@ -4,7 +4,8 @@ Execute (MarkbarFormat rejects too many options):
           \ 'verbose_help_text': [],
           \ 'short_help_text': [],
           \ 'show_verbose_help': v:false,
-          \ 'num_lines_context': 5,
+          \ 'num_lines_context_around_local': 5,
+          \ 'num_lines_context_around_global': 5,
           \ 'section_separator': [],
           \ 'indent_block': '  ',
           \ 'enable_mark_highlighting': v:false,
@@ -25,13 +26,13 @@ Execute (MarkbarFormat rejects too many options):
 
 Execute (MarkbarFormat rejects too few options):
   unlet g:format_options.foo
-  let g:num_lines_context = g:format_options.num_lines_context
-  unlet g:format_options.num_lines_context
+  let g:show_verbose_help = g:format_options.show_verbose_help
+  unlet g:format_options.show_verbose_help
   AssertThrows call markbar#MarkbarFormat#New(g:format_options)
-  AssertEqual 'Missing option "num_lines_context" in dict', g:vader_exception
+  AssertEqual 'Missing option "show_verbose_help" in dict', g:vader_exception
 
 Execute (MarkbarFormat constructs successfully with a good options dict):
-  let g:format_options.num_lines_context = g:num_lines_context
+  let g:format_options.show_verbose_help = g:show_verbose_help
   let g:format = markbar#MarkbarFormat#New(g:format_options)
   " changes to internal MarkbarFormat state shouldn't modify the dict it
   " was given
@@ -58,7 +59,8 @@ Execute (MarkbarFormat rejects bad option types):
           \ 'verbose_help_text': {},
           \ 'short_help_text': {},
           \ 'show_verbose_help': 0,
-          \ 'num_lines_context': '5',
+          \ 'num_lines_context_around_local': '5',
+          \ 'num_lines_context_around_global': '3',
           \ 'section_separator': '',
           \ 'indent_block': ['  '],
           \ 'enable_mark_highlighting': 'v:false',
@@ -94,7 +96,8 @@ Execute (MarkbarFormat stores new options when they're given one-by-one):
           \ 'verbose_help_text': ['abc'],
           \ 'short_help_text': ['def'],
           \ 'show_verbose_help': v:true,
-          \ 'num_lines_context': 4,
+          \ 'num_lines_context_around_local': 4,
+          \ 'num_lines_context_around_global': 4,
           \ 'section_separator': ['', ''],
           \ 'indent_block': '',
           \ 'enable_mark_highlighting': v:true,
@@ -113,6 +116,20 @@ Execute (MarkbarFormat stores new options when they're given one-by-one):
     call g:format.setOption(g:option, g:value)
     AssertEqual g:value, g:format.getOption(g:option)
   endfor
+
+Execute (MarkbarFormat can flip boolean options):
+  let g:value = g:format.getOption('show_verbose_help')
+  call g:format.flipOption('show_verbose_help')
+
+  " note: need the ternary operator because type(!v:true) == v:t_number,
+  " and AssertEqual is strictly typed
+  AssertEqual (!g:value ? v:true : v:false), g:format.getOption('show_verbose_help')
+  call g:format.flipOption('show_verbose_help')
+  AssertEqual (g:value ? v:true : v:false), g:format.getOption('show_verbose_help')
+
+Execute (MarkbarFormat can't flip non-boolean options):
+  AssertThrows call g:format.flipOption('mark_marker')
+  AssertEqual 'Can''t flip non-boolean option "mark_marker"', g:vader_exception
 
 Execute (MarkbarFormat stores new options when they're given all at once):
   " restore old options

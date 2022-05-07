@@ -9,7 +9,8 @@ let s:options_and_types = {
     \ 'short_help_text': v:t_list,
     \ 'verbose_help_text': v:t_list,
     \ 'show_verbose_help': v:t_bool,
-    \ 'num_lines_context': v:t_number,
+    \ 'num_lines_context_around_local': v:t_number,
+    \ 'num_lines_context_around_global': v:t_number,
     \ 'section_separator': v:t_list,
     \ 'indent_block': v:t_string,
     \ 'enable_mark_highlighting': v:t_bool,
@@ -81,6 +82,18 @@ function! s:MarkbarFormat.setOptions(options) abort dict
     for [l:option, l:new_value] in items(a:options)
         call l:self.setOption(l:option, l:new_value)
     endfor
+endfunction
+
+" EFFECTS:  Flip a boolean option's value.
+"           Exists because `type(!v:true) == v:t_number`, so flipping a
+"           boolean option through setOption is needlessly convoluted.
+function! s:MarkbarFormat.flipOption(option) abort dict
+    call markbar#ensure#IsString(a:option)
+    let l:cur_val = l:self.getOption(a:option)
+    if type(l:cur_val) !=# v:t_bool
+        throw printf('Can''t flip non-boolean option "%s"', a:option)
+    endif
+    call l:self.setOption(a:option, l:cur_val ? v:false : v:true)
 endfunction
 
 " EFFECTS:  Get an option's value. Throw exception if option doesn't exist.
