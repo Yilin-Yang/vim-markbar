@@ -1,3 +1,9 @@
+" BRIEF:    The user's View into the markbar state.
+" DETAILS:  MarkbarView manipulates the components of vim-markbar's interface
+"           that the user can see. It also stores information about these
+"           visible components, and how the user is interacting with these
+"           components.
+
 let s:MarkbarView = {
     \ 'TYPE': 'MarkbarView',
     \ '_markbar_model': {},
@@ -9,12 +15,6 @@ let s:MarkbarView = {
     \ '_saved_tabpage_nr': -1,
     \ '_show_verbose_help': v:false,
 \ }
-
-" BRIEF:    The user's View into the markbar state.
-" DETAILS:  MarkbarView manipulates the components of vim-markbar's interface
-"           that the user can see. It also stores information about these
-"           visible components, and how the user is interacting with these
-"           components.
 
 " BRIEF:    Construct a MarkbarView object.
 " PARAM:    model   (markbar#MarkbarModel)  Reference to stored information
