@@ -3,8 +3,8 @@
 "           through explicit invocations of, e.g. `<Plug>ToggleMarkbar`.
 
 " BRIEF:    Construct a StandardMarkbarController object.
-function! markbar#StandardMarkbarController#new(model, view) abort
-    let l:new = markbar#MarkbarController#new(a:model, a:view)
+function! markbar#StandardMarkbarController#New(model, view) abort
+    let l:new = markbar#MarkbarController#New(a:model, a:view)
     let l:new['DYNAMIC_TYPE'] += ['StandardMarkbarController']
 
     let l:new['_getHelpText'] =

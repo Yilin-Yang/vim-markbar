@@ -3,8 +3,8 @@
 "           when the user hits the apostrophe or backtick keys.
 
 " BRIEF:    Construct a PeekabooMarkbarController object. Set keymaps.
-function! markbar#PeekabooMarkbarController#new(model, view) abort
-    let l:new = markbar#MarkbarController#new(a:model, a:view)
+function! markbar#PeekabooMarkbarController#New(model, view) abort
+    let l:new = markbar#MarkbarController#New(a:model, a:view)
     let l:new['DYNAMIC_TYPE'] += ['PeekabooMarkbarController']
 
     let l:new['apostrophe'] =

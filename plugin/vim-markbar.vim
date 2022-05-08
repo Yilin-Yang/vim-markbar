@@ -7,7 +7,7 @@ let g:vim_markbar_autoloaded = 1
 let g:markbar_model = markbar#MarkbarModel#Get()
 let g:markbar_view  = markbar#MarkbarView#New(g:markbar_model)
 let g:standard_controller =
-    \ markbar#StandardMarkbarController#new(g:markbar_model, g:markbar_view)
+    \ markbar#StandardMarkbarController#New(g:markbar_model, g:markbar_view)
 
 noremap <silent> <Plug>OpenMarkbar      :call g:standard_controller.openMarkbar()<cr>
 noremap <silent> <Plug>CloseMarkbar     :call g:standard_controller.closeMarkbar()<cr>
@@ -15,7 +15,7 @@ noremap <silent> <Plug>ToggleMarkbar    :call g:standard_controller.toggleMarkba
 
 if markbar#settings#EnablePeekabooMarkbar()
     let g:markbar_peekaboo_controller =
-        \ markbar#PeekabooMarkbarController#new(g:markbar_model, g:markbar_view)
+        \ markbar#PeekabooMarkbarController#New(g:markbar_model, g:markbar_view)
     noremap <silent> <Plug>OpenMarkbarPeekabooApostrophe    :call g:markbar_peekaboo_controller.apostrophe()<cr>
     noremap <silent> <Plug>OpenMarkbarPeekabooBacktick      :call g:markbar_peekaboo_controller.backtick()<cr>
 
