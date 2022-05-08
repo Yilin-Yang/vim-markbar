@@ -11,7 +11,7 @@
 "                                           state.
 " PARAM:    view    (markbar#MarkbarView)   Reference to an object controlling
 "                                           the appearance of the markbar UI.
-function! markbar#MarkbarController#new(model, view) abort
+function! markbar#MarkbarController#New(model, view) abort
     call markbar#ensure#IsClass(a:model, 'MarkbarModel')
     call markbar#ensure#IsClass(a:view, 'MarkbarView')
     let l:new = {
