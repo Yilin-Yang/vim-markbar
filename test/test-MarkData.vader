@@ -227,3 +227,25 @@ Execute (MarkData: Error Check, Invalid Markstring):
   \ "
 Then:
   AssertThrows markbar#MarkData#New(g:markstring)
+
+Execute (MarkData gives proper names to "punctuation marks"):
+  let g:marks_and_names = [
+    \ ["'", 'Last Jump'],
+    \ ['<', 'Selection Start'],
+    \ ['>', 'Selection End'],
+    \ ['"', 'Left Buffer'],
+    \ ['^', 'Left Insert Mode'],
+    \ ['.', 'Last Change'],
+    \ ['[', 'Change/Yank Start'],
+    \ [']', 'Change/Yank End'],
+    \ ['(', 'Sentence Start'],
+    \ [')', 'Sentence End'],
+    \ ['{', 'Paragraph Start'],
+    \ ['}', 'Paragraph End'],
+  \ ]
+  for [g:mark, g:name] in g:marks_and_names
+    let g:markdata = markbar#BasicMarkData#New(
+        \ markbar#MarkData#New(printf('%s 1 2 foobar', g:mark)))
+    AssertEqual printf('(l: 1, c: 2) %s', g:name),
+        \ markbar#MarkData#DefaultMarkName(g:markdata)
+  endfor
