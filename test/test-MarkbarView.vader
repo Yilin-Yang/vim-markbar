@@ -1,7 +1,7 @@
 Include: WindowHelpers.vader
 
 Execute (Initialize MarkbarModel):
-  let g:markbar_model = markbar#MarkbarModel#Get()
+  let g:markbar_model = markbar#MarkbarModel#New()
 
 Execute (Test Initialize Markbar Buffer):
   let g:markbar_view = markbar#MarkbarView#New(g:markbar_model)

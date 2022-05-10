@@ -20,36 +20,12 @@ let s:MarkbarModel = {
 "           objects. This is done by parsing the output of the |:marks|
 "           command, which returns local marks for the currently open buffer,
 "           as well as 'global' marks, like uppercase marks.
-"
-"           MarkbarModel is a singleton. Successive calls to `Get` will return
-"           a reference to the MarkbarModel already constructed (if one
-"           exists).
-function! markbar#MarkbarModel#Get() abort
-    try
-        call markbar#ensure#IsClass(s:MarkbarModel, 'MarkbarModel')
-        " there exists a preexisting markbar_model, don't reinitialize
-        return s:MarkbarModel
-    catch /Object is not of type/
-        " invalid object, okay to overwrite
-    endtry
-
+function! markbar#MarkbarModel#New() abort
     let s:MarkbarModel.TYPE = 'MarkbarModel'
 
     " bottom of the active buffer stack will *always* be zero, to prevent
     " errors when the entire stack is cleared
     call s:MarkbarModel.pushNewBuffer(0)
-
-    if v:vim_did_enter
-        call s:MarkbarModel.pushNewBuffer(markbar#helpers#GetOpenBuffers())
-    endif
-
-    augroup markbar_model_update
-        au!
-        autocmd VimEnter * call s:MarkbarModel.pushNewBuffer(markbar#helpers#GetOpenBuffers())
-        autocmd BufEnter * call s:MarkbarModel.pushNewBuffer(expand('<abuf>') + 0)
-        autocmd BufDelete,BufWipeout *
-            \ call s:MarkbarModel.evictBufferCache(expand('<abuf>') + 0)
-    augroup end
 
     return s:MarkbarModel
 endfunction

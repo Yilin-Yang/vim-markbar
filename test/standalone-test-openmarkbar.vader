@@ -72,10 +72,61 @@ Expect:
       tenth line
       ~
   
-Do (Close Markbar):
+Do (Closing markbar leaves the markbar):
+  Mo
   Mc
 Then:
   Assert !exists('b:is_markbar')
+
+Do (? shows verbose help):
+  Mo?
+Expect:
+  " vim-markbar Keymappings
+  " -----------------------
+  " Press ? to close help
+  " -----------------------
+  " With the cursor over a mark or its context,
+  " <cr>: jump to mark
+  " n: move cursor to next mark
+  " N: move cursor to previous mark
+  " r: rename mark
+  " c: reset mark's name
+  " d: delete mark
+  " -----------------------
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
+Do (? closes verbose help after opening):
+  Mo??
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+  
 
 Do (Reclosing already closed markbar doesn't move cursor):
   :edit! 10lines.txt\<cr>
@@ -297,6 +348,21 @@ Then:
 
   AssertEqual g:last_window, win_getid(), "Jumped to mark in wrong window!"
 
+Given:
+  first line
+    second line
+  third line
+Do (Go to mark goes to the first non-blank character without jump_to_exact_position):
+  :let g:markbar_jump_to_exact_position = v:false\<cr>
+  gg0maj$mbj0mc
+  Mo
+  ggnn\<cr>
+Then:
+  let g:markbar_jump_to_exact_position = v:true
+  let cur_pos = getcurpos()
+  AssertEqual 2, cur_pos[1]
+  AssertEqual 3, cur_pos[2]
+
 Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
   let g:mark = g:markbar_model.getMarkData('B')
@@ -407,3 +473,139 @@ Do (Delete File Mark, Then Return to Buffer):
   \<cr>
 Then:
   AssertEqual g:bufnr, bufnr('%')
+
+Do (Set New Marks):
+  :edit! 10lines.txt\<cr>
+  1G05lmA5G0mB10G$mC
+
+Execute (Backtick-like mark location is highlighted when highlighting is turned on):
+  let g:markbar_enable_mark_highlighting = v:true
+  let g:markbar_jump_to_exact_position = v:true
+  normal Mo
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      first➜ line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      ➜fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth lin➜e
+      ~
+  
+Execute (Apostrophe-like mark location is highlighted when highlighting is turned on):
+  let g:markbar_jump_to_exact_position = v:false
+  normal Mo
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+      ~
+      ➜first line
+      second line
+
+  ['B]: 10lines.txt
+      fourth line
+      ➜fifth line
+      sixth line
+
+  ['C]: 10lines.txt
+      ninth line
+      ➜tenth line
+      ~
+  
+Do (Set Local Marks):
+  :edit! 10lines.txt\<cr>
+  2G0ma4G$mb
+
+Then (g:markbar_num_lines_context controls how many context lines are shown):
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 2,
+      \ 'around_file': 0,
+      \ 'peekaboo_around_local': 5,
+      \ 'peekaboo_around_file': 8,
+      \ }
+  let g:markbar_jump_to_exact_position = v:true
+  normal Mo
+
+Expect:
+  " Press ? for help
+  ['a]: 
+      ➜second line
+      third line
+
+  ['b]: 
+      fourth lin➜e
+      fifth line
+
+  ['A]: 10lines.txt
+
+  ['B]: 10lines.txt
+
+  ['C]: 10lines.txt
+  
+Execute (Reconfigured context length displays properly with highlighting disabled):
+  " test an alternate code path
+  let g:markbar_enable_mark_highlighting = v:false
+  edit! 10lines.txt
+  normal Mo
+
+Expect:
+  " Press ? for help
+  ['a]: 
+      second line
+      third line
+
+  ['b]: 
+      fourth line
+      fifth line
+
+  ['A]: 10lines.txt
+
+  ['B]: 10lines.txt
+
+  ['C]: 10lines.txt
+  
+
+Execute (Context displays properly when file marks show more context than local marks):
+  let g:markbar_num_lines_context = {
+      \ 'around_local': 2,
+      \ 'around_file': 4,
+      \ 'peekaboo_around_local': 5,
+      \ 'peekaboo_around_file': 8,
+      \ }
+  edit! 10lines.txt
+  normal Mo
+Expect:
+  " Press ? for help
+  ['a]: 
+      second line
+      third line
+
+  ['b]: 
+      fourth line
+      fifth line
+
+  ['A]: 10lines.txt
+      ~
+      first line
+      second line
+      third line
+
+  ['B]: 10lines.txt
+      fourth line
+      fifth line
+      sixth line
+      seventh line
+
+  ['C]: 10lines.txt
+      ninth line
+      tenth line
+      ~
+      ~
+  

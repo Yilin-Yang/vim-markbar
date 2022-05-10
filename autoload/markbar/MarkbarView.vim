@@ -13,7 +13,6 @@ let s:MarkbarView = {
     \ '_win_resize_cmd:': '',
     \ '_saved_num_win': -1,
     \ '_saved_tabpage_nr': -1,
-    \ '_show_verbose_help': v:false,
 \ }
 
 " BRIEF:    Construct a MarkbarView object.
@@ -86,12 +85,6 @@ function! s:MarkbarView.closeMarkbar() abort dict
     return v:true
 endfunction
 
-" BRIEF:    Toggle the visibility of verbose help in the markbar.
-" DETAILS:  Won't take effect until the markbar has been repopulated.
-function! s:MarkbarView.toggleShowHelp() abort dict
-    let l:self._show_verbose_help = !l:self._show_verbose_help
-endfunction
-
 " RETURNS:  (v:t_bool)  `v:true` if a markbar window is open in the current tab.
 function! s:MarkbarView.markbarIsOpenCurrentTab() abort dict
     let l:tab_buffers = tabpagebuflist()
@@ -134,11 +127,6 @@ endfunction
 " DETAILS:  Creates a markbar buffer if one does not yet exist.
 function! s:MarkbarView.getMarkbarWinID() abort dict
     return bufwinid(l:self.getMarkbarBuffer())
-endfunction
-
-" RETURNS:  (v:t_bool)  Whether or not to show verbose help in the markbar.
-function! s:MarkbarView.getShouldShowHelp() abort dict
-    return l:self._show_verbose_help
 endfunction
 
 " BRIEF:    Move the cursor to the given line number in the current buffer.
