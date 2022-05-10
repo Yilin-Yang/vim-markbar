@@ -47,6 +47,24 @@ Expect:
   " a: jump directly to mark ['a]
   " -----------------------
 
+Do (Verbose help stays open in later markbars if not hidden):
+  '
+Expect:
+  " "Peekaboo" vim-markbar
+  " -----------------------
+  " Press ? to close help
+  " -----------------------
+  " <Esc>: close markbar
+  " <leader>a: select ['a] in markbar
+  " <cr>: jump to selected mark
+  " a: jump directly to mark ['a]
+  " -----------------------
+
+Do (? closes verbose help):
+  '?
+Expect:
+  " Press ? for help
+
 " If the 'open markbar' binding works while the 'toggle' binding doesn't,
 " this should fail
 Do (Set Marks, Peekaboo Markbar Open):
