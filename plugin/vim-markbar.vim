@@ -3,7 +3,9 @@ if exists('g:vim_markbar_autoloaded')
 endif
 let g:vim_markbar_autoloaded = 1
 
-function! s:StandardFormatOptions() abort
+" EFFECTS:  Return standard markbar format options that are determined by user
+"           settings.
+function! s:UsersStandardFormatOptions() abort
     let l:num_lines_context = markbar#settings#NumLinesContext()
     let l:num_lines_context_around_local = l:num_lines_context.around_local
     let l:num_lines_context_around_global = l:num_lines_context.around_file
@@ -24,7 +26,6 @@ function! s:StandardFormatOptions() abort
             \ printf('" %s: delete mark', markbar#settings#DeleteMarkMapping()),
             \ '" -----------------------',
         \ ],
-        \ 'show_verbose_help': v:false,
         \ 'num_lines_context_around_local': l:num_lines_context_around_local,
         \ 'num_lines_context_around_global': l:num_lines_context_around_global,
         \ 'section_separator': markbar#settings#MarkbarSectionSeparator(),
@@ -44,8 +45,11 @@ endfunction
 
 let g:markbar_model = markbar#MarkbarModel#New()
 let g:markbar_view  = markbar#MarkbarView#New(g:markbar_model)
+
 let g:markbar_standard_format = markbar#MarkbarFormat#New(
-        \ s:StandardFormatOptions())
+        \ extend({
+            \ 'show_verbose_help': v:false,
+        \ }, s:UsersStandardFormatOptions()))
 let g:markbar_standard_controller =
         \ markbar#MarkbarController#New(g:markbar_model, g:markbar_view,
                                       \ g:markbar_standard_format)
@@ -59,7 +63,7 @@ endif
 
 
 function! s:OpenMarkbar() abort
-    call g:markbar_standard_format.setOptions(s:StandardFormatOptions())
+    call g:markbar_standard_format.setOptions(s:UsersStandardFormatOptions())
     call g:markbar_standard_controller.openMarkbar()
     call s:SetMarkbarMappings()
     call s:SetRefreshMarkbarAutocmds(g:markbar_standard_controller)
@@ -141,7 +145,7 @@ endfunction
 
 if markbar#settings#EnablePeekabooMarkbar()
 
-    function! s:PeekabooFormatOptions(select_map, jump_to_map) abort
+    function! s:UsersPeekabooFormatOptions(select_map, jump_to_map) abort
         call markbar#ensure#IsClass(a:select_map, 'KeyMapper')
         call markbar#ensure#IsClass(a:jump_to_map, 'KeyMapper')
         let l:select_map = a:select_map._keys_to_map[0]
@@ -170,7 +174,6 @@ if markbar#settings#EnablePeekabooMarkbar()
                     \ . l:jump_to_target . ']',
                 \ '" -----------------------',
             \ ],
-            \ 'show_verbose_help': v:false,
             \ 'num_lines_context_around_local': l:num_lines_context_around_local,
             \ 'num_lines_context_around_global': l:num_lines_context_around_global,
             \ 'section_separator': markbar#settings#PeekabooMarkbarSectionSeparator(),
@@ -202,8 +205,10 @@ if markbar#settings#EnablePeekabooMarkbar()
     \ )
 
     let g:markbar_peekaboo_format = markbar#MarkbarFormat#New(
-            \ s:PeekabooFormatOptions(g:markbar_peekaboo_select_keys,
-                                    \ g:markbar_peekaboo_jump_to_keys))
+            \ extend({
+                \ 'show_verbose_help': v:false,
+            \ }, s:UsersPeekabooFormatOptions(g:markbar_peekaboo_select_keys,
+                                            \ g:markbar_peekaboo_jump_to_keys)))
     let g:markbar_peekaboo_controller = markbar#MarkbarController#New(
             \ g:markbar_model, g:markbar_view, g:markbar_peekaboo_format)
 
@@ -226,8 +231,8 @@ if markbar#settings#EnablePeekabooMarkbar()
             endif
         endfor
         call g:markbar_peekaboo_format.setOptions(
-                \ s:PeekabooFormatOptions(g:markbar_peekaboo_select_keys,
-                                        \ g:markbar_peekaboo_jump_to_keys))
+                \ s:UsersPeekabooFormatOptions(g:markbar_peekaboo_select_keys,
+                                             \ g:markbar_peekaboo_jump_to_keys))
         call g:markbar_peekaboo_format.setOption('jump_like_backtick',
                                                \ a:jump_like_backtick)
         call g:markbar_peekaboo_controller.openMarkbar()
