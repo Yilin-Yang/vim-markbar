@@ -279,10 +279,17 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 *g:markbar_jump_to_exact_position*                       |(v:t_bool)|
     `Default Value:` `v:true`
 
-    Whether to jump to the line and column number of a mark from the markbar.
+    Whether to jump to the exact column number of a mark from the markbar.
 
     When |v:true|, this is functionally equivalent to jumping to a mark using
     the backtick character. See `:help mark-motions` for details.
+
+*g:markbar_peekaboo_jump_to_exact_position*              |(v:t_bool)|
+    `Default Value:` `v:false`
+
+    Like |g:markbar_jump_to_exact_position| but for the peekaboo markbar.
+    When true, a peekaboo markbar opened with |'| behaves like a peekaboo
+    markbar opened with |`|.
 
 *g:markbar_rename_mark_completion*                       |(v:t_string)|
     `Default Value:` `file_in_path`

@@ -424,15 +424,15 @@ endfunction
 "                           opened the 'peekboo markbar' using the apostrophe
 "                           key.
 function! markbar#settings#BacktickBehaviorWithApostrophe() abort
-    if !exists('g:markbar_backtick_behavior_with_apostrophe')
-        let g:markbar_backtick_behavior_with_apostrophe = v:false
+    if !exists('g:markbar_peekaboo_jump_to_exact_position')
+        let g:markbar_peekaboo_jump_to_exact_position = v:false
     endif
     call s:AssertType(
-        \ g:markbar_backtick_behavior_with_apostrophe,
+        \ g:markbar_peekaboo_jump_to_exact_position,
         \ v:t_bool,
-        \ 'g:markbar_backtick_behavior_with_apostrophe'
+        \ 'g:markbar_peekaboo_jump_to_exact_position'
     \ )
-    return g:markbar_backtick_behavior_with_apostrophe
+    return g:markbar_peekaboo_jump_to_exact_position
 endfunction
 
 " RETURNS:  (v:t_string)    The `:h command-completion` options used when

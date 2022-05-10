@@ -3,7 +3,7 @@ Include: WindowHelpers.vader
 
 Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_enable_mark_highlighting = v:false
-  let g:markbar_jump_to_exact_position = v:true
+  let g:markbar_peekaboo_jump_to_exact_position = v:true
 
   let g:markbar_num_lines_context = 3
   let g:markbar_peekaboo_open_vertical = v:true
@@ -33,6 +33,19 @@ Do (Close Peekaboo Markbar):
   \<Esc>
 Then:
   AssertEqual '', getbufvar('.', 'is_markbar')
+
+Do (? shows verbose help):
+  '?
+Expect:
+  " "Peekaboo" vim-markbar
+  " -----------------------
+  " Press ? to close help
+  " -----------------------
+  " <Esc>: close markbar
+  " <leader>a: select ['a] in markbar
+  " <cr>: jump to selected mark
+  " a: jump directly to mark ['a]
+  " -----------------------
 
 " If the 'open markbar' binding works while the 'toggle' binding doesn't,
 " this should fail
@@ -99,8 +112,28 @@ Expect:
     ➜tenth line
     ~
   
-Execute (Test Mark Highlighting, Apostrophe):
+Execute (Apostrophe is highlighted like backtick when jump_to_exact_position is true):
   let g:markbar_enable_mark_highlighting = v:true
+  normal '
+Expect:
+  " Press ? for help
+  ['A]: 10lines.txt
+    ~
+    first➜ line
+    second line
+
+  ['B]: 10lines.txt
+    fourth line
+    ➜fifth line
+    sixth line
+
+  ['C]: 10lines.txt
+    ninth line
+    ➜tenth line
+    ~
+  
+Execute (Apostrophe is highlighted like apostrophe when jump_to_exact_position is false):
+  let g:markbar_peekaboo_jump_to_exact_position = v:false
   normal '
 Expect:
   " Press ? for help
@@ -140,7 +173,8 @@ Then:
   " check line number
   AssertEqual 2, cur_pos[1]
 
-Do (Select and Go To Mark, Apostrophe):
+Do (Select and go to mark with apostrophe goes to exact column with jump_to_exact_position):
+  :let g:markbar_peekaboo_jump_to_exact_position = v:true\<cr>
   '
   \A\<cr>
 Then:
@@ -151,8 +185,20 @@ Then:
   AssertEqual 1, cur_pos[1]
 
   " check column number
-  " default JumpToExactPosition behavior makes this behave like backtick
   AssertEqual 6, cur_pos[2]
+
+Execute (Select and go to mark with apostrophe goes to start of line without jump_to_exact_position):
+  let g:markbar_peekaboo_jump_to_exact_position = v:false
+  execute "normal '\\A\<cr>"
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 1, cur_pos[2]
 
 Do (Select and Go To Mark, Backtick):
   `
@@ -190,9 +236,10 @@ Then:
   AssertEqual g:last_window, win_getid(), "Jumped to mark in wrong window!"
 
 
-Do (Go Direct To Mark, Apostrophe):
-  '
-  A
+Execute (Go direct to mark with apostrophe works with jump_to_exact_position):
+  let g:markbar_peekaboo_jump_to_exact_position = v:true
+  normal '
+  normal A
 Then:
   AssertEqual '10lines.txt', expand('%:t')
   let cur_pos = getcurpos()
@@ -201,8 +248,21 @@ Then:
   AssertEqual 1, cur_pos[1]
 
   " check column number
-  " TODO why does this test fail (goes to column 2?)
-  " AssertEqual 1, cur_pos[2]
+  AssertEqual 6, cur_pos[2]
+
+Execute (Go direct to mark with apostrophe works without jump_to_exact_position):
+  let g:markbar_peekaboo_jump_to_exact_position = v:false
+  normal '
+  normal A
+Then:
+  AssertEqual '10lines.txt', expand('%:t')
+  let cur_pos = getcurpos()
+
+  " check line number
+  AssertEqual 1, cur_pos[1]
+
+  " check column number
+  AssertEqual 1, cur_pos[2]
 
 Do (Go Direct To Mark, Backtick):
   `
@@ -295,6 +355,18 @@ Then:
 
   " check column number
   AssertEqual 6, cur_pos[2]
+
+Given:
+  first line
+    second line
+  third line
+Execute (Apostrophe markbar goes to first non-blank character):
+  normal! gg0maj$mbj0mc
+  normal 'b
+Then:
+  let cur_pos = getcurpos()
+  AssertEqual 2, cur_pos[1]
+  AssertEqual 3, cur_pos[2]
 
 Execute (Show More Marks, Change Num Lines Context):
   let g:markbar_peekaboo_marks_to_display = 'abcABC'

@@ -93,3 +93,50 @@ Expect:
     one line before
     before latest jump
     one line after
+
+Execute (MarkbarTextGenerator handles non-default format strings for local marks):
+  let g:chars = 'abcdefghijklmnopqrstuvwxyz'
+  let g:i = 0
+  while g:i <# len(g:chars)
+    let g:char = g:chars[g:i]
+    let g:local_marks[g:char] = SynthesizeMark(g:char, 1, 2, 'foobar.txt',
+                                          \ ['', '', ''])
+    let i += 1
+  endwhile
+
+  call g:generator.format.setOption('local_mark_name_format_str',
+                                  \ 'local %d %d %s')
+  call g:generator.format.setOption('local_mark_name_arguments',
+                                  \ ['line', 'col', 'fname'])
+  call g:generator.format.setOption('marks_to_display', g:chars)
+  call g:generator.format.setOption('num_lines_context_around_local', 0)
+  call PrintMarkbarText()
+Expect:
+  " this is verbose help text
+  " foobar
+  ['a]: local 1 2 foobar.txt
+  ['b]: local 1 2 foobar.txt
+  ['c]: local 1 2 foobar.txt
+  ['d]: local 1 2 foobar.txt
+  ['e]: local 1 2 foobar.txt
+  ['f]: local 1 2 foobar.txt
+  ['g]: local 1 2 foobar.txt
+  ['h]: local 1 2 foobar.txt
+  ['i]: local 1 2 foobar.txt
+  ['j]: local 1 2 foobar.txt
+  ['k]: local 1 2 foobar.txt
+  ['l]: local 1 2 foobar.txt
+  ['m]: local 1 2 foobar.txt
+  ['n]: local 1 2 foobar.txt
+  ['o]: local 1 2 foobar.txt
+  ['p]: local 1 2 foobar.txt
+  ['q]: local 1 2 foobar.txt
+  ['r]: local 1 2 foobar.txt
+  ['s]: local 1 2 foobar.txt
+  ['t]: local 1 2 foobar.txt
+  ['u]: local 1 2 foobar.txt
+  ['v]: local 1 2 foobar.txt
+  ['w]: local 1 2 foobar.txt
+  ['x]: local 1 2 foobar.txt
+  ['y]: local 1 2 foobar.txt
+  ['z]: local 1 2 foobar.txt
