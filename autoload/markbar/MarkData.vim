@@ -1,6 +1,7 @@
 let s:MarkData = {
     \ 'TYPE': 'MarkData',
     \ '_data': [],
+    \ '_bufname': '',
     \ '_context': [],
     \ '_name': ''
 \ }
@@ -19,56 +20,54 @@ let s:MarkData = {
 "
 "           This is how the `marks` command prints output for a mark. See `:h
 "           marks` for more details.
-function! markbar#MarkData#New(markstring) abort
+" PARAM:    bufname     (v:t_string)    Name of the buffer holding the mark.
+"                                       Ignored when MarkData is a global mark.
+function! markbar#MarkData#New(markstring, bufname) abort
     call markbar#ensure#IsString(a:markstring)
+    call markbar#ensure#IsString(a:bufname)
     let l:new = deepcopy(s:MarkData)
     let l:new._data = matchlist(
         \ a:markstring, '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)')[1:3]
     if empty(l:new._data)
         throw 'markstring parsing failed for: ' . a:markstring
     endif
+    if !l:new.isGlobal()
+        let l:new._bufname = a:bufname
+    endif
     return l:new
 endfunction
 
-" RETURNS:  (v:t_string)    The default name for a local mark.
-" PARAM:    mark_data       (markbar#BasicMarkData)     The mark to name.
+" RETURNS:  (v:t_string)    Default name for a 'punctuation' mark, or an empty
+"                           string.
 function! markbar#MarkData#DefaultMarkName(mark_data) abort
     call markbar#ensure#IsClass(a:mark_data, 'BasicMarkData')
     let l:mark = a:mark_data.mark
-    let l:format = printf(
-        \ '(l: %d, c: %d) ',
-        \ a:mark_data.line,
-        \ a:mark_data.column,
-        \ ) . '%s'
     if l:mark ==# "'"
-        return printf(l:format, 'Last Jump')
+        return 'Last Jump'
     elseif l:mark ==# '<'
-        return printf(l:format, 'Selection Start')
+        return 'Selection Start'
     elseif l:mark ==# '>'
-        return printf(l:format, 'Selection End')
+        return 'Selection End'
     elseif l:mark ==# '"'
-        return printf(l:format, 'Left Buffer')
+        return 'Left Buffer'
     elseif l:mark ==# '^'
-        return printf(l:format, 'Left Insert Mode')
+        return 'Left Insert Mode'
     elseif l:mark ==# '.'
-        return printf(l:format, 'Last Change')
+        return 'Last Change'
     elseif l:mark ==# '['
-        return printf(l:format, 'Change/Yank Start')
+        return 'Change/Yank Start'
     elseif l:mark ==# ']'
-        return printf(l:format, 'Change/Yank End')
+        return 'Change/Yank End'
     elseif l:mark ==# '('
-        return printf(l:format, 'Sentence Start')
+        return 'Sentence Start'
     elseif l:mark ==# ')'
-        return printf(l:format, 'Sentence End')
+        return 'Sentence End'
     elseif l:mark ==# '{'
-        return printf(l:format, 'Paragraph Start')
+        return 'Paragraph Start'
     elseif l:mark ==# '}'
-        return printf(l:format, 'Paragraph End')
+        return 'Paragraph End'
     endif
-    return printf(
-        \ 'l: %4d, c: %4d',
-        \ a:mark_data.line,
-        \ a:mark_data.column)
+    return ''
 endfunction
 
 function! s:MarkData.getMarkChar() abort dict
@@ -106,7 +105,13 @@ function! s:MarkData.setContext(new_context) abort dict
     let l:self._context = a:new_context
 endfunction
 
-" RETURNS:  (v:t_string)    Name of the file in which this mark is found.
+" RETURNS:  (v:t_string)    Name of the buffer or file holding this mark.
+"                           When MarkData represents a global mark, this comes
+"                           from a |bufname()| call; otherwise, the bufname
+"                           stored at construction is returned.
 function! s:MarkData.getFilename() abort dict
-    return bufname(markbar#helpers#BufferNo(l:self.getMarkChar()))
+    if l:self.isGlobal()
+        return bufname(markbar#helpers#BufferNo(l:self.getMarkChar()))
+    endif
+    return l:self._bufname
 endfunction

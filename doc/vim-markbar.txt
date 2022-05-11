@@ -300,7 +300,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
 *g:markbar_mark_name_format_string*                      |(v:t_string)|
 *g:markbar_peekaboo_mark_name_format_string*
-    `Default Value:` `'%s'`
+    `Default Value:` `'(l: %d, c: %d) %s'`
 
     The format string used when setting "default names" for a local mark.
 
@@ -308,7 +308,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
 *g:markbar_mark_name_arguments*                          |(v:t_list)|
 *g:markbar_peekaboo_mark_name_arguments*
-    `Default Value:` `[function('markbar#MarkData#DefaultMarkName')]`
+    `Default Value:` `['line', 'col', function('markbar#MarkData#DefaultMarkName')]`
 
     The values with which to populate |g:markbar_mark_name_format_string|.
 
@@ -333,11 +333,11 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     - `'line'`
       - The line number of the mark, as a |v:t_number|.
     - `'column'`
-      - The column number of the mark, as a |v:t_number|.
+      - The column number of the mark, as a |v:t_number|. This is the value
+        shown by |:marks|, which is one less than the value from |getpos()|,
+        i.e. the first column is 0 and not 1.
     - `'filename'`
-      - The filename of the mark, as a |v:t_string|. As of the time of
-        writing, this is given as an absolute path (i.e. specified from the
-        root of the filesystem).
+      - The |bufname()| of the buffer holding the mark, as a |v:t_string|.
     - `'context'`
       - The context in which the mark appears. Each line of context is given
         as a |v:t_string| in a |v:t_list|. If the user requests 3 lines of
@@ -355,7 +355,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     vim-markbar given for file marks by using a function reference in the
     following way: >
         function! LineAndCol(mark_data) abort
-            return printf('l: %4d, c: %4d', mark_data['line'], mark_data['column'])
+            return printf('l: %d, c: %d', mark_data['line'], mark_data['column'])
         endfunction
 
         " ...
@@ -365,17 +365,18 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 <
     See `:help function()` for more details.
 
-    A more sophisticated example of the above can also be found in
-    `'autoload/markbar/MarkData.vim'`, in the function
-    `markbar#MarkData#DefaultMarkName()`.
-
 *g:markbar_file_mark_format_string*                      |(v:t_string)|
 *g:markbar_peekaboo_file_mark_format_string*
-    `Default Value:` `%s [l: %4d, c: %4d]`
+    `Default Value:` `%s [l: %d, c: %d]`
+
+    Format string used to set default names for a |file-mark|, except numbered
+    marks ('0 to '9).
 
 *g:markbar_file_mark_arguments*                          |(v:t_list)|
 *g:markbar_peekaboo_file_mark_arguments*
     `Default Value:` `['fname', 'line', 'col']`
+
+    Format string used to set default names for a numbered mark ('0 to '9).
 
 *g:markbar_numbered_mark_format_string*                  |(v:t_string)|
 *g:markbar_peekaboo_numbered_mark_format_string*

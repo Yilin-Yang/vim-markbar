@@ -11,9 +11,9 @@ Execute (Initialize):
           \ 'enable_mark_highlighting': v:false,
           \ 'mark_marker': markbar#settings#MarkMarker(),
           \ 'jump_like_backtick': v:true,
-          \ 'local_mark_name_format_str': '%s',
+          \ 'local_mark_name_format_str': '(l: %d, c: %d) %s',
           \ 'local_mark_name_arguments':
-              \ [function('markbar#MarkData#DefaultMarkName')],
+              \ ['line', 'col', function('markbar#MarkData#DefaultMarkName')],
           \ 'file_mark_name_format_str': '%s [l: %d, c: %d]',
           \ 'file_mark_name_arguments': ['fname', 'line', 'col'],
           \ 'numbered_mark_name_format_str': '%s [l: %d, c: %d]',
@@ -47,7 +47,8 @@ Expect:
 Execute (MarkbarTextGenerator prints no marks with empty 'marks_to_display'):
   function! SynthesizeMark(mark_char, line_no, col_no, filename, context) abort
     let l:mark = markbar#MarkData#New(
-        \ printf('%s %d %d foo bar foo', a:mark_char, a:line_no, a:col_no))
+        \ printf('%s %d %d foo bar foo', a:mark_char, a:line_no, a:col_no),
+        \ a:filename)
     call l:mark.setContext(a:context)
     let l:mark.getFilename = function({a -> a}, [a:filename])
     return l:mark
@@ -140,3 +141,37 @@ Expect:
   ['x]: local 1 2 foobar.txt
   ['y]: local 1 2 foobar.txt
   ['z]: local 1 2 foobar.txt
+
+Execute (MarkbarTextGenerator prints proper default names for punctuation marks):
+  let g:chars = '''<>"^.[](){}'
+  let g:i = 0
+  while g:i <# len(g:chars)
+    let g:char = g:chars[g:i]
+    let g:local_marks[g:char] = SynthesizeMark(g:char, 1, 2, 'foobar.txt',
+                                          \ ['', '', ''])
+    let i += 1
+  endwhile
+
+  call g:generator.format.setOption('local_mark_name_format_str',
+                                  \ '%d %d %s: %s')
+  call g:generator.format.setOption(
+      \ 'local_mark_name_arguments',
+      \ ['line', 'col', 'fname', function('markbar#MarkData#DefaultMarkName')])
+  call g:generator.format.setOption('marks_to_display', g:chars)
+  call g:generator.format.setOption('num_lines_context_around_local', 0)
+  call PrintMarkbarText()
+Expect:
+  " this is verbose help text
+  " foobar
+  ['']: 1 2 foobar.txt: Last Jump
+  ['<]: 1 2 foobar.txt: Selection Start
+  ['>]: 1 2 foobar.txt: Selection End
+  ['"]: 1 2 foobar.txt: Left Buffer
+  ['^]: 1 2 foobar.txt: Left Insert Mode
+  ['.]: 1 2 foobar.txt: Last Change
+  ['[]: 1 2 foobar.txt: Change/Yank Start
+  [']]: 1 2 foobar.txt: Change/Yank End
+  ['(]: 1 2 foobar.txt: Sentence Start
+  [')]: 1 2 foobar.txt: Sentence End
+  ['{]: 1 2 foobar.txt: Paragraph Start
+  ['}]: 1 2 foobar.txt: Paragraph End

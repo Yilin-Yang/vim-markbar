@@ -9,14 +9,6 @@ Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_peekaboo_open_vertical = v:true
   let g:markbar_peekaboo_section_separation = 1
 
-  let g:markbar_peekaboo_mark_name_format_string     = ''
-  let g:markbar_peekaboo_file_mark_format_string     = '%s'
-  let g:markbar_peekaboo_numbered_mark_format_string = ''
-
-  let g:markbar_peekaboo_mark_name_arguments     = []
-  let g:markbar_peekaboo_file_mark_arguments     = ['fname']
-  let g:markbar_peekaboo_numbered_mark_arguments = []
-
   let g:markbar_peekaboo_marks_to_display = 'ABC'
 
 Do (Open Peekaboo Markbar, Apostrophe, No Marks):
@@ -81,17 +73,17 @@ Then:
   AssertEqual 1, b:is_markbar
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     ~
     first line
     second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     fourth line
     fifth line
     sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     ninth line
     tenth line
     ~
@@ -115,17 +107,17 @@ Execute (Test Mark Highlighting, Backtick):
   normal `
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     ~
     first➜ line
     second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     fourth line
     ➜fifth line
     sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     ninth line
     ➜tenth line
     ~
@@ -135,17 +127,17 @@ Execute (Apostrophe is highlighted like backtick when jump_to_exact_position is 
   normal '
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     ~
     first➜ line
     second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     fourth line
     ➜fifth line
     sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     ninth line
     ➜tenth line
     ~
@@ -155,17 +147,17 @@ Execute (Apostrophe is highlighted like apostrophe when jump_to_exact_position i
   normal '
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     ~
     ➜first line
     second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     fourth line
     ➜fifth line
     sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     ninth line
     ➜tenth line
     ~
@@ -317,31 +309,31 @@ Then:
 
   AssertEqual g:last_window, win_getid(), "Jumped to mark in wrong window!"
 
-Do (View Single-Quote Mark):
-  :let g:markbar_peekaboo_marks_to_display = '''ABC'\<cr>
-  :edit! 10lines.txt\<cr>
-  gg5l
-  :let cur_pos = getcurpos()\<cr>
-  :normal! 'B\<cr>
-  '
+Execute (View Single-Quote Mark):
+  let g:markbar_peekaboo_marks_to_display = '''ABC'
+  edit! 10lines.txt
+  normal! gg05l
+  let cur_pos = getcurpos()
+  normal! 'B
+  normal '
 Expect:
   " Press ? for help
-  ['']: 
+  ['']: (l: 1, c: 5) Last Jump
     ~
     first line
     second line
 
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     ~
     first line
     second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     fourth line
     fifth line
     sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     ninth line
     tenth line
     ~
@@ -400,19 +392,19 @@ Do (Set Local Marks):
 
 Expect (Num Context Defaults to Same as Ordinary Markbar):
   " Press ? for help
-  ['a]: 
+  ['a]: (l: 2, c: 0) 
     second line
     third line
 
-  ['b]: 
+  ['b]: (l: 4, c: 10) 
     fourth line
     fifth line
 
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
   
 Execute (Show Correct Num Lines When File Shows More than Local):
   let g:markbar_num_lines_context = {
@@ -424,19 +416,19 @@ Execute (Show Correct Num Lines When File Shows More than Local):
 
 Expect (Correct Numbers of Lines of Context):
   " Press ? for help
-  ['a]: 
+  ['a]: (l: 2, c: 0) 
 
-  ['b]: 
+  ['b]: (l: 4, c: 10) 
 
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     first line
     second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     fifth line
     sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     tenth line
     ~
   
@@ -452,21 +444,21 @@ Execute (Separately Configure Normal and Peekaboo):
 
 Expect (Correct Numbers of Lines of Context):
   " Press ? for help
-  ['a]: 
+  ['a]: (l: 2, c: 0) 
     ~
     first line
     second line
     third line
     fourth line
 
-  ['b]: 
+  ['b]: (l: 4, c: 10) 
     second line
     third line
     fourth line
     fifth line
     sixth line
 
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     ~
     ~
     ~
@@ -476,7 +468,7 @@ Expect (Correct Numbers of Lines of Context):
     fourth line
     fifth line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     second line
     third line
     fourth line
@@ -486,7 +478,7 @@ Expect (Correct Numbers of Lines of Context):
     eighth line
     ninth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     seventh line
     eighth line
     ninth line
@@ -503,21 +495,21 @@ Execute (Enable Mark Highlighting):
 
 Expect (Correct Output, Backtick-Like):
   " Press ? for help
-  ['a]: 
+  ['a]: (l: 2, c: 0) 
     ~
     first line
     ➜second line
     third line
     fourth line
 
-  ['b]: 
+  ['b]: (l: 4, c: 10) 
     second line
     third line
     fourth lin➜e
     fifth line
     sixth line
 
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
     ~
     ~
     ~
@@ -527,7 +519,7 @@ Expect (Correct Output, Backtick-Like):
     fourth line
     fifth line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
     second line
     third line
     fourth line
@@ -537,7 +529,7 @@ Expect (Correct Output, Backtick-Like):
     eighth line
     ninth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 0]
     seventh line
     eighth line
     ninth line

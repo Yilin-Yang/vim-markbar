@@ -1,55 +1,55 @@
 function! markbar#ensure#IsNumber(Object)
     if type(a:Object) ==# v:t_number
-        return
+        return a:Object
     endif
     throw printf('Object is not an integer: %s', string(a:Object))
 endfunction
 
 function! markbar#ensure#IsString(Object) abort
     if type(a:Object) ==# v:t_string
-        return
+        return a:Object
     endif
     throw printf('Object is not a string: %s', string(a:Object))
 endfunction
 
 function! markbar#ensure#IsFuncref(Object)
     if type(a:Object) ==# v:t_func
-        return
+        return a:Object
     endif
     throw printf('Object is not a funcref: %s', string(a:Object))
 endfunction
 
 function! markbar#ensure#IsList(Object)
     if type(a:Object) ==# v:t_list
-        return
+        return a:Object
     endif
     throw printf('Object is not a list: %s', string(a:Object))
 endfunction
 
 function! markbar#ensure#IsDictionary(Object)
     if type(a:Object) ==# v:t_dict
-        return
+        return a:Object
     endif
     throw printf('Object is not a dict: %s', string(a:Object))
 endfunction
 
 function! markbar#ensure#IsFloat(Object)
     if type(a:Object) ==# v:t_float
-        return
+        return a:Object
     endif
     throw printf('Object is not a float: %s', string(a:Object))
 endfunction
 
 function! markbar#ensure#IsBoolean(Object)
     if type(a:Object) ==# v:t_bool
-        return
+        return a:Object
     endif
     throw printf('Object is not a boolean: %s', string(a:Object))
 endfunction
 
 function! markbar#ensure#IsClass(Object, classname) abort
     if type(a:Object) ==# v:t_dict && get(a:Object, 'TYPE', '') ==# a:classname
-        return
+        return a:Object
     endif
     throw printf('Object is not of type %s: %s',
         \ a:classname, string(a:Object))
@@ -61,4 +61,5 @@ function! markbar#ensure#IsMarkChar(Object) abort
     if !has_key(markbar#constants#ALL_MARKS_DICT(), a:Object)
         throw printf('Invalid mark name: %s', a:Object)
     endif
+    return a:Object
 endfunction

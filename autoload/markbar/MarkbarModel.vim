@@ -174,7 +174,8 @@ endfunction
 "           Creates BufferCaches for the current buffer and global marks if
 "           they don't yet exist.
 function! s:MarkbarModel.updateCurrentAndGlobal() abort dict
-    let l:cur_buffer_cache = l:self._getOrInitBufferCache(bufnr('%'))
+    let l:bufnr = bufnr('%')
+    let l:cur_buffer_cache = l:self._getOrInitBufferCache(l:bufnr)
     "                                                     ^ This is bufnr('%')
     " and not getActiveBuffer() because helpers#GetLocalMarks() pulls |:marks|
     " output for the currently focused window, which might e.g.  be the
@@ -197,8 +198,10 @@ function! s:MarkbarModel.updateCurrentAndGlobal() abort dict
         endif
     endfor
 
-    call    l:cur_buffer_cache.updateCache(markbar#helpers#GetLocalMarks())
+    let l:bufname = bufname(l:bufnr)
+    call l:cur_buffer_cache.updateCache(
+            \ markbar#helpers#GetLocalMarks(), l:bufname)
     call l:global_buffer_cache.updateCache(markbar#helpers#GetGlobalMarks())
-    call    l:cur_buffer_cache.updateContexts(l:max_num_context)
+    call l:cur_buffer_cache.updateContexts(l:max_num_context)
     call l:global_buffer_cache.updateContexts(l:max_num_context)
 endfunction

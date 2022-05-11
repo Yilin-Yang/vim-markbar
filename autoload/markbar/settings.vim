@@ -455,7 +455,7 @@ endfunction
 function! markbar#settings#MarkNameFormatString() abort
     if !exists('g:markbar_mark_name_format_string')
         let g:markbar_mark_name_format_string =
-            \ '%s'
+            \ '(l: %d, c: %d) %s'
     endif
     call s:AssertType(
         \ g:markbar_mark_name_format_string,
@@ -470,7 +470,7 @@ endfunction
 function! markbar#settings#MarkNameArguments() abort
     if !exists('g:markbar_mark_name_arguments')
         let g:markbar_mark_name_arguments =
-            \ [ function('markbar#MarkData#DefaultMarkName') ]
+            \ ['line', 'col', function('markbar#MarkData#DefaultMarkName')]
     endif
     call s:AssertType(
         \ g:markbar_mark_name_arguments,
@@ -486,7 +486,7 @@ endfunction
 function! markbar#settings#FileMarkFormatString() abort
     if !exists('g:markbar_file_mark_format_string')
         let g:markbar_file_mark_format_string =
-            \ '%s [l: %4d, c: %4d]'
+            \ '%s [l: %d, c: %d]'
     endif
     call s:AssertType(
         \ g:markbar_file_mark_format_string,
