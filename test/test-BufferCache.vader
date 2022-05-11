@@ -19,7 +19,7 @@ Execute (BufferCache: Populate Local Cache):
   execute '35mark d'
   execute '45mark e'
   let cache_50lines = markbar#BufferCache#New(bufnr('%'))
-  call cache_50lines.updateCache(markbar#helpers#GetLocalMarks())
+  call cache_50lines.updateCache(markbar#helpers#GetLocalMarks(), '50lines.txt')
 Then:
   let g:bufno_50lines = bufnr('%')
   let buffer_marks = cache_50lines['marks_dict']
@@ -30,7 +30,6 @@ Then:
   AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
 
 Execute (BufferCache: Populate Global Cache):
-  " should still be on 50lines.txt, but just in case,
   execute 'normal! :e! #' . g:bufno_50lines . "\<cr>"
   execute '30mark C'
   execute '40mark D'
@@ -57,7 +56,7 @@ Execute (BufferCache: Add More Global Marks; Add Local Marks):
   execute '20mark a'
 
   let cache_30lines = markbar#BufferCache#New(bufnr('%'))
-  call cache_30lines.updateCache(markbar#helpers#GetLocalMarks())
+  call cache_30lines.updateCache(markbar#helpers#GetLocalMarks(), '30lines.txt')
   call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
 
 Then:

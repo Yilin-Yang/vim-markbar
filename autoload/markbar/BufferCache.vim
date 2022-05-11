@@ -31,9 +31,12 @@ function! s:BufferCache.getMark(mark) abort dict
 endfunction
 
 " EFFECTS:  Repopulate BufferCache's `marks_dict` with the given marks output.
-" PARAM:    marks_output    (v:t_string)    The 'raw' output of |:marks|.
-function! s:BufferCache.updateCache(marks_output) abort dict
+" PARAM:    marks_output    (v:t_string)    Raw output of |:marks|.
+" PARAM:    bufname?        (v:t_string)    Buffer being queried by |:marks|.
+"                                           Defaults to the empty string.
+function! s:BufferCache.updateCache(marks_output, ...) abort dict
     call markbar#ensure#IsString(a:marks_output)
+    let l:bufname = markbar#ensure#IsString(get(a:000, 0, ''))
 
     " strip leading whitespace and columns header ('mark line  col file/text')
     let l:trimmed = markbar#helpers#TrimMarksHeader(a:marks_output)
@@ -44,7 +47,7 @@ function! s:BufferCache.updateCache(marks_output) abort dict
     while l:i
         let l:i -= 1
         try
-            let l:markdata = markbar#MarkData#New(l:markstrings[l:i])
+            let l:markdata = markbar#MarkData#New(l:markstrings[l:i], l:bufname)
             let l:new_marks_dict[l:markdata.getMarkChar()] = l:markdata
         catch /markstring parsing failed/
             " drop this markdata

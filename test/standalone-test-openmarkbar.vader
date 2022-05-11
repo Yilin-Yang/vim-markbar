@@ -8,14 +8,6 @@ Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_num_lines_context = 3
   let g:markbar_open_vertical = v:true
 
-  let g:markbar_mark_name_format_string     = ''
-  let g:markbar_file_mark_format_string     = '%s'
-  let g:markbar_numbered_mark_format_string = ''
-
-  let g:markbar_mark_name_arguments     = []
-  let g:markbar_file_mark_arguments     = ['fname']
-  let g:markbar_numbered_mark_arguments = []
-
   map Mo <Plug>OpenMarkbar
   map Mc <Plug>CloseMarkbar
   map Mt <Plug>ToggleMarkbar
@@ -57,17 +49,17 @@ Then:
   AssertEqual 1, b:is_markbar
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -93,17 +85,17 @@ Expect:
   " c: reset mark's name
   " d: delete mark
   " -----------------------
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -123,17 +115,17 @@ Expect:
   " c: reset mark's name
   " d: delete mark
   " -----------------------
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -142,17 +134,17 @@ Do (? closes verbose help after opening):
   Mo?
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -170,17 +162,17 @@ Do (Re-Open Closed Markbar (E499 Check)):
   Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -193,17 +185,17 @@ Then:
   " AssertEqual num_windows, len(tabpagebuflist())
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -231,17 +223,17 @@ Execute (:bdelete Markbar):
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -255,17 +247,17 @@ Then:
   AssertEqual 'markbar', &filetype
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -279,17 +271,17 @@ Then:
   AssertEqual 'markbar', &filetype
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -400,7 +392,7 @@ Execute (Explicitly Rename Mark):
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
@@ -410,7 +402,7 @@ Expect:
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -422,17 +414,17 @@ Do (Reset Mark Name):
   Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -443,12 +435,12 @@ Do (Delete Mark):
   5Gd
 Expect:
   " Press ? for help
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -456,21 +448,21 @@ Expect:
 
 Do (Set Local Mark, Toggle Markbar Open):
   :edit! 10lines.txt\<cr>
-  1Gma
+  1G05lma
   Mt
 Expect:
   " Press ? for help
-  ['a]: 
+  ['a]: (l: 1, c: 5) 
       ~
       first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -482,12 +474,12 @@ Do (Delete Local Mark):
   d
 Expect:
   " Press ? for help
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 5]
       ninth line
       tenth line
       ~
@@ -514,17 +506,17 @@ Execute (Backtick-like mark location is highlighted when highlighting is turned 
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       first➜ line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
       fourth line
       ➜fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 9]
       ninth line
       tenth lin➜e
       ~
@@ -534,17 +526,17 @@ Execute (Apostrophe-like mark location is highlighted when highlighting is turne
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt
+  ['A]: 10lines.txt [l: 1, c: 5]
       ~
       ➜first line
       second line
 
-  ['B]: 10lines.txt
+  ['B]: 10lines.txt [l: 5, c: 0]
       fourth line
       ➜fifth line
       sixth line
 
-  ['C]: 10lines.txt
+  ['C]: 10lines.txt [l: 10, c: 9]
       ninth line
       ➜tenth line
       ~
@@ -553,7 +545,41 @@ Do (Set Local Marks):
   :edit! 10lines.txt\<cr>
   2G0ma4G$mb
 
-Then (g:markbar_num_lines_context controls how many context lines are shown):
+Execute (Default mark names format can be customized):
+  let g:markbar_mark_name_format_string = '%s {c: %d, l: %d}'
+  let g:markbar_mark_name_arguments = ['fname', 'col', 'line']
+  let g:markbar_file_mark_format_string = 'fname: %s, col: %d, line: %d'
+  let g:markbar_file_mark_arguments = ['fname', 'col', 'line']
+  edit! 10lines.txt
+  normal Mo
+Expect:
+  " Press ? for help
+  ['a]: 10lines.txt {c: 0, l: 2}
+      first line
+      ➜second line
+      third line
+
+  ['b]: 10lines.txt {c: 10, l: 4}
+      third line
+      ➜fourth line
+      fifth line
+
+  ['A]: fname: 10lines.txt, col: 5, line: 1
+      ~
+      ➜first line
+      second line
+
+  ['B]: fname: 10lines.txt, col: 0, line: 5
+      fourth line
+      ➜fifth line
+      sixth line
+
+  ['C]: fname: 10lines.txt, col: 9, line: 10
+      ninth line
+      ➜tenth line
+      ~
+  
+Execute (g:markbar_num_lines_context controls how many context lines are shown):
   let g:markbar_num_lines_context = {
       \ 'around_local': 2,
       \ 'around_file': 0,
@@ -561,23 +587,24 @@ Then (g:markbar_num_lines_context controls how many context lines are shown):
       \ 'peekaboo_around_file': 8,
       \ }
   let g:markbar_jump_to_exact_position = v:true
+  edit! 10lines.txt
   normal Mo
 
 Expect:
   " Press ? for help
-  ['a]: 
+  ['a]: 10lines.txt {c: 0, l: 2}
       ➜second line
       third line
 
-  ['b]: 
+  ['b]: 10lines.txt {c: 10, l: 4}
       fourth lin➜e
       fifth line
 
-  ['A]: 10lines.txt
+  ['A]: fname: 10lines.txt, col: 5, line: 1
 
-  ['B]: 10lines.txt
+  ['B]: fname: 10lines.txt, col: 0, line: 5
 
-  ['C]: 10lines.txt
+  ['C]: fname: 10lines.txt, col: 9, line: 10
   
 Execute (Reconfigured context length displays properly with highlighting disabled):
   " test an alternate code path
@@ -587,19 +614,19 @@ Execute (Reconfigured context length displays properly with highlighting disable
 
 Expect:
   " Press ? for help
-  ['a]: 
+  ['a]: 10lines.txt {c: 0, l: 2}
       second line
       third line
 
-  ['b]: 
+  ['b]: 10lines.txt {c: 10, l: 4}
       fourth line
       fifth line
 
-  ['A]: 10lines.txt
+  ['A]: fname: 10lines.txt, col: 5, line: 1
 
-  ['B]: 10lines.txt
+  ['B]: fname: 10lines.txt, col: 0, line: 5
 
-  ['C]: 10lines.txt
+  ['C]: fname: 10lines.txt, col: 9, line: 10
   
 
 Execute (Context displays properly when file marks show more context than local marks):
@@ -613,27 +640,27 @@ Execute (Context displays properly when file marks show more context than local 
   normal Mo
 Expect:
   " Press ? for help
-  ['a]: 
+  ['a]: 10lines.txt {c: 0, l: 2}
       second line
       third line
 
-  ['b]: 
+  ['b]: 10lines.txt {c: 10, l: 4}
       fourth line
       fifth line
 
-  ['A]: 10lines.txt
+  ['A]: fname: 10lines.txt, col: 5, line: 1
       ~
       first line
       second line
       third line
 
-  ['B]: 10lines.txt
+  ['B]: fname: 10lines.txt, col: 0, line: 5
       fourth line
       fifth line
       sixth line
       seventh line
 
-  ['C]: 10lines.txt
+  ['C]: fname: 10lines.txt, col: 9, line: 10
       ninth line
       tenth line
       ~
