@@ -60,7 +60,8 @@ function! s:BufferCache.updateCache(marks_output, ...) abort dict
         if !has_key(l:new_marks_dict, l:mark)
             continue
         endif
-        call l:new_marks_dict[l:mark].setName(l:old_dict[l:mark].getName())
+        call l:new_marks_dict[l:mark].setUserName(
+                \ l:old_dict[l:mark].getUserName())
     endfor
 
     let l:self.marks_dict = l:new_marks_dict

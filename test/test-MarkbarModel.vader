@@ -77,14 +77,14 @@ Then:
 Execute (BufferCache: Test Name Preservation Across Cache Updates):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   let local_mark = g:markbar_model.getMarkData('c')
-  call local_mark.setName('foo')
+  call local_mark.setUserName('foo')
   let global_mark = g:markbar_model.getMarkData('E')
-  call global_mark.setName('goo')
+  call global_mark.setUserName('goo')
 
   call g:markbar_model.updateCurrentAndGlobal()
 Then:
-  AssertEqual 'foo', local_mark.getName()
-  AssertEqual 'goo', global_mark.getName()
+  AssertEqual 'foo', local_mark.getUserName()
+  AssertEqual 'goo', global_mark.getUserName()
 
 Execute (MarkbarModel: Fetch Contexts for Onscreen Buffer):
   execute 'normal :edit! ' . '50lines.txt' . "\<cr>"

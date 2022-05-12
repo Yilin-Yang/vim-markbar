@@ -41,10 +41,10 @@ function! s:MarkbarModel.renameMark(mark) abort dict
 
     call inputsave()
     let l:new_name = input(printf('New name for mark [''%s]: ', a:mark),
-        \ l:mark_data.getName(), markbar#settings#RenameMarkCompletion())
+        \ l:mark_data.getUserName(), markbar#settings#RenameMarkCompletion())
     call inputrestore()
 
-    call l:mark_data.setName(l:new_name)
+    call l:mark_data.setUserName(l:new_name)
 endfunction
 
 " BRIEF:    Reset the the selected mark's name to the default.
@@ -53,7 +53,7 @@ endfunction
 function! s:MarkbarModel.resetMark(mark) abort dict
     call markbar#ensure#IsMarkChar(a:mark)
     let l:mark_data = l:self.getMarkData(a:mark)
-    call l:mark_data.setName('')
+    call l:mark_data.setUserName('')
 endfunction
 
 " BRIEF:    Delete the given mark, and remove it from the cache.

@@ -12,8 +12,7 @@ Execute (Initialize):
           \ 'mark_marker': markbar#settings#MarkMarker(),
           \ 'jump_like_backtick': v:true,
           \ 'local_mark_name_format_str': '(l: %d, c: %d) %s',
-          \ 'local_mark_name_arguments':
-              \ ['line', 'col', function('markbar#MarkData#DefaultMarkName')],
+          \ 'local_mark_name_arguments': ['line', 'col', 'name'],
           \ 'file_mark_name_format_str': '%s [l: %d, c: %d]',
           \ 'file_mark_name_arguments': ['fname', 'line', 'col'],
           \ 'numbered_mark_name_format_str': '%s [l: %d, c: %d]',
@@ -156,9 +155,51 @@ Execute (MarkbarTextGenerator prints proper default names for punctuation marks)
                                   \ '%d %d %s: %s')
   call g:generator.format.setOption(
       \ 'local_mark_name_arguments',
-      \ ['line', 'col', 'fname', function('markbar#MarkData#DefaultMarkName')])
+      \ ['line', 'col', 'fname', 'name'])
   call g:generator.format.setOption('marks_to_display', g:chars)
   call g:generator.format.setOption('num_lines_context_around_local', 0)
+  call PrintMarkbarText()
+Expect:
+  " this is verbose help text
+  " foobar
+  ['']: 1 2 foobar.txt: Last Jump
+  ['<]: 1 2 foobar.txt: Selection Start
+  ['>]: 1 2 foobar.txt: Selection End
+  ['"]: 1 2 foobar.txt: Left Buffer
+  ['^]: 1 2 foobar.txt: Left Insert Mode
+  ['.]: 1 2 foobar.txt: Last Change
+  ['[]: 1 2 foobar.txt: Change/Yank Start
+  [']]: 1 2 foobar.txt: Change/Yank End
+  ['(]: 1 2 foobar.txt: Sentence Start
+  [')]: 1 2 foobar.txt: Sentence End
+  ['{]: 1 2 foobar.txt: Paragraph Start
+  ['}]: 1 2 foobar.txt: Paragraph End
+
+Execute (MarkbarTextGenerator prefers user-given names to default ones):
+  for [g:char, g:mark] in items(g:local_marks)
+    call g:mark.setUserName('foobar')
+  endfor
+  call PrintMarkbarText()
+Expect:
+  " this is verbose help text
+  " foobar
+  ['']: 1 2 foobar.txt: foobar
+  ['<]: 1 2 foobar.txt: foobar
+  ['>]: 1 2 foobar.txt: foobar
+  ['"]: 1 2 foobar.txt: foobar
+  ['^]: 1 2 foobar.txt: foobar
+  ['.]: 1 2 foobar.txt: foobar
+  ['[]: 1 2 foobar.txt: foobar
+  [']]: 1 2 foobar.txt: foobar
+  ['(]: 1 2 foobar.txt: foobar
+  [')]: 1 2 foobar.txt: foobar
+  ['{]: 1 2 foobar.txt: foobar
+  ['}]: 1 2 foobar.txt: foobar
+
+Execute (MarkbarTextGenerator reverts to default names when user-given name is cleared):
+  for [g:char, g:mark] in items(g:local_marks)
+    call g:mark.setUserName('')
+  endfor
   call PrintMarkbarText()
 Expect:
   " this is verbose help text

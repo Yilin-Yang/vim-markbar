@@ -344,7 +344,7 @@ Do (Edge Case: Go Direct To Single-Quote Mark):
   :normal! 'B\<cr>
   '
   '
-Then: 
+Then:
   let cur_pos = getcurpos()
   " check line number
   AssertEqual 1, cur_pos[1]
@@ -392,11 +392,11 @@ Do (Set Local Marks):
 
 Expect (Num Context Defaults to Same as Ordinary Markbar):
   " Press ? for help
-  ['a]: (l: 2, c: 0) 
+  ['a]: (l: 2, c: 0)
     second line
     third line
 
-  ['b]: (l: 4, c: 10) 
+  ['b]: (l: 4, c: 10)
     fourth line
     fifth line
 
@@ -416,9 +416,9 @@ Execute (Show Correct Num Lines When File Shows More than Local):
 
 Expect (Correct Numbers of Lines of Context):
   " Press ? for help
-  ['a]: (l: 2, c: 0) 
+  ['a]: (l: 2, c: 0)
 
-  ['b]: (l: 4, c: 10) 
+  ['b]: (l: 4, c: 10)
 
   ['A]: 10lines.txt [l: 1, c: 5]
     first line
@@ -444,14 +444,14 @@ Execute (Separately Configure Normal and Peekaboo):
 
 Expect (Correct Numbers of Lines of Context):
   " Press ? for help
-  ['a]: (l: 2, c: 0) 
+  ['a]: (l: 2, c: 0)
     ~
     first line
     second line
     third line
     fourth line
 
-  ['b]: (l: 4, c: 10) 
+  ['b]: (l: 4, c: 10)
     second line
     third line
     fourth line
@@ -495,14 +495,14 @@ Execute (Enable Mark Highlighting):
 
 Expect (Correct Output, Backtick-Like):
   " Press ? for help
-  ['a]: (l: 2, c: 0) 
+  ['a]: (l: 2, c: 0)
     ~
     first line
     ➜second line
     third line
     fourth line
 
-  ['b]: (l: 4, c: 10) 
+  ['b]: (l: 4, c: 10)
     second line
     third line
     fourth lin➜e

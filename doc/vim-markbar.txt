@@ -303,12 +303,13 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     `Default Value:` `'(l: %d, c: %d) %s'`
 
     The format string used when setting "default names" for a local mark.
+    Note that leading and trailing whitespace are stripped before printing.
 
     See `:help printf` for further details.
 
 *g:markbar_mark_name_arguments*                          |(v:t_list)|
 *g:markbar_peekaboo_mark_name_arguments*
-    `Default Value:` `['line', 'col', function('markbar#MarkData#DefaultMarkName')]`
+    `Default Value:` `['line', 'col', 'name']`
 
     The values with which to populate |g:markbar_mark_name_format_string|.
 
@@ -316,7 +317,10 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     - `'line'`: the line number of the mark
     - `'col'`: the column number of the mark
     - `'fname'`: the parent filename of the mark
+    - `'name'`: the user-given name for the mark, or a descriptive default name
     - function reference: see below.
+
+    If `'name'` is omitted, renaming marks will have no visible effect.
 
                                                 *vim-markbar-custom-mark-names*
                                                 *vim-markbar-function-references*
@@ -338,12 +342,15 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
         i.e. the first column is 0 and not 1.
     - `'filename'`
       - The |bufname()| of the buffer holding the mark, as a |v:t_string|.
+    - `'user_given_name'`
+        - The name given to the mark by the user. May be an empty string.
+    - `'default_name'`
+        - Descriptive default name for the mark. May be an empty string.
     - `'context'`
       - The context in which the mark appears. Each line of context is given
-        as a |v:t_string| in a |v:t_list|. If the user requests 3 lines of
-        context (i.e. |g:markbar_num_lines_context| equals 3), the
-        zero-indexed string in this list will be the line above the mark, the
-        one-indexed string will be the line of the mark, and so on.
+        as a |v:t_string| in a |v:t_list|.
+    - `'mark_line_idx'`
+      - The index of the line containing the mark within the `'context'` list.
     - `'TYPE'`
       - A |v:t_string| with the hardcoded value `'BasicMarkData'`. This is a
         quirk of the "vimscript class" idiom that I use in this plugin, which
@@ -352,16 +359,21 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     This dictionary is fully mutable and can be modified without side effects.
 
     As an example, one can replicate the default naming behavior of
-    vim-markbar given for file marks by using a function reference in the
+    vim-markbar given for local marks by using a function reference in the
     following way: >
-        function! LineAndCol(mark_data) abort
-            return printf('l: %d, c: %d', mark_data['line'], mark_data['column'])
+        function! CustomMarkName(mark_data) abort
+            let l:name = a:mark_data.user_given_name
+            if empty(l:name)
+                let l:name = a:mark_data.default_name
+            endif
+            return printf('(l: %d, c: %d') %s, a:mark_data.line,
+                \ a:mark_data.column, l:name)
         endfunction
 
         " ...
 
         let g:markbar_mark_name_format_string = '%s'
-        let g:markbar_mark_name_arguments = [ function('LineAndCol') ]
+        let g:markbar_mark_name_arguments = [ function('CustomMarkName) ]
 <
     See `:help function()` for more details.
 
