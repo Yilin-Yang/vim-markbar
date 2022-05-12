@@ -33,11 +33,11 @@ Do (Toggle Markbar Closed, No Marks):
 Then:
   AssertEqual '', getbufvar('.', 'is_markbar')
 
-" If the 'open markbar' binding works while the 'toggle' binding doesn't, 
+" If the 'open markbar' binding works while the 'toggle' binding doesn't,
 " this should fail
 Do (Set Marks, Toggle Markbar Open):
   :edit! 10lines.txt\<cr>
-  1G5lmA5GmB10GmC
+  1G05lmA5G05lmB10G05lmC
   Mt
 Then:
   AssertEqual 0, &buflisted
@@ -388,7 +388,7 @@ Then:
 Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
   let g:mark = g:markbar_model.getMarkData('B')
-  call g:mark.setName('New Name')
+  call g:mark.setUserName('New Name')
   normal Mo
 Expect:
   " Press ? for help
@@ -397,7 +397,7 @@ Expect:
       first line
       second line
 
-  ['B]: New Name
+  ['B]: New Name 10lines.txt [l: 5, c: 5]
       fourth line
       fifth line
       sixth line
@@ -452,7 +452,7 @@ Do (Set Local Mark, Toggle Markbar Open):
   Mt
 Expect:
   " Press ? for help
-  ['a]: (l: 1, c: 5) 
+  ['a]: (l: 1, c: 5)
       ~
       first line
       second line

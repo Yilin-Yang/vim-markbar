@@ -8,16 +8,13 @@
 "           guaranteed to have a stable API between plugin versions.
 function! markbar#BasicMarkData#New(orig_mark_data) abort
     let l:new = {'TYPE': 'BasicMarkData'}
-    let l:m = a:orig_mark_data.getMarkChar()
-    let l:new.mark     = l:m
-    let l:new.line     = a:orig_mark_data.getLineNo()
-    let l:new.column   = a:orig_mark_data.getColumnNo()
-    if markbar#helpers#IsGlobalMark(l:m) || markbar#helpers#IsNumberedMark(l:m)
-        let l:new.filename = a:orig_mark_data.getFilename()
-    else
-        let l:last_active = g:markbar_model.getActiveBuffer()
-        let l:new.filename = bufname(l:last_active)
-    endif
+    let l:new.mark = a:orig_mark_data.getMarkChar()
+    let l:new.line = a:orig_mark_data.getLineNo()
+    let l:new.column = a:orig_mark_data.getColumnNo()
+    let l:new.filename = a:orig_mark_data.getFilename()
     let l:new.context = deepcopy(a:orig_mark_data._context)
+    let l:new.mark_line_idx = markbar#helpers#MarkLineIdxInContext(l:new.context)
+    let l:new.user_given_name = a:orig_mark_data.getUserName()
+    let l:new.default_name = a:orig_mark_data.getDefaultName()
     return l:new
 endfunction

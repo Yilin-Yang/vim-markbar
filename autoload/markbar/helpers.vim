@@ -339,7 +339,7 @@ function! markbar#helpers#FetchContext(buffer_expr, around_line, num_lines) abor
 endfunction
 
 " RETURNS: The mark's line index in the given context.
-function! markbar#helpers#MarkLineNoInContext(context) abort
+function! markbar#helpers#MarkLineIdxInContext(context) abort
     call markbar#ensure#IsList(a:context)
     let l:context_len = len(a:context)
     if !l:context_len

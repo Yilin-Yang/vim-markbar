@@ -71,7 +71,7 @@ function! s:MarkbarTextGenerator.getText(local_marks, global_marks) abort dict
             " insert the mark marker at the mark's line, column in the context
             let l:marker = l:self.format.getOption('mark_marker')
             let l:mark_line_idx =
-                \ markbar#helpers#MarkLineNoInContext(l:full_context)
+                \ markbar#helpers#MarkLineIdxInContext(l:full_context)
             let l:jump_like_backtick =
                 \ l:self.format.getOption('jump_like_backtick')
 
@@ -99,55 +99,59 @@ endfunction
 function! s:MarkbarTextGenerator.getMarkHeading(mark) abort dict
     call markbar#ensure#IsClass(a:mark, 'MarkData')
     let l:suffix = ' '
-    let l:user_given_name = a:mark.getName()
-    if empty(l:user_given_name) " generate default mark name
-        let l:mark_char = a:mark.getMarkChar()
-        if !markbar#helpers#IsGlobalMark(l:mark_char)
-            let l:format_str =
-                \ l:self.format.getOption('local_mark_name_format_str')
-            let l:format_arg =
-                \ l:self.format.getOption('local_mark_name_arguments')
-        elseif markbar#helpers#IsUppercaseMark(l:mark_char)
-            let l:format_str =
-                \ l:self.format.getOption('file_mark_name_format_str')
-            let l:format_arg =
-                \ l:self.format.getOption('file_mark_name_arguments')
-        else " numbered mark
-            let l:format_str =
-                \ l:self.format.getOption('numbered_mark_name_format_str')
-            let l:format_arg =
-                \ l:self.format.getOption('numbered_mark_name_arguments')
-        endif
 
-        let l:name = ''
-        if !empty(l:format_str)
-            let l:cmd = printf("let l:name = printf('%s'", l:format_str)
-
-            for l:Arg in l:format_arg " capital 'Arg' to handle funcrefs
-                let l:cmd .= ', '
-                if type(l:Arg) == v:t_func
-                    let l:cmd .= string(l:Arg(markbar#BasicMarkData#New(a:mark)))
-                elseif l:Arg ==# 'line'
-                    let l:cmd .= a:mark.getLineNo()
-                elseif l:Arg ==# 'col'
-                    let l:cmd .= a:mark.getColumnNo()
-                elseif l:Arg ==# 'fname'
-                    " string() to include quotes when concatenating onto l:cmd
-                    let l:cmd .=
-                        \ string(a:mark.getFilename())
-                else
-                    throw printf('Unrecognized format argument: %s',
-                        \ string(l:Arg))
-                endif
-            endfor
-            let l:cmd .= ')'
-            execute l:cmd
-        endif
-
-        let l:suffix .= l:name
-    else
-        let l:suffix .= l:user_given_name
+    let l:mark_char = a:mark.getMarkChar()
+    if !markbar#helpers#IsGlobalMark(l:mark_char)
+        let l:format_str =
+            \ l:self.format.getOption('local_mark_name_format_str')
+        let l:format_arg =
+            \ l:self.format.getOption('local_mark_name_arguments')
+    elseif markbar#helpers#IsUppercaseMark(l:mark_char)
+        let l:format_str =
+            \ l:self.format.getOption('file_mark_name_format_str')
+        let l:format_arg =
+            \ l:self.format.getOption('file_mark_name_arguments')
+    else " numbered mark
+        let l:format_str =
+            \ l:self.format.getOption('numbered_mark_name_format_str')
+        let l:format_arg =
+            \ l:self.format.getOption('numbered_mark_name_arguments')
     endif
+
+    let l:name = ''
+    if !empty(l:format_str)
+        let l:cmd = printf("let l:name = printf('%s'", l:format_str)
+
+        for l:Arg in l:format_arg " capital 'Arg' to handle funcrefs
+            let l:cmd .= ', '
+            if type(l:Arg) == v:t_func
+                let l:cmd .= string(l:Arg(markbar#BasicMarkData#New(a:mark)))
+            elseif l:Arg ==# 'line'
+                let l:cmd .= a:mark.getLineNo()
+            elseif l:Arg ==# 'col'
+                let l:cmd .= a:mark.getColumnNo()
+            elseif l:Arg ==# 'fname'
+                " string() to include quotes when concatenating onto l:cmd
+                let l:cmd .= string(a:mark.getFilename())
+            elseif l:Arg ==# 'name'
+                let l:name = a:mark.getUserName()
+                if empty(l:name)
+                    let l:name = a:mark.getDefaultName()
+                endif
+                let l:cmd .= string(l:name)
+            else
+                throw printf('Unrecognized format argument: %s',
+                    \ string(l:Arg))
+            endif
+        endfor
+        let l:cmd .= ')'
+        execute l:cmd
+    endif
+
+    " strip leading, trailing whitespace
+    let l:name = matchlist(l:name, '\m^\s*\(.\{-}\)\s*$')[1]
+
+    let l:suffix .= l:name
 
     return printf("['%s]:%s", a:mark.getMarkChar(), l:suffix)
 endfunction

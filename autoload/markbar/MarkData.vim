@@ -37,11 +37,9 @@ function! markbar#MarkData#New(markstring, bufname) abort
     return l:new
 endfunction
 
-" RETURNS:  (v:t_string)    Default name for a 'punctuation' mark, or an empty
-"                           string.
-function! markbar#MarkData#DefaultMarkName(mark_data) abort
-    call markbar#ensure#IsClass(a:mark_data, 'BasicMarkData')
-    let l:mark = a:mark_data.mark
+" RETURNS:  (v:t_string)    Default name for a mark, or an empty string.
+function! s:MarkData.getDefaultName() abort
+    let l:mark = l:self.getMarkChar()
     if l:mark ==# "'"
         return 'Last Jump'
     elseif l:mark ==# '<'
@@ -82,7 +80,8 @@ function! s:MarkData.getColumnNo() abort dict
     return l:self._data[2]
 endfunction
 
-function! s:MarkData.getName() abort dict
+" RETURNS:  (v:t_string)    User-provided name for this mark, or ''.
+function! s:MarkData.getUserName() abort dict
     return l:self._name
 endfunction
 
@@ -94,7 +93,8 @@ function! s:MarkData.isGlobal() abort dict
     return markbar#helpers#IsGlobalMark(l:self.getMarkChar())
 endfunction
 
-function! s:MarkData.setName(new_name) abort dict
+" EFFECTS:  Set user-given name for this mark.
+function! s:MarkData.setUserName(new_name) abort dict
     let l:self._name = a:new_name
 endfunction
 
