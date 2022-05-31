@@ -207,60 +207,15 @@ function! markbar#helpers#SplitString(string, idx) abort
     return [ a:string[0:a:idx-1], a:string[a:idx :] ]
 endfunction
 
-" EFFECTS:  - Replace the line range in the given buffer with the given lines.
-"           - If the number of elements in the list is different from the
-"           number of lines in the given range, add/remove lines as needed.
-" DETAILS:  - See `:help nvim_buf_set_lines` (in neovim) or `:help setbufline`
-"           (in vim).
-"           - To insert a line at a given line number (pushing the original
-"           line down without removing it), set both `a:start` and `a:end` to
-"           the target line number.
-"           - To replace a line at a given line number `line`, let
-"           `a:start = line` and `a:end = line + 1`.
-"           - To append lines at the end of the buffer, either manually
-"           specify the 'line-past-the-end', or set both `a:start` and `a:end`
-"           to 0.
-"           - To insert lines before the last line of the buffer, use negative
-"           indexing (e.g. `a:start = a:end = -1` inserts a line above the
-"           last line in the buffer).
-" PARAM:    start   (v:t_number)    The first line to replace, inclusive.
-" PARAM:    end     (v:t_number)    The last line to replace, exclusive.
-" PARAM:    lines   (v:t_list)      The 'new' lines to insert.
-function! markbar#helpers#SetBufferLineRange(buffer_expr, start, end, lines) abort
-    if !(exists('*nvim_buf_set_lines') || exists('*setbufline'))
-        throw '(vim-markbar) vim version is too old! '
-            \ . '(Need nvim with `nvim_buf_set_lines`, or vim with `setbufline`.)'
-    endif
-    let l:target_buf = bufnr(a:buffer_expr)
-    if has('nvim')
-        call nvim_buf_set_lines(l:target_buf, a:start - 1, a:end - 1, 0, a:lines)
-    else
-        let l:num_lines = len(getbufline(l:target_buf, 1, '$'))
-        if     !a:start       | let l:start = l:num_lines
-        elseif  a:start <#  0 | let l:start = a:start + l:num_lines
-        else                  | let l:start = a:start - 1
-        endif
-
-        if     !a:end      | let l:end = l:num_lines
-        elseif  a:end <# 0 | let l:end = a:end + l:num_lines
-        else               | let l:end = a:end - 1
-        endif
-
-        call deletebufline(l:target_buf, l:start + 1, l:end)
-        let l:buffer_wiped = getbufline(l:target_buf, 1, '$') ==# [''] ? 1 : 0
-        call appendbufline(l:target_buf, l:start, a:lines)
-        if l:buffer_wiped
-            " 'deleting everything' and then appending will leave one more
-            " empty line than nvim_buf_set_lines
-            call deletebufline(l:target_buf, '$')
-        endif
-    endif
-endfunction
-
 " EFFECTS:  Totally replace the contents of the given buffer with the given
 "           lines.
 function! markbar#helpers#ReplaceBuffer(buffer_expr, lines) abort
-    call markbar#helpers#SetBufferLineRange(a:buffer_expr, 1, 0, a:lines)
+    if has('nvim')
+        call nvim_buf_set_lines(a:buffer_expr, 0, -1, 0, a:lines)
+    else
+        silent call deletebufline(a:buffer_expr, 1, '$')
+        silent call setbufline(a:buffer_expr, 1, a:lines)
+    endif
 endfunction
 
 " EFFECTS:  Retrieve the given line range (inclusive) from the requested

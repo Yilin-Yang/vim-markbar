@@ -1,5 +1,6 @@
 Include: clear-marks.vader
 Include: WindowHelpers.vader
+Include: MessageHelpers.vader
 
 Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_enable_mark_highlighting = v:false
@@ -47,6 +48,10 @@ Then:
   AssertEqual 'markbar', &filetype
   AssertEqual 'markbar', &syntax
   AssertEqual 1, b:is_markbar
+
+  AssertNotEqual len(getbufline(bufnr('%'), 1, '$')), getcurpos()[1],
+      \ 'Cursor was pushed to bottom of markbar'
+
 Expect:
   " Press ? for help
   ['A]: 10lines.txt [l: 1, c: 5]
@@ -101,6 +106,59 @@ Expect:
       ~
   
 Do (Verbose help stays open in later markbars if not hidden):
+  Mo
+Expect:
+  " vim-markbar Keymappings
+  " -----------------------
+  " Press ? to close help
+  " -----------------------
+  " With the cursor over a mark or its context,
+  " <cr>: jump to mark
+  " n: move cursor to next mark
+  " N: move cursor to previous mark
+  " r: rename mark
+  " c: reset mark's name
+  " d: delete mark
+  " -----------------------
+  ['A]: 10lines.txt [l: 1, c: 5]
+      ~
+      first line
+      second line
+
+  ['B]: 10lines.txt [l: 5, c: 5]
+      fourth line
+      fifth line
+      sixth line
+
+  ['C]: 10lines.txt [l: 10, c: 5]
+      ninth line
+      tenth line
+      ~
+  
+
+Execute (Renaming mark without a mark selected shows a message):
+  normal Mo
+  normal! 7G
+  AssertEqual '" n: move cursor to next mark', getline('.')
+  " getline('.') seems to malfunction in vim when an echomsg is being shown
+  normal r
+  AssertEqual "\nNo mark selected for renaming.", LastMessage()
+
+Execute (Name-clearing mark without a mark selected shows a message):
+  normal Mo
+  normal! 7G
+  AssertEqual '" n: move cursor to next mark', getline('.')
+  normal c
+  AssertEqual "\nNo mark selected for name-clearing.", LastMessage()
+
+Execute (Deleting mark without a mark selected shows a message):
+  normal Mo
+  normal! 7G
+  AssertEqual '" n: move cursor to next mark', getline('.')
+  normal d
+  AssertEqual "\nNo mark selected for deletion.", LastMessage()
+
+Do (Invalid mark rename, name-clear, deletions did nothing):
   Mo
 Expect:
   " vim-markbar Keymappings

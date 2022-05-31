@@ -1,0 +1,9 @@
+Execute (Declare Message Helpers):
+  ""
+  " Return the last :message as a string.
+  function! LastMessage() abort
+    redir => l:to_return
+    silent 1messages
+    redir end
+    return l:to_return
+  endfunction

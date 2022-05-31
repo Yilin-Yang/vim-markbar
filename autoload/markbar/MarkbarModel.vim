@@ -30,12 +30,28 @@ function! markbar#MarkbarModel#New() abort
     return s:MarkbarModel
 endfunction
 
+function! s:WarnIfValidMarkCharIsEmpty(Object, operation) abort
+    call markbar#ensure#IsString(a:Object)
+    if a:Object ==# ''
+        echohl WarningMsg
+        echomsg printf('No mark selected for %s.', a:operation)
+        echohl None
+        return v:true
+    endif
+    if !has_key(markbar#constants#ALL_MARKS_DICT(), a:Object)
+        throw printf('Invalid mark name: %s', a:Object)
+    endif
+    return v:false
+endfunction
+
 " BRIEF:    Prompt the user to assign an explicit name to the selected mark.
 " DETAILS:  Requires that the markbar be open and focused.
 "           Changes won't appear until the markbar has been repopulated.
 " PARAM:    mark    (v:t_string)    Single character representing the mark.
 function! s:MarkbarModel.renameMark(mark) abort dict
-    call markbar#ensure#IsMarkChar(a:mark)
+    if s:WarnIfValidMarkCharIsEmpty(a:mark, 'renaming')
+        return
+    endif
 
     let l:mark_data = l:self.getMarkData(a:mark)
 
@@ -51,7 +67,9 @@ endfunction
 " DETAILS:  Changes won't appear until the markbar has been repopulated.
 " PARAM:    mark    (v:t_string)    Single character representing the mark.
 function! s:MarkbarModel.resetMark(mark) abort dict
-    call markbar#ensure#IsMarkChar(a:mark)
+    if s:WarnIfValidMarkCharIsEmpty(a:mark, 'name-clearing')
+        return
+    endif
     let l:mark_data = l:self.getMarkData(a:mark)
     call l:mark_data.setUserName('')
 endfunction
@@ -62,7 +80,9 @@ endfunction
 " PARAM:    mark    (v:t_string)    The single character representing the
 "                                   mark.
 function! s:MarkbarModel.deleteMark(mark) abort dict
-    call markbar#ensure#IsMarkChar(a:mark)
+    if s:WarnIfValidMarkCharIsEmpty(a:mark, 'deletion')
+        return
+    endif
 
     let l:is_global = markbar#helpers#IsGlobalMark(a:mark)
 
