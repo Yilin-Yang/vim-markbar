@@ -71,6 +71,10 @@ Then:
   AssertEqual 'markbar', &filetype
   AssertEqual 'markbar', &syntax
   AssertEqual 1, b:is_markbar
+
+  AssertNotEqual len(getbufline(bufnr('%'), 1, '$')), getcurpos()[1],
+      \ 'Cursor was pushed to bottom of markbar'
+
 Expect:
   " Press ? for help
   ['A]: 10lines.txt [l: 1, c: 5]
