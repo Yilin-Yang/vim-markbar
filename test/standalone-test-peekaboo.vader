@@ -1,5 +1,6 @@
 Include: clear-marks.vader
 Include: WindowHelpers.vader
+Include: MessageHelpers.vader
 
 Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_enable_mark_highlighting = v:false
@@ -187,6 +188,11 @@ Then:
   " check line number
   AssertEqual 2, cur_pos[1]
 
+Do (Selecting non-existent mark shows a message):
+  '\d
+Then:
+  AssertEqual "\nMark not in markbar: d", LastMessage()
+
 Do (Select and go to mark with apostrophe goes to exact column with jump_to_exact_position):
   :let g:markbar_peekaboo_jump_to_exact_position = v:true\<cr>
   '
@@ -277,6 +283,11 @@ Then:
 
   " check column number
   AssertEqual 1, cur_pos[2]
+
+Do (Go direct to non-existent mark shows a message):
+  'd
+Then:
+  AssertEqual "\nMark not set: d", LastMessage()
 
 Do (Go Direct To Mark, Backtick):
   `

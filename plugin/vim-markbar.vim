@@ -304,25 +304,6 @@ if markbar#settings#ExplicitlyRemapMarkMappings()
     call g:markbar_backtick_remapper.setMappings('noremap <silent>')
 endif
 
-function! s:SetEchoHeaderAutocmds() abort
-    if getbufvar(bufnr('%'), 'is_markbar')
-        augroup markbar_echo_header
-            au!
-            autocmd CursorHold,CursorMoved *
-                \ echo getline(g:markbar_view.getCurrentMarkHeadingLine())
-        augroup end
-    else
-        augroup markbar_echo_header
-            au!
-        augroup end
-    endif
-endfunction
-
-augroup markbar_buffer_updates
-    au!
-    autocmd BufEnter * call s:SetEchoHeaderAutocmds()
-augroup end
-
 augroup markbar_model_update
     au!
     autocmd VimEnter * call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
