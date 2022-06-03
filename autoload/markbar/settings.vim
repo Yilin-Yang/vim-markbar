@@ -402,6 +402,19 @@ function! markbar#settings#PreviousMarkMapping() abort
     return g:markbar_previous_mark_mapping
 endfunction
 
+" RETURNS:  (v:t_string)    The keymapping used to close the peekaboo markbar.
+function! markbar#settings#ClosePeekabooMapping() abort
+    if !exists('g:markbar_close_peekaboo_mapping')
+        let g:markbar_close_peekaboo_mapping = '<Esc>'
+    endif
+    call s:AssertType(
+        \ g:markbar_close_peekaboo_mapping,
+        \ v:t_string,
+        \ 'g:markbar_close_peekaboo_mapping'
+    \ )
+    return g:markbar_close_peekaboo_mapping
+endfunction
+
 " RETURNS:  (v:t_bool)      `v:true` if the 'jump to mark from markbar'
 "                           mapping should go to the exact line *and column*
 "                           of the mark, or `v:false` if it should go to the

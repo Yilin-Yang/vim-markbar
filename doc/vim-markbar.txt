@@ -276,6 +276,16 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     The mapping used to move the cursor to the previous mark listed in the
     markbar.
 
+*g:markbar_close_peekaboo_mapping*                       |(v:t_string)|
+    `Default Value:` `<Esc>`
+
+    The mapping used to close the peekaboo markbar.
+
+    You may want to change this to `qq` or similar when using vim (not neovim)
+    in a terminal, because then the |^[| at the start of the |terminal-key-codes|
+    for keys like <S-Up> and <PageDown> might erroneously trigger this mapping.
+    vim-markbar tries to work around this.
+
 *g:markbar_jump_to_exact_position*                       |(v:t_bool)|
     `Default Value:` `v:true`
 
