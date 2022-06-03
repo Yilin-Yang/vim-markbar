@@ -257,16 +257,6 @@ if markbar#settings#EnablePeekabooMarkbar()
         let b:view  = g:markbar_view
         let b:model = g:markbar_model
 
-        noremap <silent> <buffer> <Esc> :call b:ctrl.closeMarkbar()<cr>
-        execute 'noremap <silent> <buffer> '
-            \ . markbar#settings#PeekabooJumpToMarkMapping()
-            \ . ' :call b:view.goToSelectedMark('
-                \ . (a:jump_like_backtick ? 'v:true' : 'v:false')
-            \ . ')<cr>'
-        execute 'noremap <silent> <buffer> ? '
-            \ . ':call b:fmt.flipOption("show_verbose_help")<cr>'
-            \ . ':call b:ctrl.refreshContents()<cr>'
-
         call g:markbar_peekaboo_select_keys.setCallback(
             \ { key, mods, prefix -> b:view.selectMark(key) }
         \ )
@@ -278,6 +268,32 @@ if markbar#settings#EnablePeekabooMarkbar()
                 \ 'noremap <silent> <buffer>')
         call g:markbar_peekaboo_jump_to_keys.setMappings(
                 \ 'noremap <silent> <buffer>')
+
+        execute printf('noremap <silent> <buffer> %s :call b:ctrl.closeMarkbar()<cr>',
+            \ markbar#settings#ClosePeekabooMapping())
+        execute 'noremap <silent> <buffer> '
+            \ . markbar#settings#PeekabooJumpToMarkMapping()
+            \ . ' :call b:view.goToSelectedMark('
+                \ . (a:jump_like_backtick ? 'v:true' : 'v:false')
+            \ . ')<cr>'
+        execute 'noremap <silent> <buffer> ? '
+            \ . ':call b:fmt.flipOption("show_verbose_help")<cr>'
+            \ . ':call b:ctrl.refreshContents()<cr>'
+
+        if !has('nvim')
+            " Work around |terminal-key-codes| like the arrow keys erroneously
+            " closing the peekaboo markbar when
+            " g:markbar_close_peekaboo_mapping ==? '<Esc>'.
+
+            " Apparently, setting any mapping with a literal <Esc> special
+            " character will cause <Up>, <Down>, etc. to start working
+            " correctly. |ttimeout| doesn't seem to affect anything.
+            "
+            " Tested with:
+            " VIM - Vi IMproved 8.2 (2019 Dec 12, compiled Apr 18 2022 19:26:30)
+            " Included patches: 1-3995
+            noremap <silent> <buffer> notarealkeycode <Nop>
+        endif
     endfunction
 
 endif

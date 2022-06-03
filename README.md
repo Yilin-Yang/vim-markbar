@@ -185,6 +185,12 @@ let g:markbar_rename_mark_mapping   = '<F2>'
 let g:markbar_reset_mark_mapping    = 'r'
 let g:markbar_delete_mark_mapping   = '<Del>'
 
+" vim (not neovim) can behave weirdly when '<Esc>' is a mapping's LHS:
+" vim-markbar tries to work around this, but if e.g. the arrow keys cause
+" the peekaboo markbar to close erroneously, or if you prefer, you may want to
+" change this.
+let g:markbar_close_peekaboo_mapping = 'qq'
+
 " open/close markbar mappings
 nmap <Leader>m  <Plug>ToggleMarkbar
 nmap <Leader>mo <Plug>OpenMarkbar

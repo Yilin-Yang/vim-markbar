@@ -93,10 +93,65 @@ Expect:
     tenth line
     ~
   
-Do (Close Peekaboo Markbar):
-  \<Esc>
+" vim in a terminal (but not neovim) interprets e.g. <Up> as ^[OA,
+" which might get parsed as <Esc> (close peekaboo markbar), O (insert line
+" above cursor), A (type the letter 'A'). This is undesirable behavior.
+"
+" See :h terminal-key-codes in vim.
+Execute (Arrow keys work for navigation inside peekaboo markbar):
+  normal '
+  normal! 9G05l
+  let g:old_cur_pos = getcurpos()
+  let g:up    = has('nvim') ? "\<Up>"    : &t_ku
+  let g:down  = has('nvim') ? "\<Down>"  : &t_kd
+  let g:left  = has('nvim') ? "\<Left>"  : &t_kl
+  let g:right = has('nvim') ? "\<Right>" : &t_kr
+
+  execute 'normal '.g:up
+  execute 'normal '.g:up
+  execute 'normal '.g:down
+  execute 'normal '.g:left
+  execute 'normal '.g:right
+  execute 'normal '.g:left
+
+  let g:cur_pos = getcurpos()
 Then:
-  Assert !exists('b:is_markbar')
+  AssertEqual 1, b:is_markbar
+  AssertEqual g:old_cur_pos[1] - 1, g:cur_pos[1]
+  AssertEqual g:old_cur_pos[2] - 1, g:cur_pos[2]
+
+Execute (PageUp and PageDown work for navigation inside peekaboo markbar):
+  normal '
+  normal! 9G05l
+  let g:old_cur_pos = getcurpos()
+  let g:pg_up    = has('nvim') ? "\<PageUp>"   : &t_kP
+  let g:pg_down  = has('nvim') ? "\<PageDown>" : &t_kN
+
+  execute 'normal '.g:pg_up
+  execute 'normal '.g:pg_down
+  execute 'normal '.g:pg_up
+  execute 'normal '.g:pg_down
+  execute 'normal '.g:pg_down
+
+  let g:cur_pos = getcurpos()
+Then:
+  AssertEqual 1, b:is_markbar
+  AssertNotEqual g:old_cur_pos[1], g:cur_pos[1]
+  AssertEqual len(getbufline(bufnr('%'), 1, '$')), g:cur_pos[1]
+
+Execute (Home and End work for navigation inside peekaboo markbar):
+  normal '
+  normal! 7G05l
+
+  let g:home = has('nvim') ? "\<Home>" : &t_kh
+  let g:end  = has('nvim') ? "\<End>"  : &t_@7
+
+  execute 'normal '.g:home
+  AssertEqual 1, b:is_markbar
+  AssertEqual 1, getcurpos()[2]
+
+  execute 'normal '.g:end
+  AssertEqual len("['B]: 10lines.txt [l: 5, c: 0]"), getcurpos()[2]
 
 Execute (Preserve Window Layout On Closing Peekaboo Markbar):
   vsplit
@@ -106,6 +161,31 @@ Execute (Preserve Window Layout On Closing Peekaboo Markbar):
   execute "normal \<Esc>"
 Then:
   call AssertWinStatesAboutEqual(g:saved_state, GetWinState(), 1)
+
+Execute (Close peekaboo markbar works with default <Esc> mapping):
+  " Do this after the '_ and _ work for navigation inside peekaboo markbar'
+  " tests because the default value for g:markbar_close_peekaboo_mapping
+  " is what causes |terminal-key-codes| to malfunction.
+  normal '
+  AssertEqual 1, b:is_markbar
+  execute "normal \<Esc>"
+  Assert !exists('b:is_markbar')
+
+Execute (Close peekaboo markbar works with different mapping):
+  let g:markbar_close_peekaboo_mapping = 'qq'
+  normal '
+  AssertEqual 1, b:is_markbar
+  execute "normal qq"
+  Assert !exists('b:is_markbar')
+
+Execute (Go-direct-to-mark doesn't clobber the close-markbar mapping):
+  let g:markbar_close_peekaboo_mapping = 'q'
+  normal '
+  AssertEqual 1, b:is_markbar
+  execute "normal q"
+  Assert !exists('b:is_markbar')
+Then:
+  let g:markbar_close_peekaboo_mapping = '<Esc>'
 
 Execute (Test Mark Highlighting, Backtick):
   let g:markbar_enable_mark_highlighting = v:true
@@ -255,6 +335,15 @@ Then:
 
   AssertEqual g:last_window, win_getid(), "Jumped to mark in wrong window!"
 
+Execute (Go-direct-to-mark doesn't clobber go-to-selected):
+  let g:markbar_peekaboo_jump_to_mark_mapping = 'A'
+  normal '
+  normal \BA
+Then:
+  let g:markbar_peekaboo_jump_to_mark_mapping = '<cr>'
+  let g:cur_pos = getcurpos()
+  AssertEqual 5, g:cur_pos[1]
+  AssertEqual 1, g:cur_pos[2]
 
 Execute (Go direct to mark with apostrophe works with jump_to_exact_position):
   let g:markbar_peekaboo_jump_to_exact_position = v:true
