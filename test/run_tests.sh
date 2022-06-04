@@ -108,8 +108,8 @@ while [[ $# -gt 0 ]]; do
       ;;
     '-v' | '--visible')
       export NOT_VISIBLE=0
-      BASE_CMD_NVIM="-Nnu .test_vimrc -i NONE"
-      BASE_CMD_VIM="-Nnu .test_vimrc -i NONE"
+      BASE_CMD_NVIM="-Nnu .test_vimrc"
+      BASE_CMD_VIM="-Nnu .test_vimrc"
       VADER_CMD="-c 'Vader *'"
       ;;
     '--vim')

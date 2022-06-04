@@ -129,10 +129,10 @@ function! s:MarkbarView.getMarkbarWinID() abort dict
     return bufwinid(l:self.getMarkbarBuffer())
 endfunction
 
-" BRIEF:    Move the cursor to the given line number in the current buffer.
+" BRIEF:    Move cursor to the start of the given line in the current buffer.
 " PARAM:    line    (v:t_number)    The target line number.
 function! s:MarkbarView._moveCursorToLine(line) abort dict
-    execute 'silent normal! ' . a:line . 'G'
+    execute 'silent normal! ' . a:line . 'G0'
 endfunction
 
 " BRIEF:    Jump to the currently selected mark
@@ -276,9 +276,12 @@ function! s:MarkbarView._getNextMarkHeadingLine() abort dict
     return l:cur_heading_no
 endfunction
 
-" RETURNS:  (v:t_number)    The line number of the mark heading below the
+" RETURNS:  (v:t_number)    The line number of the mark heading above the
 "                           'currently selected' mark.
 function! s:MarkbarView._getPreviousMarkHeadingLine() abort dict
+    let l:searched_from_line = getcurpos()[1]
+    " if the cursor is on a mark header, but right of column 0, then search
+    " will return the current line; skip the match if that happens
     let l:cur_heading_no = search(
         \ markbar#constants#MARK_HEADING_SEARCH_PATTERN(), 'bn', 0)
     return l:cur_heading_no
