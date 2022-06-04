@@ -361,50 +361,64 @@ Do (Iterate Through Marks with Next):
   Mo
   ggnnn
 Then:
-  let cur_pos = getcurpos()
-
-  " check line number
-  AssertEqual 12, cur_pos[1]
+  let g:cur_pos = getcurpos()
+  AssertEqual 12, g:cur_pos[1]
 
 Do (Use Count with Next):
   Mo
   gg3n
 Then:
-  let cur_pos = getcurpos()
+  let g:cur_pos = getcurpos()
+  AssertEqual 12, g:cur_pos[1]
 
-  " check line number
-  AssertEqual 12, cur_pos[1]
+Do (Iterating through marks with next wraps around bottom of markbar):
+  Mo
+  ggnnnnn
+Then:
+  let g:cur_pos = getcurpos()
+  AssertEqual 7, g:cur_pos[1]
 
 Do (Iterate Through Marks with Previous):
   Mo
   GNNN
 Then:
-  let cur_pos = getcurpos()
-
-  " check line number
-  AssertEqual 2, cur_pos[1]
+  let g:cur_pos = getcurpos()
+  AssertEqual 2, g:cur_pos[1]
 
 Do (Use Count with Previous):
   Mo
   G3N
 Then:
-  let cur_pos = getcurpos()
+  let g:cur_pos = getcurpos()
+  AssertEqual 2, g:cur_pos[1]
 
-  " check line number
-  AssertEqual 2, cur_pos[1]
+Do (Iterating through marks with previous wraps around top of markbar):
+  Mo
+  GNNNNN
+Then:
+  let g:cur_pos = getcurpos()
+  AssertEqual 7, g:cur_pos[1]
+
+Do (Iterating backwards works when cursor is right of column 0):
+  Mo
+  12G$
+  NN
+Then:
+  let g:cur_pos = getcurpos()
+  AssertEqual 7, g:cur_pos[1]
 
 Do (Go To Mark):
   Mo
   2G\<cr>
 Then:
   AssertEqual '10lines.txt', expand('%:t')
-  let cur_pos = getcurpos()
+  let g:cur_pos = getcurpos()
 
   " check line number
-  AssertEqual 1, cur_pos[1]
+  AssertEqual 1, g:cur_pos[1]
 
   " check column number
-  AssertEqual 6, cur_pos[2]
+  AssertEqual 6, g:cur_pos[2]
 
 Do (Go To Mark Opens In Correct Window with markbar_open_position = 'topleft'):
   :let g:markbar_open_position = 'topleft'\<cr>
@@ -439,9 +453,9 @@ Do (Go to mark goes to the first non-blank character without jump_to_exact_posit
   ggnn\<cr>
 Then:
   let g:markbar_jump_to_exact_position = v:true
-  let cur_pos = getcurpos()
-  AssertEqual 2, cur_pos[1]
-  AssertEqual 3, cur_pos[2]
+  let g:cur_pos = getcurpos()
+  AssertEqual 2, g:cur_pos[1]
+  AssertEqual 3, g:cur_pos[2]
 
 Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
