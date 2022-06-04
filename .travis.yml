@@ -6,7 +6,7 @@ before_script:
   - sudo add-apt-repository ppa:jonathonf/vim -y
   - sudo add-apt-repository ppa:neovim-ppa/stable -y
   - sudo apt-get update  -q
-  - sudo apt-get install -y language-pack-de language-pack-es
+  - sudo apt-get install -y language-pack-de
   - |
     sudo apt-get install -y vim
     vim  --version

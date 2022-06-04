@@ -18,67 +18,81 @@ printUsage() {
   printf "\t                    (Script will not fail with nonzero exit code on test failure)\n"
   printf "\t-h, --help           Print this helptext\n"
   printf "\t-i, --international  Re-run tests using non-English locales\n"
-  printf "\t-f <PAT>, --file=<PAT>   Run only tests globbed (matched) by <PAT>\n"
+  printf "\t-f <FILE>, --file=<FILE>  Run only the test <FILE>\n"
   printf "\t-e <PATH>, --vim_exe=<PATH>   Use the given (n)vim executable.\n"
-  printf "\t                              Unaffected by --vim or --neovim"
+  printf "\t                              Make sure to still specify --neovim if using neovim."
   printf "\n"
 }
 
 runAndExitOnFail() {
   local COMMAND=$1
   echo "$COMMAND"
-  eval "$COMMAND"
-  if [[ $? -ne 0 ]]; then
+  if ! eval "$COMMAND"; then
     echo "Command failed!"
     exit 1
   fi
 }
 
-# Runs the given ${COMMAND}, substituting the '*' character in ${COMMAND} with
-# the given ${GLOB}.
-runAllAtOnce() {
-  local COMMAND=$1
-  local GLOB=$2
-  local COMMAND="${COMMAND//\*/$GLOB}"
-  runAndExitOnFail "$COMMAND"
-}
-
-# Runs the given ${COMMAND}, substituting the '*' character in ${COMMAND} with
-# all of the files matched by the given ${GLOB}.
+# Runs an individual {TEST}. If {TEST} is a standlone-test-sequential-*
+# directory, then run that subdirectory's test suite in ascending numerical
+# order with a subdirectory-local viminfo/shada file.
 runIndividually() {
-  local COMMAND=$1
-  local GLOB=$2
+  local BASE_CMD=$1
+  local VADER_CMD=$2
+  local TEST=$3
   local FILES
-  FILES=$(ls $GLOB)
+  FILES=$(find . -maxdepth 1 -name "$TEST" | sed "s|^\./||")
   for FILE in $FILES; do
-    local SINGLE_CMD="${COMMAND//\*/$FILE}"
-    runAndExitOnFail "$SINGLE_CMD"
+    if [ -d "$FILE" ]; then
+      runSequentialTests "$BASE_CMD" "$VADER_CMD" "$FILE"
+    else
+      local SINGLE_CMD="$BASE_CMD -i NONE ${VADER_CMD//\*/$FILE}"
+      runAndExitOnFail "$SINGLE_CMD"
+    fi
   done
 }
 
-# Runs test cases using the given ${BASE_CMD} and ${VADER_CMD}, but inserts
-# the given ${BEFORE} command between ${BASE_CMD} and ${VADER_CMD}.
+# Runs each test in the given ${SUBDIR} in ascending numerical order.
+runSequentialTests() {
+  local BASE_CMD="$1"
+  local VADER_CMD=$2
+  local SUBDIR=$3
+  local SHARED_DATA="$SUBDIR/viminfo_or_shada"
+
+  echo "rm -f \"$SHARED_DATA\""
+  rm -f "$SHARED_DATA"
+
+  local TESTFILES
+  TESTFILES=$(ls $SUBDIR/*$SUBDIR)
+  for TESTFILE in $TESTFILES; do
+    runAndExitOnFail "$BASE_CMD -i $SHARED_DATA ${VADER_CMD//\*/$TESTFILE}"
+  done
+}
+
+# Runs test cases using the given ${BASE_CMD} and ${VADER_CMD}.
 #
-# Runs "all at once" tests using the given ${GLOB}. If ${STANDALONE_GLOB} is
-# specified, standalone tests are run as well.
+# Runs "all at once" tests using the given ${GLOB}, if given. If
+# ${STANDALONE_GLOB} is specified, then standalone tests are run as well.
+#
+# ref: https://tldp.org/LDP/abs/html/string-manipulation.html
 runTests() {
   local BASE_CMD=$1
   local VADER_CMD=$2
-  local BEFORE=$3
-  local GLOB=$4
-  local STANDALONE_GLOB=$5
+  local GLOB=$3
+  local STANDALONE_GLOB=$4
 
-  local COMMAND="$BASE_CMD $BEFORE $VADER_CMD"
-  runAllAtOnce "$COMMAND" "$GLOB"
+  if [ "$GLOB" ]; then
+    runAndExitOnFail "$BASE_CMD -i NONE ${VADER_CMD//\*/$GLOB}"
+  fi
   if [ "$STANDALONE_GLOB" ]; then
-    runIndividually "$COMMAND" "$STANDALONE_GLOB"
+    runIndividually "$BASE_CMD" "$VADER_CMD" "$STANDALONE_GLOB"
   fi
 }
 
 NVIM_PATH_DEFAULT='nvim '
 VIM_PATH_DEFAULT='vim '
-BASE_CMD_NVIM="--headless -Nnu .test_vimrc -i NONE"
-BASE_CMD_VIM="-Nnu .test_vimrc -i NONE"
+BASE_CMD_NVIM="--headless -Nnu .test_vimrc"
+BASE_CMD_VIM="-Nnu .test_vimrc"
 RUN_VIM=1
 RUN_GIVEN=0
 GAVE_PATH=0
@@ -94,8 +108,8 @@ while [[ $# -gt 0 ]]; do
       ;;
     '-v' | '--visible')
       export NOT_VISIBLE=0
-      BASE_CMD_NVIM="nvim -Nnu .test_vimrc -i NONE"
-      BASE_CMD_VIM="vim -Nnu .test_vimrc -i NONE"
+      BASE_CMD_NVIM="-Nnu .test_vimrc -i NONE"
+      BASE_CMD_VIM="-Nnu .test_vimrc -i NONE"
       VADER_CMD="-c 'Vader *'"
       ;;
     '--vim')
@@ -130,6 +144,9 @@ while [[ $# -gt 0 ]]; do
       printUsage
       exit 0
       ;;
+    *)
+      >&2 printf "Unrecognized argument: %s\n" "${ARG}"
+      exit 1
   esac
   shift
 done
@@ -158,15 +175,13 @@ if [ $RUN_GIVEN -eq 1 ]; then
   runTests "${BASE_CMD}" "${VADER_CMD}" "" "${GLOB_USER}"
   if [ $TEST_INTERNATIONAL ]; then
     # test non-English locale
-    runTests "${BASE_CMD}" "${VADER_CMD}" "-c 'language de_DE.utf8'" "${GLOB_USER}"
-    runTests "${BASE_CMD}" "${VADER_CMD}" "-c 'language es_ES.utf8'" "${GLOB_USER}"
+    runTests "${BASE_CMD} -c 'language de_DE.utf8'" "${VADER_CMD}" "" "${GLOB_USER}"
   fi
 else
-  runTests "${BASE_CMD}" "${VADER_CMD}" "" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
+  runTests "${BASE_CMD}" "${VADER_CMD}" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
   if [ $TEST_INTERNATIONAL ]; then
     # test non-English locale
-    runTests "${BASE_CMD}" "${VADER_CMD}" "-c 'language de_DE.utf8'" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
-    runTests "${BASE_CMD}" "${VADER_CMD}" "-c 'language es_ES.utf8'" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
+    runTests "${BASE_CMD} -c 'language de_DE.utf8'" "${VADER_CMD}" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
   fi
 fi
 unset NOT_VISIBLE

@@ -724,3 +724,38 @@ Expect:
       ~
       ~
   
+Execute (Configure to display only ' and " marks):
+  let g:markbar_num_lines_context = 0
+  let g:markbar_section_separation = 0
+  let g:markbar_marks_to_display = '''"'
+  let g:markbar_mark_name_format_string = 'mark'
+  let g:markbar_mark_name_arguments = []
+  edit! 10lines.txt
+  normal! m'm"
+  normal Mo
+Expect:
+  " Press ? for help
+  ['']: mark
+  ['"]: mark
+
+Do (Trying to delete the ' mark prints an error message):
+  :edit! 10lines.txt\<cr>
+  Mogg
+  nd
+Then:
+  AssertEqual "\nCannot delete the ' mark.", LastMessage()
+Expect:
+  " Press ? for help
+  ['']: mark
+  ['"]: mark
+
+Do (Trying to delete the " mark prints an error message):
+  :edit! 10lines.txt\<cr>
+  Moggnn
+  d
+Then:
+  AssertEqual "\nCannot delete the \" mark.", LastMessage()
+Expect:
+  " Press ? for help
+  ['']: mark
+  ['"]: mark
