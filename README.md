@@ -191,6 +191,17 @@ let g:markbar_delete_mark_mapping   = '<Del>'
 " change this.
 let g:markbar_close_peekaboo_mapping = 'qq'
 
+" Deleted marks may reappear in subsequent vim/neovim sessions. vim fixed
+" this in patch 8.2.0050; this is still an issue in neovim,
+" ref: https://github.com/neovim/neovim/issues/4295#issuecomment-544207151
+" and https://github.com/Yilin-Yang/vim-markbar/issues/20
+"
+" This option works around that issue by running |:wviminfo!| or |:wshada!|
+" whenever vim-markbar deletes a mark. Because that has side effects, this is
+" disabled by default, but if you don't care/don't know what viminfo/shada are,
+" then you can enable this to make mark deletion work as expected.
+let g:markbar_force_clear_shared_data_on_delmark = v:true
+
 " open/close markbar mappings
 nmap <Leader>m  <Plug>ToggleMarkbar
 nmap <Leader>mo <Plug>OpenMarkbar

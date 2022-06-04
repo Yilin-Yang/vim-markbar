@@ -5,3 +5,4 @@ Session.vim
 *.swp
 *temp
 doc/tags
+viminfo_or_shada

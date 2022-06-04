@@ -83,6 +83,14 @@ function! s:MarkbarModel.deleteMark(mark) abort dict
     if s:WarnIfValidMarkCharIsEmpty(a:mark, 'deletion')
         return
     endif
+    if a:mark ==# "'" || a:mark ==# '"'
+        " '' explicitly cannot be deleted; '" is reset by wshada,
+        " which effectively 'undeletes' it right after delmarks
+        echohl WarningMsg
+        echomsg printf('Cannot delete the %s mark.', a:mark)
+        echohl None
+        return
+    endif
 
     let l:is_global = markbar#helpers#IsGlobalMark(a:mark)
 
@@ -93,14 +101,7 @@ function! s:MarkbarModel.deleteMark(mark) abort dict
         let l:active_buffer = l:self.getActiveBuffer()
         execute win_gotoid(bufwinid(l:active_buffer))
     endif
-    try
-        execute 'delmarks ' . a:mark
-    catch /E475/  " Bad argument
-        " do nothing; it'll disappear from the markbar, and be repopulated
-        " when it's next opened.
-    catch /E471/  " Argument required
-        " user tried deleting the double quote
-    endtry
+    execute 'delmarks ' . a:mark
     execute win_gotoid(bufwinid(l:markbar_buffer))
     call setpos('.', l:cur_pos)
 
@@ -111,6 +112,14 @@ function! s:MarkbarModel.deleteMark(mark) abort dict
         unlet l:cache.marks_dict[a:mark]
     catch /E716/  " Key not present in dictionary
     endtry
+
+    if markbar#settings#ForceClearSharedDataOnDelmark()
+        if has('nvim')
+            wshada!
+        else
+            wviminfo!
+        endif
+    endif
 endfunction
 
 " RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.

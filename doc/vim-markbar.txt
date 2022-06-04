@@ -124,6 +124,22 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     Note that this variable is not synchronized to 'foldopen': it will not
     update if 'foldopen' is changed after |g:markbar_foldopen| is initialized.
 
+*g:markbar_force_clear_shared_data_on_delmark*           |(v:t_bool)|
+    `Default Value`: `v:false`
+
+    Whether to `:wviminfo!` or `:wshada!` on deleting a mark.
+
+    vim versions without patch 8.2.0050 and all neovim versions (as of the
+    time of writing) may not "remember" when marks are deleted, i.e. a mark
+    deleted through the markbar may reappear in the markbar after closing and
+    reopening (neo)vim.
+
+    A heavy-handed solution to this is to |:wviminfo!| in vim or |:wshada!| in
+    neovim whenever vim-markbar deletes a mark. This has the side effect of
+    "throwing away" the old contents of the |viminfo-file| or |shada-file|,
+    and possibly resetting |'quote| marks. Because of those side effects, this
+    option is disabled by default.
+
 *g:markbar_open_vertical*                                |(v:t_bool)|
 *g:markbar_peekaboo_open_vertical*
     `Default Value:` `v:true`

@@ -46,6 +46,19 @@ function! markbar#settings#foldopen() abort
     return g:markbar_foldopen
 endfunction
 
+" RETURNS:  (v:t_bool)      Whether to :wviminfo!/:wshada! on deleting a mark.
+function! markbar#settings#ForceClearSharedDataOnDelmark() abort
+    if !exists('g:markbar_force_clear_shared_data_on_delmark')
+        let g:markbar_force_clear_shared_data_on_delmark = v:false
+    endif
+    call s:AssertType(
+        \ g:markbar_force_clear_shared_data_on_delmark,
+        \ v:t_bool,
+        \ 'g:markbar_force_clear_shared_data_on_delmark'
+    \ )
+    return g:markbar_force_clear_shared_data_on_delmark
+endfunction
+
 " RETURNS:  (v:t_bool)      Whether to open markbars as vertical splits
 "                           (`v:true`) or horizontal splits (`v:false`).
 function! markbar#settings#MarkbarOpenVertical() abort

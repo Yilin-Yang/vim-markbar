@@ -1,0 +1,12 @@
+Execute (Set Settings):
+  let g:markbar_enable_mark_highlighting = v:false
+  let g:markbar_num_lines_context = 0
+  let g:markbar_section_separation = 0
+
+  let g:markbar_marks_to_display='abcABC'
+
+  let g:markbar_force_clear_shared_data_on_delmark = v:true
+
+  map Mo <Plug>OpenMarkbar
+  map Mc <Plug>CloseMarkbar
+  map Mt <Plug>ToggleMarkbar

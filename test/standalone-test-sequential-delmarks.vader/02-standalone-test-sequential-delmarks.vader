@@ -1,0 +1,8 @@
+Include: set-settings.vader
+
+Do (Delete All Marks):
+  :edit! 10lines.txt\<cr>
+  Mo
+  GdGdGdGdGd
+Expect:
+  " Press ? for help

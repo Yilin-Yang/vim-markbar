@@ -1,0 +1,7 @@
+Include: set-settings.vader
+
+Do (Open Markbar):
+  :edit! 10lines.txt\<cr>
+  Mo
+Expect (Marks that were deleted stay deleted):
+  " Press ? for help

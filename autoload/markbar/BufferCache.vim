@@ -46,12 +46,8 @@ function! s:BufferCache.updateCache(marks_output, ...) abort dict
     let l:i = len(l:markstrings)
     while l:i
         let l:i -= 1
-        try
-            let l:markdata = markbar#MarkData#New(l:markstrings[l:i], l:bufname)
-            let l:new_marks_dict[l:markdata.getMarkChar()] = l:markdata
-        catch /markstring parsing failed/
-            " drop this markdata
-        endtry
+        let l:markdata = markbar#MarkData#New(l:markstrings[l:i], l:bufname)
+        let l:new_marks_dict[l:markdata.getMarkChar()] = l:markdata
     endwhile
 
     " copy over existing mark names
