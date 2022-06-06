@@ -52,7 +52,7 @@ function! markbar#helpers#GetLocalMarks() abort
     let l:to_return = ''
     try
         redir => l:to_return
-        silent marks
+        silent marks abcdefghijklmnopqrstuvwxyz[]<>'`\"^.(){}
         redir end
         let l:to_return .= "\n"
     catch /E283/

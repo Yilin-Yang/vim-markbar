@@ -10,13 +10,12 @@ Execute (Perform test setup):
   normal! gg0mA5G5lmBG$mC
   normal! 1G0ma4G$3hmbGk07lmc
 
-  let g:model = markbar#MarkbarModel#New()
+  let g:model = markbar#MarkbarModel#New(markbar#ShaDaRosters#New())
   call g:model.updateCurrentAndGlobal()
 
 
   let g:all_marks = g:model.getBufferCache(g:bufnr_10lines).marks_dict
-  call extend(g:all_marks, g:model.getBufferCache(
-      \ markbar#constants#GLOBAL_MARKS_BUFNR()).marks_dict)
+  call extend(g:all_marks, g:model.getBufferCache(0).marks_dict)
 
 Execute (BasicMarkData constructs properly from local and global MarkData):
   for g:char in split(g:mark_chars, '\zs')
@@ -28,7 +27,8 @@ Execute (BasicMarkData constructs properly from local and global MarkData):
     AssertEqual g:markdata.getMarkChar(), g:basic_markdata.mark
     AssertEqual g:markdata.getLineNo(), g:basic_markdata.line
     AssertEqual g:markdata.getColumnNo(), g:basic_markdata.column
-    AssertEqual g:markdata.getFilename(), g:basic_markdata.filename
+    AssertEqual g:markdata.getBufname(), g:basic_markdata.filename
+    AssertEqual g:markdata.getFilename(), g:basic_markdata.full_filepath
     AssertEqual g:markdata.getContext(), g:basic_markdata.context
     AssertEqual markbar#helpers#MarkLineIdxInContext(g:markdata.getContext()),
         \ g:basic_markdata.mark_line_idx

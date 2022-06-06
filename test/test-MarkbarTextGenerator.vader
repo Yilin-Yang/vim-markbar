@@ -44,51 +44,56 @@ Expect:
   " foobar
 
 Execute (MarkbarTextGenerator prints no marks with empty 'marks_to_display'):
-  function! SynthesizeMark(mark_char, line_no, col_no, filename, context) abort
+  function! SynthesizeMark(mark_char, line_no, col_no, bufname,
+                         \ filename, context) abort
     let l:mark = markbar#MarkData#New(
         \ printf('%s %d %d foo bar foo', a:mark_char, a:line_no, a:col_no),
-        \ a:filename)
+        \ a:bufname, a:filename)
     call l:mark.setContext(a:context)
     let l:mark.getFilename = function({a -> a}, [a:filename])
     return l:mark
   endfunction
 
-  let g:local_marks['a'] = SynthesizeMark('a', 1, 2, 'curbuf', [
-      \ 'One line before',
-      \ 'The line holding mark a',
-      \ 'One line after',
-    \ ])
-  let g:local_marks["'"] = SynthesizeMark("'", 2, 3, 'curbuf', [
-      \ 'one line before',
-      \ 'before latest jump',
-      \ 'one line after',
-    \ ])
-  let g:global_marks['A'] = SynthesizeMark('A', 5, 6, 'A_file.txt', [
-      \ 'A_file, one line before',
-      \ 'mark A',
-      \ 'A_file, one line after',
-    \ ])
-  let g:global_marks['1'] = SynthesizeMark('1', 6, 7, '1_file.txt', [
-      \ '1_file, one line before',
-      \ 'mark 1',
-      \ '1_file, one line after',
-    \ ])
+  let g:local_marks['a'] = SynthesizeMark('a', 1, 2, 'curbuf', '/foo/bar/curbuf',
+      \ [
+        \ 'One line before',
+        \ 'The line holding mark a',
+        \ 'One line after',
+      \ ])
+  let g:local_marks["'"] = SynthesizeMark("'", 2, 3, 'curbuf', '/foo/bar/curbuf',
+      \ [
+        \ 'one line before',
+        \ 'before latest jump',
+        \ 'one line after',
+      \ ])
+  let g:global_marks['A'] = SynthesizeMark('A', 5, 6, 'A_file.txt', '/foo/bar/A_file.txt',
+      \ [
+        \ 'A_file, one line before',
+        \ 'mark A',
+        \ 'A_file, one line after',
+      \ ])
+  let g:global_marks['1'] = SynthesizeMark('1', 6, 7, '1_file.txt', '/foo/bar/1_file.txt',
+      \ [
+        \ '1_file, one line before',
+        \ 'mark 1',
+        \ '1_file, one line after',
+      \ ])
 
   call PrintMarkbarText()
 Expect:
   " this is verbose help text
   " foobar
 
-Execute (MarkbarTextGenerator prints marks 1 and ' in that order):
-  call g:generator.format.setOption('marks_to_display', "1'")
+Execute (MarkbarTextGenerator prints marks a and ' in that order):
+  call g:generator.format.setOption('marks_to_display', "a'")
   call PrintMarkbarText()
 Expect:
   " this is verbose help text
   " foobar
-  ['1]: 1_file.txt [l: 6, c: 7]
-    1_file, one line before
-    mark 1
-    1_file, one line after
+  ['a]: (l: 1, c: 2)
+    One line before
+    The line holding mark a
+    One line after
   ['']: (l: 2, c: 3) Last Jump
     one line before
     before latest jump
@@ -99,8 +104,8 @@ Execute (MarkbarTextGenerator handles non-default format strings for local marks
   let g:i = 0
   while g:i <# len(g:chars)
     let g:char = g:chars[g:i]
-    let g:local_marks[g:char] = SynthesizeMark(g:char, 1, 2, 'foobar.txt',
-                                          \ ['', '', ''])
+    let g:local_marks[g:char] = SynthesizeMark(g:char, 1, 2,
+        \ 'foobar.txt', '/foo/bar/foobar.txt', ['', '', ''])
     let i += 1
   endwhile
 
@@ -146,8 +151,8 @@ Execute (MarkbarTextGenerator prints proper default names for punctuation marks)
   let g:i = 0
   while g:i <# len(g:chars)
     let g:char = g:chars[g:i]
-    let g:local_marks[g:char] = SynthesizeMark(g:char, 1, 2, 'foobar.txt',
-                                          \ ['', '', ''])
+    let g:local_marks[g:char] = SynthesizeMark(g:char, 1, 2,
+        \ 'foobar.txt', '/foo/bar/foobar.txt', ['', '', ''])
     let i += 1
   endwhile
 

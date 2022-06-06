@@ -6,3 +6,6 @@ Execute (Set Settings):
   let g:markbar_marks_to_display='abcABC'
 
   let g:markbar_force_clear_shared_data_on_delmark = v:true
+
+Execute (Call MarkbarVimEnter()):
+  call g:MarkbarVimEnter()

@@ -1,4 +1,6 @@
 let s:MarkbarModel = {
+    \ 'TYPE': 'MarkbarModel',
+    \ '_rosters': v:null,
     \ '_buffer_caches': {},
     \ '_active_buffer_stack':
         \ markbar#ConditionalStack#New(
@@ -20,14 +22,21 @@ let s:MarkbarModel = {
 "           objects. This is done by parsing the output of the |:marks|
 "           command, which returns local marks for the currently open buffer,
 "           as well as 'global' marks, like uppercase marks.
-function! markbar#MarkbarModel#New() abort
-    let s:MarkbarModel.TYPE = 'MarkbarModel'
+"
+"           Mark names are also tracked in/with a ShaDaRosters object, which
+"           helps to persist mark names across editing sessions.
+" PARAM:    rosters (ShaDaRosters)      Mark names from/for the ShaDa file.
+function! markbar#MarkbarModel#New(rosters) abort
+    call markbar#ensure#IsClass(a:rosters, 'ShaDaRosters')
+
+    let l:new = deepcopy(s:MarkbarModel)
+    let l:new._rosters = a:rosters
 
     " bottom of the active buffer stack will *always* be zero, to prevent
     " errors when the entire stack is cleared
-    call s:MarkbarModel.pushNewBuffer(0)
+    call l:new.pushNewBuffer(0)
 
-    return s:MarkbarModel
+    return l:new
 endfunction
 
 function! s:WarnIfValidMarkCharIsEmpty(Object, operation) abort
@@ -44,23 +53,41 @@ function! s:WarnIfValidMarkCharIsEmpty(Object, operation) abort
     return v:false
 endfunction
 
+" DETAILS:  Update the {roster} entry for the given {mark_data} with {new_name}.
+function! s:UpdateNameAndRosterEntry(rosters, mark_data, new_name) abort
+    call markbar#ensure#IsClass(a:rosters, 'ShaDaRosters')
+    call markbar#ensure#IsClass(a:mark_data, 'MarkData')
+    call markbar#ensure#IsString(a:new_name)
+
+    call a:mark_data.setUserName(a:new_name)
+    call a:rosters.setName(
+            \ a:mark_data.isGlobal() ? 0 : a:mark_data.getFilename(),
+            \ a:mark_data.getMarkChar(), a:new_name)
+endfunction
+
 " BRIEF:    Prompt the user to assign an explicit name to the selected mark.
 " DETAILS:  Requires that the markbar be open and focused.
 "           Changes won't appear until the markbar has been repopulated.
 " PARAM:    mark    (v:t_string)    Single character representing the mark.
-function! s:MarkbarModel.renameMark(mark) abort dict
+" PARAM:    new_name?   (v:t_string)    New name for the mark. If not present
+"                                       or empty, prompt the user to enter a
+"                                       new name.
+function! s:MarkbarModel.renameMark(mark, ...) abort dict
     if s:WarnIfValidMarkCharIsEmpty(a:mark, 'renaming')
         return
     endif
 
     let l:mark_data = l:self.getMarkData(a:mark)
 
-    call inputsave()
-    let l:new_name = input(printf('New name for mark [''%s]: ', a:mark),
-        \ l:mark_data.getUserName(), markbar#settings#RenameMarkCompletion())
-    call inputrestore()
+    let l:new_name = get(a:000, 0, '')
+    if empty(l:new_name)
+        call inputsave()
+        let l:new_name = input(printf('New name for mark [''%s]: ', a:mark),
+            \ l:mark_data.getUserName(), markbar#settings#RenameMarkCompletion())
+        call inputrestore()
+    endif
 
-    call l:mark_data.setUserName(l:new_name)
+    call s:UpdateNameAndRosterEntry(l:self._rosters, l:mark_data, l:new_name)
 endfunction
 
 " BRIEF:    Reset the the selected mark's name to the default.
@@ -71,14 +98,13 @@ function! s:MarkbarModel.resetMark(mark) abort dict
         return
     endif
     let l:mark_data = l:self.getMarkData(a:mark)
-    call l:mark_data.setUserName('')
+    call s:UpdateNameAndRosterEntry(l:self._rosters, l:mark_data, '')
 endfunction
 
 " BRIEF:    Delete the given mark, and remove it from the cache.
 " DETAILS:  Changes won't appear until the markbar has been repopulated.
 "           Must be invoked while the cursor is inside a markbar.
-" PARAM:    mark    (v:t_string)    The single character representing the
-"                                   mark.
+" PARAM:    mark    (v:t_string)    The single character representing the mark.
 function! s:MarkbarModel.deleteMark(mark) abort dict
     if s:WarnIfValidMarkCharIsEmpty(a:mark, 'deletion')
         return
@@ -105,11 +131,12 @@ function! s:MarkbarModel.deleteMark(mark) abort dict
     execute win_gotoid(bufwinid(l:markbar_buffer))
     call setpos('.', l:cur_pos)
 
-    " update the cache
-    let l:cache = l:self.getBufferCache(
-        \ l:is_global ? markbar#constants#GLOBAL_MARKS_BUFNR() : l:active_buffer)
+    " remove MarkData from the cache; clear its name
+    let l:cache = l:self.getBufferCache(l:is_global ? 0 : l:active_buffer)
     try
+        let l:mark_data = l:cache.marks_dict[a:mark]
         unlet l:cache.marks_dict[a:mark]
+        call s:UpdateNameAndRosterEntry(l:self._rosters, l:mark_data, '')
     catch /E716/  " Key not present in dictionary
     endtry
 
@@ -151,10 +178,7 @@ endfunction
 function! s:MarkbarModel.getMarkData(mark_char) abort dict
     let l:is_global = markbar#helpers#IsGlobalMark(a:mark_char)
     let l:mark_buffer =
-            \ l:is_global ?
-                \ markbar#constants#GLOBAL_MARKS_BUFNR()
-                \ :
-                \ l:self.getActiveBuffer()
+            \ l:is_global ? 0 : l:self.getActiveBuffer()
     let l:marks_dict =
         \ l:self.getBufferCache(l:mark_buffer).marks_dict
     if !has_key(l:marks_dict, a:mark_char)
@@ -172,7 +196,7 @@ function! s:MarkbarModel._getOrInitBufferCache(buffer_no) abort dict
     call markbar#ensure#IsNumber(a:buffer_no)
     let l:cache = get(l:self._buffer_caches, a:buffer_no, 0)
     if empty(l:cache)
-        let l:cache = markbar#BufferCache#New(a:buffer_no)
+        let l:cache = markbar#BufferCache#New(a:buffer_no, l:self._rosters)
         let l:self._buffer_caches[a:buffer_no] = l:cache
     endif
     return l:cache
@@ -214,8 +238,7 @@ function! s:MarkbarModel.updateCurrentAndGlobal() abort dict
     " If getActiveBuffer() and bufnr('%') were different, then
     " cur_buffer_cache.updateCache might e.g. clobber the last active buffer's
     " BufferCache with the (probably nonexistent) marks for the markbar window.
-    let l:global_buffer_cache = l:self._getOrInitBufferCache(
-        \ markbar#constants#GLOBAL_MARKS_BUFNR())
+    let l:global_buffer_cache = l:self._getOrInitBufferCache(0)
 
     " retrieve the greatest number of lines of context that we may need
     " for all marks, for simplicity
@@ -228,9 +251,11 @@ function! s:MarkbarModel.updateCurrentAndGlobal() abort dict
     endfor
 
     let l:bufname = bufname(l:bufnr)
-    call l:cur_buffer_cache.updateCache(
-            \ markbar#helpers#GetLocalMarks(), l:bufname)
-    call l:global_buffer_cache.updateCache(markbar#helpers#GetGlobalMarks())
+    let l:filename = expand('%:p')
+    call l:cur_buffer_cache.updateCache(markbar#helpers#GetLocalMarks(),
+                                      \ l:bufname, l:filename)
+    call l:global_buffer_cache.updateCache(markbar#helpers#GetGlobalMarks(),
+                                         \ '', '')
     call l:cur_buffer_cache.updateContexts(l:max_num_context)
     call l:global_buffer_cache.updateContexts(l:max_num_context)
 endfunction

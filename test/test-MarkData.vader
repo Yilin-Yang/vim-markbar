@@ -157,7 +157,8 @@ Execute (MarkData: Local Mark):
   let g:markstring = "
     \ a     97    0 mark line  col file/text\r\n
   \ "
-  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt')
+  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt',
+                                    \ '/foo/bar/foobar.txt')
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual 'a',  g:result.getMarkChar()
@@ -169,7 +170,8 @@ Execute (MarkData: Non-Alphabetic Mark):
   let g:markstring = "
     \ [      1    0 The quick brown fox jumps over the lazy dog\n
   \ "
-  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt')
+  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt',
+                                    \ '/foo/bar/foobar.txt')
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual '[', g:result.getMarkChar()
@@ -181,9 +183,11 @@ Execute (MarkData: Construct from 'Synthetic' Markstring):
   normal! i12345
   normal! viwy
   let left_bracket =
-    \ markbar#MarkData#New(markbar#helpers#MakeMarkString('['), 'foobar.txt')
+    \ markbar#MarkData#New(markbar#helpers#MakeMarkString('['), 'foobar.txt',
+                         \ '/foo/bar/foobar.txt')
   let right_bracket =
-    \ markbar#MarkData#New(markbar#helpers#MakeMarkString(']'), 'foobar.txt')
+    \ markbar#MarkData#New(markbar#helpers#MakeMarkString(']'), 'foobar.txt',
+                         \ '/foo/bar/foobar.txt')
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual '[',  left_bracket.getMarkChar()
@@ -201,7 +205,8 @@ Execute (MarkData: Global File Mark):
   let g:markstring = "
     \ D      64    31 The quick brown fox jumps over the lazy dog\r\n
   \ "
-  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt')
+  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt',
+                                    \ '/foo/bar/foobar.txt')
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual 'D',  g:result.getMarkChar()
@@ -213,7 +218,8 @@ Execute (MarkData: ShaDa Numeric Mark):
   let g:markstring = "
     \ 8      19   5 The quick brown fox jumps over the lazy dog\n
   \ "
-  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt')
+  let g:result = markbar#MarkData#New(g:markstring, 'foobar.txt',
+                                    \ '/foo/bar/foobar.txt')
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual '8',  g:result.getMarkChar()
@@ -226,7 +232,8 @@ Execute (MarkData: Error Check, Invalid Markstring):
     \ D      1  The quick brown fox jumps over the lazy dog\r\n
   \ "
 Then:
-  AssertThrows markbar#MarkData#New(g:markstring, 'foobar.txt')
+  AssertThrows markbar#MarkData#New(g:markstring, 'foobar.txt',
+                                    \ '/foo/bar/foobar.txt')
 
 Execute (MarkData gives proper names to "punctuation marks"):
   let g:marks_and_names = [
@@ -245,6 +252,6 @@ Execute (MarkData gives proper names to "punctuation marks"):
   \ ]
   for [g:mark, g:name] in g:marks_and_names
     let g:markdata = markbar#MarkData#New(printf('%s 1 2 foobar', g:mark),
-        \ 'foobar.txt')
+        \ 'foobar.txt', '/foo/bar/foobar.txt')
     AssertEqual g:name, g:markdata.getDefaultName()
   endfor

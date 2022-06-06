@@ -1,13 +1,17 @@
 Include: clear-marks.vader
 Include: load-test-files.vader
+Include: MarkDataHelpers.vader
+
+Execute (Setup):
+  let g:rosters = markbar#ShaDaRosters#New()
 
 Execute (BufferCache: isGlobal Test, True):
-  let temp_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS_BUFNR())
+  let temp_cache = markbar#BufferCache#New(0, g:rosters)
 Then:
   Assert temp_cache.isGlobal()
 
 Execute (BufferCache: isGlobal Test, False):
-  let temp_cache = markbar#BufferCache#New(bufnr('%'))
+  let temp_cache = markbar#BufferCache#New(bufnr('%'), g:rosters)
 Then:
   Assert !temp_cache.isGlobal()
 
@@ -18,30 +22,41 @@ Execute (BufferCache: Populate Local Cache):
   execute '25mark c'
   execute '35mark d'
   execute '45mark e'
-  let cache_50lines = markbar#BufferCache#New(bufnr('%'))
-  call cache_50lines.updateCache(markbar#helpers#GetLocalMarks(), '50lines.txt')
+  let g:filepath_50lines = expand('%:p')
+  let cache_50lines = markbar#BufferCache#New(bufnr('%'), g:rosters)
+  call cache_50lines.updateCache(markbar#helpers#GetLocalMarks(),
+      \ '50lines.txt', g:filepath_50lines)
 Then:
   let g:bufno_50lines = bufnr('%')
   let buffer_marks = cache_50lines['marks_dict']
-  AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
-  AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
-  AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
-  AssertEqual ['d', '35', '0'],   buffer_marks['d']['_data']
-  AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
+  call AssertParsedCorrectly(['a',  '5', '0', '50lines.txt', g:filepath_50lines], buffer_marks['a'])
+  call AssertParsedCorrectly(['b', '15', '0', '50lines.txt', g:filepath_50lines], buffer_marks['b'])
+  call AssertParsedCorrectly(['c', '25', '0', '50lines.txt', g:filepath_50lines], buffer_marks['c'])
+  call AssertParsedCorrectly(['d', '35', '0', '50lines.txt', g:filepath_50lines], buffer_marks['d'])
+  call AssertParsedCorrectly(['e', '45', '0', '50lines.txt', g:filepath_50lines], buffer_marks['e'])
 
 Execute (BufferCache: Populate Global Cache):
   execute 'normal! :e! #' . g:bufno_50lines . "\<cr>"
   execute '30mark C'
   execute '40mark D'
   execute '50mark E'
-  let global_cache = markbar#BufferCache#New(markbar#constants#GLOBAL_MARKS_BUFNR())
-  call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
+  let global_cache = markbar#BufferCache#New(0, g:rosters)
+  call global_cache.updateCache(markbar#helpers#GetGlobalMarks(), '', '')
 Then:
   " check globals
   let buffer_marks = global_cache['marks_dict']
-  AssertEqual ['C', '30', '0'],   buffer_marks['C']['_data']
-  AssertEqual ['D', '40', '0'],   buffer_marks['D']['_data']
-  AssertEqual ['E', '50', '0'],   buffer_marks['E']['_data']
+  call AssertParsedCorrectly(['C', '30', '0', '50lines.txt', g:filepath_50lines], buffer_marks['C'])
+  call AssertParsedCorrectly(['D', '40', '0', '50lines.txt', g:filepath_50lines], buffer_marks['D'])
+  call AssertParsedCorrectly(['E', '50', '0', '50lines.txt', g:filepath_50lines], buffer_marks['E'])
+
+Execute (BufferCache global marks populate correctly from different buffer):
+  execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
+  call global_cache.updateCache(markbar#helpers#GetGlobalMarks(), '', '')
+Then:
+  let buffer_marks = global_cache['marks_dict']
+  call AssertParsedCorrectly(['C', '30', '0', '50lines.txt', g:filepath_50lines], buffer_marks['C'])
+  call AssertParsedCorrectly(['D', '40', '0', '50lines.txt', g:filepath_50lines], buffer_marks['D'])
+  call AssertParsedCorrectly(['E', '50', '0', '50lines.txt', g:filepath_50lines], buffer_marks['E'])
 
 Execute (BufferCache: Add More Global Marks; Add Local Marks):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
@@ -55,32 +70,34 @@ Execute (BufferCache: Add More Global Marks; Add Local Marks):
   execute '15mark b'
   execute '20mark a'
 
-  let cache_30lines = markbar#BufferCache#New(bufnr('%'))
-  call cache_30lines.updateCache(markbar#helpers#GetLocalMarks(), '30lines.txt')
-  call global_cache.updateCache(markbar#helpers#GetGlobalMarks())
+  let g:filepath_30lines = expand('%:p')
+  let g:cache_30lines = markbar#BufferCache#New(bufnr('%'), g:rosters)
+  call g:cache_30lines.updateCache(markbar#helpers#GetLocalMarks(),
+      \ '30lines.txt', g:filepath_30lines)
+  call g:global_cache.updateCache(markbar#helpers#GetGlobalMarks(), '', '')
 
 Then:
   let buffer_marks = cache_30lines['marks_dict']
-  AssertEqual ['e',  '1', '0'],   buffer_marks['e']['_data']
-  AssertEqual ['d',  '5', '0'],   buffer_marks['d']['_data']
-  AssertEqual ['c', '10', '0'],   buffer_marks['c']['_data']
-  AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
-  AssertEqual ['a', '20', '0'],   buffer_marks['a']['_data']
+  call AssertParsedCorrectly(['e',  '1', '0', '30lines.txt', g:filepath_30lines], buffer_marks['e'])
+  call AssertParsedCorrectly(['d',  '5', '0', '30lines.txt', g:filepath_30lines], buffer_marks['d'])
+  call AssertParsedCorrectly(['c', '10', '0', '30lines.txt', g:filepath_30lines], buffer_marks['c'])
+  call AssertParsedCorrectly(['b', '15', '0', '30lines.txt', g:filepath_30lines], buffer_marks['b'])
+  call AssertParsedCorrectly(['a', '20', '0', '30lines.txt', g:filepath_30lines], buffer_marks['a'])
 
   " make sure that we didn't somehow overwrite these older ones
   let buffer_marks = cache_50lines['marks_dict']
-  AssertEqual ['a',  '5', '0'],   buffer_marks['a']['_data']
-  AssertEqual ['b', '15', '0'],   buffer_marks['b']['_data']
-  AssertEqual ['c', '25', '0'],   buffer_marks['c']['_data']
-  AssertEqual ['d', '35', '0'],   buffer_marks['d']['_data']
-  AssertEqual ['e', '45', '0'],   buffer_marks['e']['_data']
+  call AssertParsedCorrectly(['a',  '5', '0', '50lines.txt', g:filepath_50lines], buffer_marks['a'])
+  call AssertParsedCorrectly(['b', '15', '0', '50lines.txt', g:filepath_50lines], buffer_marks['b'])
+  call AssertParsedCorrectly(['c', '25', '0', '50lines.txt', g:filepath_50lines], buffer_marks['c'])
+  call AssertParsedCorrectly(['d', '35', '0', '50lines.txt', g:filepath_50lines], buffer_marks['d'])
+  call AssertParsedCorrectly(['e', '45', '0', '50lines.txt', g:filepath_50lines], buffer_marks['e'])
 
   let buffer_marks = global_cache['marks_dict']
-  AssertEqual ['A', '10', '0'],   buffer_marks['A']['_data']
-  AssertEqual ['B', '20', '0'],   buffer_marks['B']['_data']
-  AssertEqual ['C', '30', '0'],   buffer_marks['C']['_data']
-  AssertEqual ['D', '40', '0'],   buffer_marks['D']['_data']
-  AssertEqual ['E', '50', '0'],   buffer_marks['E']['_data']
+  call AssertParsedCorrectly(['A', '10', '0', '30lines.txt', g:filepath_30lines], buffer_marks['A'])
+  call AssertParsedCorrectly(['B', '20', '0', '30lines.txt', g:filepath_30lines], buffer_marks['B'])
+  call AssertParsedCorrectly(['C', '30', '0', '50lines.txt', g:filepath_50lines], buffer_marks['C'])
+  call AssertParsedCorrectly(['D', '40', '0', '50lines.txt', g:filepath_50lines], buffer_marks['D'])
+  call AssertParsedCorrectly(['E', '50', '0', '50lines.txt', g:filepath_50lines], buffer_marks['E'])
 
 
 Execute (BufferCache: Fetch Contexts for Onscreen Buffer):
@@ -110,7 +127,8 @@ Then:
 Execute (BufferCache: Delete Mark, Update Local Contexts, 30lines.txt):
   execute 'normal :edit! ' . '30lines.txt' . "\<cr>"
   execute 'delmarks a'
-  call cache_30lines.updateCache(markbar#helpers#GetLocalMarks())
+  call cache_30lines.updateCache(markbar#helpers#GetLocalMarks(),
+      \ '30lines.txt', g:filepath_30lines)
 Then:
   Assert !has_key(cache_30lines['marks_dict'], 'a')
 

@@ -9,10 +9,6 @@ Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_num_lines_context = 3
   let g:markbar_open_vertical = v:true
 
-  map Mo <Plug>OpenMarkbar
-  map Mc <Plug>CloseMarkbar
-  map Mt <Plug>ToggleMarkbar
-
 Do (Open Markbar, No Marks):
   Mo
 Expect:
@@ -460,7 +456,7 @@ Then:
 Execute (Explicitly Rename Mark):
   " NOTE: command line prompt used by 'rename' doesn't seem to work with vader
   let g:mark = g:markbar_model.getMarkData('B')
-  call g:mark.setUserName('New Name')
+  call g:markbar_model.renameMark('B', 'New Name')
   normal Mo
 Expect:
   " Press ? for help

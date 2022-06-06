@@ -16,11 +16,6 @@ fu! markbar#constants#MARK_SPECIFIC_HEADING_SEARCH_PATTERN(mark)
     return '^\[''' . a:mark . '\]'
 endf
 
-" BRIEF:    The null 'buffer number' used to index the global mark database.
-fu! markbar#constants#GLOBAL_MARKS_BUFNR()
-    return 0
-endf
-
 " BFIEF:    String containing all possible mark characters.
 fu! markbar#constants#ALL_MARKS_STRING()
     return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]<>''`"^.(){}'

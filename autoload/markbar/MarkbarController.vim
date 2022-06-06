@@ -86,8 +86,7 @@ endfunction
 " BRIEF:    Replace the target buffer with the marks/contexts of the given buffer.
 function! s:MarkbarController._populateWithMarkbar(for_buffer_no) abort dict
     let l:local_cache = l:self._markbar_model.getBufferCache(a:for_buffer_no)
-    let l:global_cache = l:self._markbar_model.getBufferCache(
-            \ markbar#constants#GLOBAL_MARKS_BUFNR())
+    let l:global_cache = l:self._markbar_model.getBufferCache(0)
     let l:contents = l:self._text_generator.getText(
             \ l:local_cache.marks_dict, l:global_cache.marks_dict)
 

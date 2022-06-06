@@ -1,0 +1,63 @@
+Include: set-settings-and-init.vader
+
+Do (Set Marks in 10lines.txt, Open Markbar):
+  :edit! 10lines.txt\<cr>
+  1G05lmA5G05lmB10G05lmC
+  2G0ma4G$mb
+  Mo
+Expect:
+  " Press ? for help
+  ['a]: (l: 2, c: 0)
+  ['b]: (l: 4, c: 10)
+  ['A]: 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 5]
+
+Execute (Rename Marks in 10lines.txt):
+  edit! 10lines.txt
+  normal Mo
+  call g:markbar_model.renameMark('a', '10lines.txt a')
+  call g:markbar_model.renameMark('b', '10lines.txt b')
+  call g:markbar_model.renameMark('A', '10lines.txt A')
+  call g:markbar_model.renameMark('B', '10lines.txt B')
+  call g:markbar_model.renameMark('C', '10lines.txt C')
+  " refresh contents
+  normal MtMt
+Expect:
+  " Press ? for help
+  ['a]: (l: 2, c: 0) 10lines.txt a
+  ['b]: (l: 4, c: 10) 10lines.txt b
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt B 10lines.txt [l: 5, c: 5]
+  ['C]: 10lines.txt C 10lines.txt [l: 10, c: 5]
+
+Do (Set Marks in 30lines.txt, Open Markbar):
+  :edit! 30lines.txt\<cr>
+  1G05lma5G05lmb10G05lmc
+  20G0mC
+  Mo
+Expect:
+  " Press ? for help
+  ['a]: (l: 1, c: 5)
+  ['b]: (l: 5, c: 5)
+  ['c]: (l: 10, c: 5)
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt B 10lines.txt [l: 5, c: 5]
+  ['C]: 10lines.txt C 30lines.txt [l: 20, c: 0]
+
+Execute (Rename Marks in 30lines.txt):
+  edit! 30lines.txt
+  normal Mo
+  call g:markbar_model.renameMark('a', '30lines.txt a')
+  call g:markbar_model.renameMark('b', '30lines.txt b')
+  call g:markbar_model.renameMark('B', '10lines.txt-B')
+  " refresh contents
+  normal MtMt
+Expect:
+  " Press ? for help
+  ['a]: (l: 1, c: 5) 30lines.txt a
+  ['b]: (l: 5, c: 5) 30lines.txt b
+  ['c]: (l: 10, c: 5)
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]
+  ['C]: 10lines.txt C 30lines.txt [l: 20, c: 0]

@@ -24,6 +24,40 @@ function! markbar#settings#MarksToDisplay() abort
     return g:markbar_marks_to_display
 endfunction
 
+function! markbar#settings#PersistMarkNames() abort
+    if !exists('g:markbar_persist_mark_names')
+        let g:markbar_persist_mark_names = v:true
+    endif
+    if (has('nvim') && &shadafile ==# 'NONE') ||
+            \ (!has('nvim') && &viminfofile ==# 'NONE')
+        let g:markbar_persist_mark_names = v:false
+    endif
+    if g:markbar_persist_mark_names
+        let l:shada_values = has('nvim') ? &shada : &viminfo
+        let l:shada_values = split(l:shada_values, ',')
+        let l:will_save_globals = v:false
+        for l:value in l:shada_values
+            if l:value !=# '!'
+                continue
+            endif
+            let l:will_save_globals = v:true
+            break
+        endfor
+        if !l:will_save_globals
+            echoerr '(vim-markbar) WARNING: g:markbar_persist_mark_names is '
+                \ . 'v:true, but won''t work because viminfo-!/shada-! is not '
+                \ . 'set! `set viminfo+=!` in vim or `set shada+=!` in neovim '
+                \ . 'to fix this.'
+        endif
+    endif
+    call s:AssertType(
+        \ g:markbar_persist_mark_names,
+        \ v:t_bool,
+        \ 'g:markbar_persist_mark_names'
+    \ )
+    return g:markbar_persist_mark_names
+endfunction
+
 " RETURNS:  (v:t_bool)      Whether to open the fold(s) in which a mark is
 "                           located, if any.
 function! markbar#settings#foldopen() abort

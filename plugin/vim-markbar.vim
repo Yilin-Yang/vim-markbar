@@ -42,8 +42,9 @@ function! s:UsersStandardFormatOptions() abort
     \ }
 endfunction
 
+let g:markbar_rosters = markbar#ShaDaRosters#New()
 
-let g:markbar_model = markbar#MarkbarModel#New()
+let g:markbar_model = markbar#MarkbarModel#New(g:markbar_rosters)
 let g:markbar_view  = markbar#MarkbarView#New(g:markbar_model)
 
 let g:markbar_standard_format = markbar#MarkbarFormat#New(
@@ -54,12 +55,89 @@ let g:markbar_standard_controller =
         \ markbar#MarkbarController#New(g:markbar_model, g:markbar_view,
                                       \ g:markbar_standard_format)
 
-if v:vim_did_enter
+function! s:PopulateRosters() abort
+    if !exists('g:MARKBAR_GLOBAL_ROSTER')
+        let g:MARKBAR_GLOBAL_ROSTER = '{}'
+    endif
+    if !exists('g:MARKBAR_LOCAL_ROSTERS')
+        let g:MARKBAR_LOCAL_ROSTERS = '{}'
+    endif
+    let l:global_roster = json_decode(g:MARKBAR_GLOBAL_ROSTER)
+    let l:local_rosters = json_decode(g:MARKBAR_LOCAL_ROSTERS)
+    call g:markbar_rosters.populate(l:global_roster, l:local_rosters)
+endfunction
+
+function! s:SerializeRosters() abort
+    " update v:oldfiles with the files whose marks will be recorded in
+    " shada or viminfo
+    if has('nvim')
+        rshada!
+    else
+        rviminfo!
+    endif
+
+    let l:global_roster = {}
+    let l:local_rosters = {}
+
+    call g:markbar_rosters.writeRosters(
+            \ v:oldfiles, l:global_roster, l:local_rosters)
+
+    let g:MARKBAR_GLOBAL_ROSTER = json_encode(l:global_roster)
+    let g:MARKBAR_LOCAL_ROSTERS = json_encode(l:local_rosters)
+
+    " commit updated rosters to shada/viminfo
+    if has('nvim')
+        wshada
+    else
+        wviminfo
+    endif
+endfunction
+
+""
+" Perform one-time initialization of markbar state on startup after the
+" viminfo/ShaDa file has been read.
+"
+" This function exists so that it can be called from the vader.vim test suite.
+" We can't rely on VimEnter because it fires *after* |-c| startup commands,
+" so markbar won't be initialized when vader tests start running.
+"
+" We can't just `call g:MarkbarVimEnter()` as a line in this script because
+" |load-plugins| happens before the viminfo/ShaDa file is read. We still set a
+" VimEnter autocommand to call this function during normal use, but use
+" g:markbar_vim_did_enter to make sure that the function is only called once.
+function! g:MarkbarVimEnter() abort
+    if !exists('g:markbar_vim_did_enter')
+        let g:markbar_vim_did_enter = v:true
+    else
+        return
+    endif
+    if markbar#settings#PersistMarkNames()
+        call s:PopulateRosters()
+    endif
+
     " catching /Buffer not cached/ in MarkbarController.refreshContents()
     " might make this unnecessary, but it can't hurt
     call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
     call g:markbar_model.updateCurrentAndGlobal()
+endfunction
+
+""
+" Code to be run (only once) when markbar exits.
+function! s:MarkbarVimLeave() abort
+    if markbar#settings#PersistMarkNames()
+        call s:SerializeRosters()
+    endif
+endfunction
+
+if v:vim_did_enter
+    call g:MarkbarVimEnter()
 endif
+
+augroup markbar_read_write_shada
+    au!
+    autocmd VimEnter * call g:MarkbarVimEnter()
+    autocmd VimLeave * call s:MarkbarVimLeave()
+augroup end
 
 
 function! s:OpenMarkbar() abort

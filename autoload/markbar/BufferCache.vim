@@ -2,6 +2,7 @@ let s:BufferCache = {
     \ 'TYPE': 'BufferCache',
     \ 'marks_dict': {},
     \ '_buffer_no': 0,
+    \ '_rosters': v:null,
 \ }
 
 " EFFECTS:  Construct and return a BufferCache.
@@ -11,10 +12,12 @@ let s:BufferCache = {
 "           directly because encapsulating it with getters and setters is
 "           more trouble than it's worth.
 " PARAM:    buffer_no   (v:t_number)    This BufferCache's buffer's |bufnr()|.
-function! markbar#BufferCache#New(buffer_no) abort
+" PARAM:    rosters     (ShaDaRosters)  Mark names from/for the ShaDa file.
+function! markbar#BufferCache#New(buffer_no, rosters) abort
     call markbar#ensure#IsNumber(a:buffer_no)
     let l:new = deepcopy(s:BufferCache)
     let l:new._buffer_no = a:buffer_no
+    let l:new._rosters = a:rosters
     return l:new
 endfunction
 
@@ -32,11 +35,17 @@ endfunction
 
 " EFFECTS:  Repopulate BufferCache's `marks_dict` with the given marks output.
 " PARAM:    marks_output    (v:t_string)    Raw output of |:marks|.
-" PARAM:    bufname?        (v:t_string)    Buffer being queried by |:marks|.
-"                                           Defaults to the empty string.
-function! s:BufferCache.updateCache(marks_output, ...) abort dict
+" PARAM:    bufname         (v:t_string)    Bufname of the buffer being
+"                                           queried by |:marks|. Ignored
+"                                           for global marks.
+" PARAM:    filepath        (v:t_string)    Full filepath for the buffer being
+"                                           queried by |:marks|. Ignored for
+"                                           global marks.
+function! s:BufferCache.updateCache(marks_output, bufname, filepath) abort dict
     call markbar#ensure#IsString(a:marks_output)
-    let l:bufname = markbar#ensure#IsString(get(a:000, 0, ''))
+    call markbar#ensure#IsString(a:bufname)
+    call markbar#ensure#IsString(a:filepath)
+    let l:roster_key = l:self.isGlobal() ? 0 : a:filepath
 
     " strip leading whitespace and columns header ('mark line  col file/text')
     let l:trimmed = markbar#helpers#TrimMarksHeader(a:marks_output)
@@ -46,7 +55,8 @@ function! s:BufferCache.updateCache(marks_output, ...) abort dict
     let l:i = len(l:markstrings)
     while l:i
         let l:i -= 1
-        let l:markdata = markbar#MarkData#New(l:markstrings[l:i], l:bufname)
+        let l:markdata = markbar#MarkData#New(l:markstrings[l:i], a:bufname,
+                                            \ a:filepath)
         let l:new_marks_dict[l:markdata.getMarkChar()] = l:markdata
     endwhile
 
@@ -54,10 +64,26 @@ function! s:BufferCache.updateCache(marks_output, ...) abort dict
     let l:old_dict = l:self.marks_dict
     for l:mark in keys(l:old_dict)
         if !has_key(l:new_marks_dict, l:mark)
+            " mark was deleted since the last update, so clear it from
+            " the roster
+            call l:self._rosters.setName(l:roster_key, l:mark, '')
             continue
         endif
-        call l:new_marks_dict[l:mark].setUserName(
-                \ l:old_dict[l:mark].getUserName())
+        let l:old_name = l:old_dict[l:mark].getUserName()
+
+        call l:new_marks_dict[l:mark].setUserName(l:old_name)
+    endfor
+
+    " We assert that the names in l:self._rosters at this point are not
+    " 'stale': they've either been cleared while iterating over l:old_dict,
+    " or cleared/renamed by a call to g:markbar_model.delete/reset/renameMark()
+
+    " iterate over current marks, set names from rosters
+    for [l:mark, l:mark_data] in items(l:new_marks_dict)
+        if empty(l:mark_data.getUserName())
+            let l:old_name = l:self._rosters.getName(l:roster_key, l:mark)
+            call l:mark_data.setUserName(l:old_name)
+        endif
     endfor
 
     let l:self.marks_dict = l:new_marks_dict
@@ -89,5 +115,5 @@ function! s:BufferCache.updateContexts(num_lines) abort dict
 endfunction
 
 function! s:BufferCache.isGlobal() abort dict
-    return l:self._buffer_no ==# markbar#constants#GLOBAL_MARKS_BUFNR()
+    return l:self._buffer_no ==# 0
 endfunction

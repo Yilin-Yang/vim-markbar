@@ -111,6 +111,23 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
     Marks not listed in the string above are not listed in the markbar.
 
+*g:markbar_persist_mark_names*                           |(v:t_bool)|
+    `Default Value:` `v:true`
+
+    Whether to preserve user-set mark names in the |viminfo-file| (in vim)
+    or the |shada-file| (in neovim). When false, vim-markbar will forget every
+    mark's name when vim exits.
+
+    vim-markbar sets this to `v:false` when |viminfofile| or |shadafile| is
+    `'NONE'`.
+
+    Note that mark names won't necessarily synchronize between multiple
+    running vim/neovim instances.
+
+    Requires |viminfo-!| (in vim) or |shada-!| (in neovim) to work properly.
+
+    See |vim-markbar-rename-mark|.
+
 *g:markbar_foldopen*                                     |(v:t_bool)|
     `Default Value`: (set from the 'foldopen' option, see `:help fdo`)
 
@@ -278,8 +295,10 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 *g:markbar_delete_mark_mapping*                          |(v:t_string)|
     `Default Value:` `d`
 
-    The mapping used to delete a mark entirely. May not "stick" if the mark to
-    be deleted is special (e.g. is a numbered mark).
+    The mapping used to delete a mark entirely.
+
+    May not "stick" in some cases. See |g:markbar_force_clear_shared_data_on_delmark|
+    for a possible fix.
 
 *g:markbar_next_mark_mapping*                            |(v:t_string)|
     `Default Value:` `n`
@@ -368,6 +387,9 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
         i.e. the first column is 0 and not 1.
     - `'filename'`
       - The |bufname()| of the buffer holding the mark, as a |v:t_string|.
+    - `'full_filepath'`
+      - The full absolute filepath of the buffer holding the mark as
+        a |v:t_string|.
     - `'user_given_name'`
         - The name given to the mark by the user. May be an empty string.
     - `'default_name'`
@@ -405,14 +427,15 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
 *g:markbar_file_mark_format_string*                      |(v:t_string)|
 *g:markbar_peekaboo_file_mark_format_string*
-    `Default Value:` `%s [l: %d, c: %d]`
+    `Default Value:` `%s %s [l: %d, c: %d]`
 
     Format string used to set default names for a |file-mark|, except numbered
-    marks ('0 to '9).
+    marks ('0 to '9). Leading/Trailing whitespace are stripped from the final
+    string.
 
 *g:markbar_file_mark_arguments*                          |(v:t_list)|
 *g:markbar_peekaboo_file_mark_arguments*
-    `Default Value:` `['fname', 'line', 'col']`
+    `Default Value:` `['name', 'fname', 'line', 'col']`
 
     Format string used to set default names for a numbered mark ('0 to '9).
 
