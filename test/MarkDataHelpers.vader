@@ -1,0 +1,12 @@
+Execute (Set Up Test Helpers):
+  ""
+  " Assert that the MarkData {got} matches the {expected}, a list of
+  " [mark_char, line_no, column_no, bufname, filename].
+  function! AssertParsedCorrectly(expected, got) abort
+    call markbar#ensure#IsClass(a:got, 'MarkData')
+    AssertEqual a:expected[0], a:got.getMarkChar()
+    AssertEqual a:expected[1], a:got.getLineNo()
+    AssertEqual a:expected[2], a:got.getColumnNo()
+    AssertEqual a:expected[3], a:got.getBufname()
+    AssertEqual a:expected[4], a:got.getFilename()
+  endfunction

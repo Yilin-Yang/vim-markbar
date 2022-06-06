@@ -1,0 +1,51 @@
+Include: set-settings-and-init.vader
+
+Do (Open Markbar for 10lines.txt):
+  :edit! 10lines.txt\<cr>
+  Mo
+Expect:
+  " Press ? for help
+  ['a]: (l: 2, c: 0) 10lines.txt a
+  ['b]: (l: 4, c: 10) 10lines.txt b
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]
+  ['C]: 10lines.txt C 30lines.txt [l: 20, c: 0]
+
+Do (Open Markbar for 30lines.txt):
+  :edit! 30lines.txt\<cr>
+  Mo
+Expect:
+  " Press ? for help
+  ['a]: (l: 1, c: 5) 30lines.txt a
+  ['b]: (l: 5, c: 5) 30lines.txt b
+  ['c]: (l: 10, c: 5)
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]
+  ['C]: 10lines.txt C 30lines.txt [l: 20, c: 0]
+
+Do (Delete a mark in 10lines.txt from the markbar):
+  :edit! 10lines.txt\<cr>
+  Mo
+  ggnd
+Expect:
+  " Press ? for help
+  ['b]: (l: 4, c: 10) 10lines.txt b
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]
+  ['C]: 10lines.txt C 30lines.txt [l: 20, c: 0]
+
+Execute (Delete a local and global mark in 30lines.txt with delmarks):
+  edit! 30lines.txt
+  delmarks bC
+  if has('nvim')
+    wshada!
+  else
+    wviminfo!
+  endif
+  normal Mo
+Expect:
+  " Press ? for help
+  ['a]: (l: 1, c: 5) 30lines.txt a
+  ['c]: (l: 10, c: 5)
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]

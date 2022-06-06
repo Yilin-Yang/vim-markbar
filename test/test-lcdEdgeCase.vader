@@ -15,10 +15,6 @@ Execute (Set Settings, Set Plugin Mappings):
   let g:markbar_file_mark_arguments     = ['fname']
   let g:markbar_numbered_mark_arguments = []
 
-  map Mo <Plug>OpenMarkbar
-  map Mc <Plug>CloseMarkbar
-  map Mt <Plug>ToggleMarkbar
-
 Execute (Set local working directory, then open/close markbar.):
   lcd .
   normal Mo

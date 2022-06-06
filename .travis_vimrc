@@ -13,10 +13,22 @@ set runtimepath+=.
 set runtimepath+=..
 set runtimepath+=vader.vim
 set runtimepath+=~/.vim/bundle/vader.vim
+set runtimepath+=~/.vim/bundle/vim-scriptease
 filetype plugin indent on
 syntax enable
 set autoread
 set hidden
 set foldcolumn=1
 
+" save all-caps variables into shada/viminfo
+if has('nvim')
+  set shada+=!
+else
+  set viminfo+=!
+endif
+
 map <Leader>m <Plug>ToggleMarkbar
+
+map Mo <Plug>OpenMarkbar
+map Mc <Plug>CloseMarkbar
+map Mt <Plug>ToggleMarkbar

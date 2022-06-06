@@ -132,7 +132,7 @@ function! s:MarkbarTextGenerator.getMarkHeading(mark) abort dict
                 let l:cmd .= a:mark.getColumnNo()
             elseif l:Arg ==# 'fname'
                 " string() to include quotes when concatenating onto l:cmd
-                let l:cmd .= string(a:mark.getFilename())
+                let l:cmd .= string(a:mark.getBufname())
             elseif l:Arg ==# 'name'
                 let l:name = a:mark.getUserName()
                 if empty(l:name)

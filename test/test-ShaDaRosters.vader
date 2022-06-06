@@ -1,0 +1,104 @@
+Execute (Initialize):
+  let g:rosters = markbar#ShaDaRosters#New()
+
+Execute (ShaDaRosters populates correctly):
+  let g:global_roster = {
+    \ 'A': 'mark A',
+    \ 'B': 'mark B',
+    \ 'C': 'mark C',
+    \ '1': 'mark 1',
+    \ '2': 'mark 2',
+    \ '3': 'mark 3',
+  \ }
+  let g:filepaths_to_local_rosters = {
+    \ '/foo/bar.txt': {
+      \ 'a': 'mark a',
+      \ 'b': 'mark b',
+      \ 'c': 'mark c',
+    \ },
+    \ '/foo/baz.txt': {
+      \ 'd': 'mark d',
+      \ 'e': 'mark e',
+      \ 'f': 'mark f',
+    \ }
+  \ }
+  call g:rosters.populate(g:global_roster, g:filepaths_to_local_rosters)
+Then:
+  for [g:mark_char, g:name] in items(g:global_roster)
+    AssertEqual g:name, g:rosters.getName(0, g:mark_char)
+  endfor
+  for [g:filename, g:local_roster] in items(g:filepaths_to_local_rosters)
+    for [g:mark_char, g:name] in items(g:local_roster)
+      AssertEqual g:name, g:rosters.getName(g:filename, g:mark_char)
+    endfor
+  endfor
+
+Execute (ShaDaRosters changes roster filenames properly):
+  call g:rosters.changeRosterFilename('/foo/baz.txt', '/foo/quoz.txt')
+  let g:new_globals = {}
+  let g:new_filepaths_to_local_rosters = {}
+  call g:rosters.writeRosters(['/foo/baz.txt', '/foo/quoz.txt'],
+      \ g:new_globals, g:new_filepaths_to_local_rosters)
+Then:
+  AssertEqual g:global_roster, g:new_globals
+  AssertEqual 1, len(g:new_filepaths_to_local_rosters)
+  AssertEqual g:filepaths_to_local_rosters['/foo/baz.txt'],
+      \ g:new_filepaths_to_local_rosters['/foo/quoz.txt']
+
+Execute (ShaDaRosters throws when given global marks and a filepath):
+  AssertThrows call g:rosters.setName('/foo/quoz.txt', 'A', '')
+  AssertEqual 'Gave global mark A when accessing local roster for /foo/quoz.txt',
+      \ g:vader_exception
+
+  AssertThrows call g:rosters.getName('/foo/quoz.txt', 'A')
+  AssertEqual 'Gave global mark A when accessing local roster for /foo/quoz.txt',
+      \ g:vader_exception
+
+Execute (ShaDaRosters throws when given local marks and no filepath):
+  AssertThrows call g:rosters.setName(0, 'a', '')
+  AssertEqual 'Gave non-global mark a when accessing global roster.',
+      \ g:vader_exception
+
+  AssertThrows call g:rosters.getName(0, 'a')
+  AssertEqual 'Gave non-global mark a when accessing global roster.',
+      \ g:vader_exception
+
+Execute (ShaDaRosters serializes changed names and doesn't serialize nameless marks):
+  call g:rosters.setName(0, 'A', '')
+  call g:rosters.setName(0, 'B', 'B')
+  call g:rosters.setName('/foo/quoz.txt', 'd', '')
+  call g:rosters.setName('/foo/quoz.txt', 'e', '')
+  call g:rosters.setName('/foo/quoz.txt', 'f', 'f')
+  call g:rosters.writeRosters(['/foo/bar.txt', '/foo/quoz.txt'],
+      \ g:new_globals, g:new_filepaths_to_local_rosters)
+Then:
+  AssertEqual {
+    \ 'B': 'B',
+    \ 'C': 'mark C',
+    \ '1': 'mark 1',
+    \ '2': 'mark 2',
+    \ '3': 'mark 3',
+  \ }, g:new_globals
+  AssertEqual {
+      \ '/foo/bar.txt': {
+        \ 'a': 'mark a', 'b': 'mark b', 'c': 'mark c'},
+      \ '/foo/quoz.txt': {
+        \ 'f': 'f'},
+      \ }, g:new_filepaths_to_local_rosters
+
+Execute (ShaDaRosters doesn't serialize empty rosters):
+  call g:rosters.setName('/foo/bar.txt', 'a', '')
+  call g:rosters.setName('/foo/bar.txt', 'b', '')
+  call g:rosters.setName('/foo/bar.txt', 'c', '')
+  call g:rosters.writeRosters(['/foo/bar.txt', '/foo/quoz.txt'],
+      \ g:new_globals, g:new_filepaths_to_local_rosters)
+Then:
+  AssertEqual {'/foo/quoz.txt': {'f': 'f'}}, g:new_filepaths_to_local_rosters
+
+Execute (ShaDaRosters returns empty strings for nonexistent marks):
+  AssertEqual '', g:rosters.getName('/foo/bar.txt', 'a')
+  AssertEqual '', g:rosters.getName('/foo/bar.txt', 'b')
+  AssertEqual '', g:rosters.getName('/foo/bar.txt', 'c')
+  AssertEqual '', g:rosters.getName('/foo/quoz.txt', 'd')
+  AssertEqual '', g:rosters.getName('/foo/quoz.txt', 'e')
+  AssertEqual '', g:rosters.getName('/foo/quoz.txt', 'a')

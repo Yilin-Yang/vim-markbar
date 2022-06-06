@@ -19,7 +19,7 @@ Features
 - **Remember** why you set those marks in the first place by looking at their context!
 - **Jump to marks** directly from the markbar.
 - **Open automatically on `` ` `` or `'`,** _à la_ [vim-peekaboo!](https://github.com/junegunn/vim-peekaboo)
-- **Assign names** to your marks, directly or automatically!
+- **Assign names** to your marks that persist between vim sessions!
 - **Heavily customizable!** See below for details.
 
 Requirements
@@ -29,10 +29,9 @@ vim-markbar requires either:
 - **neovim 0.1.6** or newer.
 
 neovim 0.1.6 was released in November of 2016, so if you use neovim at all,
-you're almost certainly fine. As of the time of writing, vim 8.1 is new _enough_
-that it isn't readily available through the default apt repositories for
-Ubuntu 16.04. You may need to install it by [adding an apt repository,](https://launchpad.net/~jonathonf/+archive/ubuntu/vim)
-or simply compile it from [source.](https://github.com/vim/vim)
+you're almost certainly fine. The vim packages included in the apt repositories
+for [Ubuntu 20.04](https://packages.ubuntu.com/focal/vim) and [22.04](https://packages.ubuntu.com/jammy/vim)
+are compatible.
 
 Installation
 --------------------------------------------------------------------------------
@@ -100,16 +99,21 @@ By default, you:
 - **Clear the name of a mark** using `c`,
 - **Delete marks entirely** using `d`.
 
+**Note** that deleted marks may reappear in subsequent editor sessions in
+[neovim](https://github.com/vim/vim/issues/1339) and [vim < 8.2.0050](https://github.com/vim/vim/issues/1339).
+Set `g:markbar_force_clear_shared_data_on_delmark = v:true` as a heavy-handed
+workaround.
+
 These bindings only activate while you have a markbar window focused, so they
 shouldn't conflict with your other mappings. Note that the mappings for moving
 between marks in the markbar do shadow vim's "repeat last search" mappings: if
 you plan to frequently `/` or `?` from inside the markbar, you may wish to
-change this behavior.
+change those bindings.
 
 A few examples of how to remap these bindings are given below:
 
 ```vim
-" g, t to 'go to' a mark
+" g, t to 'go to' the mark under the cursor
 let g:markbar_jump_to_mark_mapping = 'gt'
 
 " Ctrl-r, d to rename a mark
@@ -202,6 +206,18 @@ let g:markbar_close_peekaboo_mapping = 'qq'
 " then you can enable this to make mark deletion work as expected.
 let g:markbar_force_clear_shared_data_on_delmark = v:true
 
+" Whether to save user-set mark names in viminfo/shada. This is enabled by
+" default.
+" let g:markbar_persist_mark_names = v:true
+
+" Persistent mark names requires viminfo-!/shada-!
+if has('nvim')
+    " neovim includes ! in &shada by default
+    " set shada+=!
+else
+    set viminfo+=!
+endif
+
 " open/close markbar mappings
 nmap <Leader>m  <Plug>ToggleMarkbar
 nmap <Leader>mo <Plug>OpenMarkbar
@@ -278,36 +294,36 @@ which mark to jump to.
 If you want to disable the peekaboo markbar entirely, you can set
 `g:markbar_enable_peekaboo` to `v:false`.
 
-### Default Mark Name Customization
-Marks that have not been explicitly named by the user will show "default" names
-in the markbar. By default, this consists of basic information about the mark,
+### Mark Header Customization
+vim-markbar shows a header for each mark. In addition to a name set by the
+user, the default header consists of basic information about the mark,
 e.g. the file in which it resides, its line number, and its column number. If
 you'd like, you can customize how vim-markbar constructs these default names.
 
 The default name for a file mark is controlled by the options:
 ```vim
-let g:markbar_file_mark_format_string = '%s [l: %4d, c: %4d]'
-let g:markbar_file_mark_arguments = ['fname', 'line', 'col']
+let g:markbar_file_mark_format_string = '%s %s [l: %4d, c: %4d]'
+let g:markbar_file_mark_arguments = ['name', 'fname', 'line', 'col']
 ```
 
-Which will produce a default name that looks like:
+Which will produce a header name that looks like:
 ```vim
-['A]: test/30lines.txt [l:   10, c:    0]
-"     ^ 'fname'              ^ 'line'  ^ 'col'
+['A]: name_from_user test/30lines.txt [l:   10, c:    0]
+"     ^ 'name'       ^ 'fname'              ^ 'line'  ^ 'col'
 ```
 
 You might decide to swap the line and column number, and also display them more
 compactly, like so:
 
 ```vim
-['A]: test/30lines.txt (0, 10)
-"                 'col' ^  ^ 'line'
+['A]: name_from_user test/30lines.txt (0, 10)
+"                                'col' ^  ^ 'line'
 ```
 
 You can achieve this by setting the following options:
 ```vim
-let g:markbar_file_mark_format_string = '%s (%d, %d)'
-let g:markbar_file_mark_arguments = ['fname', 'col', 'line'] " note the swapped 'col' and 'line'
+let g:markbar_file_mark_format_string = '%s %s (%d, %d)'
+let g:markbar_file_mark_arguments = ['name', 'fname', 'col', 'line'] " note the swapped 'col' and 'line'
 ```
 
 See `:help printf` and `:help g:markbar_mark_name_format_string` for more details.
@@ -315,7 +331,7 @@ See `:help printf` and `:help g:markbar_mark_name_format_string` for more detail
 #### Naming Marks with User-Provided Functions
 If you would like additional flexibility, you can provide vim-markbar with a
 reference to a "mark naming" function that you've written yourself. vim-markbar
-will call this function when "default naming" marks, providing information
+will call this function when generating mark headers, providing information
 about the mark as arguments and taking a string (the name of the mark) as a
 return value.
 

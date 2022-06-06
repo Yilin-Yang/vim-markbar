@@ -1,6 +1,9 @@
 let s:MarkData = {
     \ 'TYPE': 'MarkData',
-    \ '_data': [],
+    \ '_mark_char': '',
+    \ '_line_no': '',
+    \ '_column_no': '',
+    \ '_filepath': '',
     \ '_bufname': '',
     \ '_context': [],
     \ '_name': ''
@@ -20,18 +23,31 @@ let s:MarkData = {
 "
 "           This is how the `marks` command prints output for a mark. See `:h
 "           marks` for more details.
-" PARAM:    bufname     (v:t_string)    Name of the buffer holding the mark.
-"                                       Ignored when MarkData is a global mark.
-function! markbar#MarkData#New(markstring, bufname) abort
+" PARAM:    bufname     (v:t_string)    Bufname or the buffer holding the
+"                                       mark. Ignored when MarkData is a
+"                                       global mark.
+" PARAM:    filepath    (v:t_string)    Full filepath for the buffer holding
+"                                       the mark. Ignored when MarkData is a
+"                                       global mark.
+function! markbar#MarkData#New(markstring, bufname, filepath) abort
     call markbar#ensure#IsString(a:markstring)
     call markbar#ensure#IsString(a:bufname)
+    call markbar#ensure#IsString(a:filepath)
     let l:new = deepcopy(s:MarkData)
-    let l:new._data = matchlist(
-        \ a:markstring, '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)')[1:3]
-    if empty(l:new._data)
+
+    let l:parsed_entries =
+            \ matchlist(a:markstring,
+                      \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)')[1:3]
+    if empty(l:parsed_entries)
         throw 'markstring parsing failed for: ' . a:markstring
     endif
-    if !l:new.isGlobal()
+    let [l:new._mark_char, l:new._line_no, l:new._column_no] =
+            \ l:parsed_entries
+    if markbar#helpers#IsGlobalMark(l:new._mark_char)
+        " filepath and bufname will be looked up on every getFilename,
+        " getBufname call
+    else  " local mark
+        let l:new._filepath = a:filepath
         let l:new._bufname = a:bufname
     endif
     return l:new
@@ -69,15 +85,15 @@ function! s:MarkData.getDefaultName() abort
 endfunction
 
 function! s:MarkData.getMarkChar() abort dict
-    return l:self._data[0]
+    return l:self._mark_char
 endfunction
 
 function! s:MarkData.getLineNo() abort dict
-    return l:self._data[1]
+    return l:self._line_no
 endfunction
 
 function! s:MarkData.getColumnNo() abort dict
-    return l:self._data[2]
+    return l:self._column_no
 endfunction
 
 " RETURNS:  (v:t_string)    User-provided name for this mark, or ''.
@@ -105,13 +121,25 @@ function! s:MarkData.setContext(new_context) abort dict
     let l:self._context = a:new_context
 endfunction
 
-" RETURNS:  (v:t_string)    Name of the buffer or file holding this mark.
+" RETURNS:  (v:t_string)    |bufname()| of the buffer that contains this mark.
 "                           When MarkData represents a global mark, this comes
-"                           from a |bufname()| call; otherwise, the bufname
-"                           stored at construction is returned.
-function! s:MarkData.getFilename() abort dict
+"                           from a |bufname()| lookup.
+function! s:MarkData.getBufname() abort dict
     if l:self.isGlobal()
         return bufname(markbar#helpers#BufferNo(l:self.getMarkChar()))
+    else
+        return l:self._bufname
     endif
-    return l:self._bufname
+endfunction
+
+" RETURNS:  (v:t_string)    Full path to the file holding this mark.
+"                           When MarkData represents a global mark, this comes
+"                           from a lookup.
+function! s:MarkData.getFilename() abort dict
+    if l:self.isGlobal()
+        let l:bufnr = markbar#helpers#BufferNo(l:self.getMarkChar())
+        return expand(printf('#%s:p', l:bufnr))
+    else
+        return l:self._filepath
+    endif
 endfunction
