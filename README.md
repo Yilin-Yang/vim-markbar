@@ -100,7 +100,7 @@ By default, you:
 - **Delete marks entirely** using `d`.
 
 **Note** that deleted marks may reappear in subsequent editor sessions in
-[neovim](https://github.com/vim/vim/issues/1339) and [vim < 8.2.0050](https://github.com/vim/vim/issues/1339).
+[neovim](https://github.com/neovim/neovim/issues/4295) and [vim < 8.2.0050](https://github.com/vim/vim/issues/1339).
 Set `g:markbar_force_clear_shared_data_on_delmark = v:true` as a heavy-handed
 workaround.
 
