@@ -187,6 +187,12 @@ Execute (Go-direct-to-mark doesn't clobber the close-markbar mapping):
 Then:
   let g:markbar_close_peekaboo_mapping = '<Esc>'
 
+Do (Peekaboo markbar doesn't open from visual mode):
+  :edit! 10lines.txt\<cr>
+  gg0v`A"ay
+Then:
+  AssertEqual 'first ', @a
+
 Execute (Test Mark Highlighting, Backtick):
   let g:markbar_enable_mark_highlighting = v:true
   normal `

@@ -1,0 +1,11 @@
+" This exists as a "standalone sequential" test because only those tests
+" specify a shadafile/viminfofile; when shadafile is NONE,
+" g:markbar_persist_mark_names is always v:false, and associated warning
+" messages won't trigger.
+
+Include: helpers.vader
+
+Execute (Error message shows when shada omits !):
+  call SetShada("'100,<50,s10,h")
+  AssertThrows call g:MarkbarVimEnter()
+  AssertEqual g:persist_mark_names_err_msg, g:vader_exception

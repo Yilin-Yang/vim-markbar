@@ -72,7 +72,7 @@ git clone https://github.com/Yilin-Yang/vim-markbar.git
 
 Quick Start
 --------------------------------------------------------------------------------
-At a minimum, you should set some of the following keymappings in your `.vimrc`.
+At a minimum, you should set the following in your `.vimrc`.
 
 ```vim
 nmap <Leader>m <Plug>ToggleMarkbar
@@ -80,6 +80,13 @@ nmap <Leader>m <Plug>ToggleMarkbar
 " the following are unneeded if ToggleMarkbar is mapped
 nmap <Leader>mo <Plug>OpenMarkbar
 nmap <Leader>mc <Plug>CloseMarkbar
+
+" this is required for mark names to persist between editor sessions
+if has('nvim')
+    set shada+=!
+else
+    set viminfo+=!
+endif
 ```
 
 These examples use the [leader key,](https://stackoverflow.com/questions/1764263/what-is-the-leader-in-a-vimrc-file)
@@ -127,7 +134,7 @@ let g:markbar_reset_mark_mapping = '<BS>'
 The "peekaboo" markbar is meant to be used in the same fashion as vim's
 built-in "jump to mark" functionality: to jump to a mark, the user
 only needs to press `'` or `` ` ``, and then the key corresponding to their
-target mark, e.g. `'a` to jump to mark `a`.
+target mark. Pressing `'a` will open the peekaboo markbar and jump to mark `a`.
 
 By default, pressing the apostrophe key (`'`) or the backtick key (`` ` ``)
 opens the peekaboo markbar with apostrophe-like or backtick-like behavior,
@@ -195,6 +202,13 @@ let g:markbar_delete_mark_mapping   = '<Del>'
 " change this.
 let g:markbar_close_peekaboo_mapping = 'qq'
 
+" when true, the peekaboo markbar only opens if the user waits for timeoutlen
+" milliseconds after hitting ' or `
+let g:markbar_explicitly_remap_mark_mappings = v:true
+
+" to disable the peekaboo markbar entirely
+" let g:markbar_enable_peekaboo = v:false
+
 " Deleted marks may reappear in subsequent vim/neovim sessions. vim fixed
 " this in patch 8.2.0050; this is still an issue in neovim,
 " ref: https://github.com/neovim/neovim/issues/4295#issuecomment-544207151
@@ -212,8 +226,7 @@ let g:markbar_force_clear_shared_data_on_delmark = v:true
 
 " Persistent mark names requires viminfo-!/shada-!
 if has('nvim')
-    " neovim includes ! in &shada by default
-    " set shada+=!
+    set shada+=!
 else
     set viminfo+=!
 endif
