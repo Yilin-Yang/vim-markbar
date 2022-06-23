@@ -124,7 +124,14 @@ endfunction
 ""
 " Code to be run (only once) when markbar exits.
 function! s:MarkbarVimLeave() abort
-    if markbar#settings#PersistMarkNames()
+    " try-catch to avoid an annoying/superfluous error message to the user
+    " that's briefly visible as Vim is closing
+    try
+        let l:persist_mark_names = markbar#settings#PersistMarkNames()
+    catch /Vim(echoerr)/
+        let l:persist_mark_names = v:false
+    endtry
+    if l:persist_mark_names
         call s:SerializeRosters()
     endif
 endfunction

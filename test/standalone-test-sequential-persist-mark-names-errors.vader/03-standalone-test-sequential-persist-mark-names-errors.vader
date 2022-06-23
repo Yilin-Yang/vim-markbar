@@ -1,0 +1,5 @@
+Include: helpers.vader
+
+Execute (No error message shows when shada includes ! in the middle):
+  call SetShada("'100,<50,!,s10,h")
+  call g:MarkbarVimEnter()

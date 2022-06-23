@@ -46,8 +46,10 @@ function! markbar#settings#PersistMarkNames() abort
         if !l:will_save_globals
             echoerr '(vim-markbar) WARNING: g:markbar_persist_mark_names is '
                 \ . 'v:true, but won''t work because viminfo-!/shada-! is not '
-                \ . 'set! `set viminfo+=!` in vim or `set shada+=!` in neovim '
-                \ . 'to fix this.'
+                \ . 'set! Add `set viminfo+=!` to .vimrc in vim (or add '
+                \ . '`set shada+=!` to .vimrc in neovim) to fix this, or '
+                \ . '`let g:markbar_persist_mark_names = v:false` to silence '
+                \ . 'this error message.'
         endif
     endif
     call s:AssertType(

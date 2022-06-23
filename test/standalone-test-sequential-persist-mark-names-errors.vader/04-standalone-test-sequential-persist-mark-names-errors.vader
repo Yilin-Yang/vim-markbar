@@ -1,0 +1,6 @@
+Include: helpers.vader
+
+Execute (No error message when g:markbar_persist_mark_names is v:false):
+  call SetShada("'100,<50,s10,h")
+  let g:markbar_persist_mark_names = v:false
+  call g:MarkbarVimEnter()

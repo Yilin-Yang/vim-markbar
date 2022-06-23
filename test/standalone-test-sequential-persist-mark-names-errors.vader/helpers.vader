@@ -1,0 +1,17 @@
+Execute (Set test helpers):
+
+  function! SetShada(new_value) abort
+    if has('nvim')
+      let &shada = a:new_value
+    else
+      let &viminfo = a:new_value
+    endif
+  endfunction
+
+  let g:persist_mark_names_err_msg =
+      \ 'Vim(echoerr):(vim-markbar) WARNING: g:markbar_persist_mark_names is '
+      \ . 'v:true, but won''t work because viminfo-!/shada-! is not '
+      \ . 'set! Add `set viminfo+=!` to .vimrc in vim (or add '
+      \ . '`set shada+=!` to .vimrc in neovim) to fix this, or '
+      \ . '`let g:markbar_persist_mark_names = v:false` to silence '
+      \ . 'this error message.'
