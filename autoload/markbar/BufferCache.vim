@@ -22,7 +22,7 @@ function! markbar#BufferCache#New(buffer_no, rosters) abort
 endfunction
 
 " RETURNS:  (markbar#MarkData)  MarkData of the requested mark.
-function! s:BufferCache.getMark(mark) abort dict
+function! markbar#BufferCache#getMark(mark) abort dict
     let l:is_quote = a:mark ==# "'" || a:mark ==# '`'
     let l:mark = (l:is_quote) ? "'" : a:mark
     try
@@ -32,6 +32,7 @@ function! s:BufferCache.getMark(mark) abort dict
     endtry
     return l:md
 endfunction
+let s:BufferCache.getMark = function('markbar#BufferCache#getMark')
 
 " EFFECTS:  Repopulate BufferCache's `marks_dict` with the given marks output.
 " PARAM:    marks_output    (v:t_string)    Raw output of |:marks|.
@@ -41,7 +42,7 @@ endfunction
 " PARAM:    filepath        (v:t_string)    Full filepath for the buffer being
 "                                           queried by |:marks|. Ignored for
 "                                           global marks.
-function! s:BufferCache.updateCache(marks_output, bufname, filepath) abort dict
+function! markbar#BufferCache#updateCache(marks_output, bufname, filepath) abort dict
     call markbar#ensure#IsString(a:marks_output)
     call markbar#ensure#IsString(a:bufname)
     call markbar#ensure#IsString(a:filepath)
@@ -88,12 +89,13 @@ function! s:BufferCache.updateCache(marks_output, bufname, filepath) abort dict
 
     let l:self.marks_dict = l:new_marks_dict
 endfunction
+let s:BufferCache.updateCache = function('markbar#BufferCache#updateCache')
 
 " EFFECTS:  - Retrieve new contexts for this BufferCache's marks.
 "           - Clear cached mark contexts for marks that shouldn't exist anymore.
 "           - Fetch updated contexts for all marks.
 " PARAM:    num_lines   (v:t_number)    Number of lines of context to retrieve.
-function! s:BufferCache.updateContexts(num_lines) abort dict
+function! markbar#BufferCache#updateContexts(num_lines) abort dict
     let l:using_global_marks = l:self.isGlobal()
     let l:buffer_no = l:self._buffer_no
     for l:mark in keys(l:self.marks_dict)
@@ -113,7 +115,9 @@ function! s:BufferCache.updateContexts(num_lines) abort dict
         call l:mark_data.setContext(l:context)
     endfor
 endfunction
+let s:BufferCache.updateContexts = function('markbar#BufferCache#updateContexts')
 
-function! s:BufferCache.isGlobal() abort dict
+function! markbar#BufferCache#isGlobal() abort dict
     return l:self._buffer_no ==# 0
 endfunction
+let s:BufferCache.isGlobal = function('markbar#BufferCache#isGlobal')

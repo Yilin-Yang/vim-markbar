@@ -72,7 +72,7 @@ endfunction
 " PARAM:    new_name?   (v:t_string)    New name for the mark. If not present
 "                                       or empty, prompt the user to enter a
 "                                       new name.
-function! s:MarkbarModel.renameMark(mark, ...) abort dict
+function! markbar#MarkbarModel#renameMark(mark, ...) abort dict
     if s:WarnIfValidMarkCharIsEmpty(a:mark, 'renaming')
         return
     endif
@@ -89,23 +89,25 @@ function! s:MarkbarModel.renameMark(mark, ...) abort dict
 
     call s:UpdateNameAndRosterEntry(l:self._rosters, l:mark_data, l:new_name)
 endfunction
+let s:MarkbarModel.renameMark = function('markbar#MarkbarModel#renameMark')
 
 " BRIEF:    Reset the the selected mark's name to the default.
 " DETAILS:  Changes won't appear until the markbar has been repopulated.
 " PARAM:    mark    (v:t_string)    Single character representing the mark.
-function! s:MarkbarModel.resetMark(mark) abort dict
+function! markbar#MarkbarModel#resetMark(mark) abort dict
     if s:WarnIfValidMarkCharIsEmpty(a:mark, 'name-clearing')
         return
     endif
     let l:mark_data = l:self.getMarkData(a:mark)
     call s:UpdateNameAndRosterEntry(l:self._rosters, l:mark_data, '')
 endfunction
+let s:MarkbarModel.resetMark = function('markbar#MarkbarModel#resetMark')
 
 " BRIEF:    Delete the given mark, and remove it from the cache.
 " DETAILS:  Changes won't appear until the markbar has been repopulated.
 "           Must be invoked while the cursor is inside a markbar.
 " PARAM:    mark    (v:t_string)    The single character representing the mark.
-function! s:MarkbarModel.deleteMark(mark) abort dict
+function! markbar#MarkbarModel#deleteMark(mark) abort dict
     if s:WarnIfValidMarkCharIsEmpty(a:mark, 'deletion')
         return
     endif
@@ -148,15 +150,17 @@ function! s:MarkbarModel.deleteMark(mark) abort dict
         endif
     endif
 endfunction
+let s:MarkbarModel.deleteMark = function('markbar#MarkbarModel#deleteMark')
 
 " RETURNS:  (v:t_number)    The most recently accessed 'real' buffer.
-function! s:MarkbarModel.getActiveBuffer() abort dict
+function! markbar#MarkbarModel#getActiveBuffer() abort dict
     return l:self._active_buffer_stack.top()
 endfunction
+let s:MarkbarModel.getActiveBuffer = function('markbar#MarkbarModel#getActiveBuffer')
 
 " EFFECTS:  Push the given buffer number onto the active buffer
 "           ConditionalStack.
-function! s:MarkbarModel.pushNewBuffer(buffer_no) abort dict
+function! markbar#MarkbarModel#pushNewBuffer(buffer_no) abort dict
     if type(a:buffer_no) ==# v:t_list
         for l:no in a:buffer_no
             call l:self.pushNewBuffer(l:no)
@@ -166,6 +170,7 @@ function! s:MarkbarModel.pushNewBuffer(buffer_no) abort dict
     call markbar#ensure#IsNumber(a:buffer_no)
     call l:self._active_buffer_stack.push(a:buffer_no)
 endfunction
+let s:MarkbarModel.pushNewBuffer = function('markbar#MarkbarModel#pushNewBuffer')
 
 " RETURNS:  (markbar#MarkData)  The MarkData object corresponding to the given
 "                               mark character.
@@ -175,7 +180,7 @@ endfunction
 "           - If the requested mark is a global (file or numbered) mark, then
 "           the MarkbarModel object will search the global BufferCache.
 "           - If the requested mark cannot be found, throw an exception.
-function! s:MarkbarModel.getMarkData(mark_char) abort dict
+function! markbar#MarkbarModel#getMarkData(mark_char) abort dict
     let l:is_global = markbar#helpers#IsGlobalMark(a:mark_char)
     let l:mark_buffer =
             \ l:is_global ? 0 : l:self.getActiveBuffer()
@@ -188,11 +193,12 @@ function! s:MarkbarModel.getMarkData(mark_char) abort dict
     let l:mark = l:marks_dict[a:mark_char]
     return l:mark
 endfunction
+let s:MarkbarModel.getMarkData = function('markbar#MarkbarModel#getMarkData')
 
 " RETURNS:  (markbar#BufferCache)   BufferCache for the requested buffer.
 " DETAILS:  Initializes a BufferCache for the buffer if one doesn't exist.
 " PARAM:    buffer_no   (v:t_number)    The bufnr() of the requested buffer.
-function! s:MarkbarModel._getOrInitBufferCache(buffer_no) abort dict
+function! markbar#MarkbarModel#_getOrInitBufferCache(buffer_no) abort dict
     call markbar#ensure#IsNumber(a:buffer_no)
     let l:cache = get(l:self._buffer_caches, a:buffer_no, 0)
     if empty(l:cache)
@@ -201,11 +207,12 @@ function! s:MarkbarModel._getOrInitBufferCache(buffer_no) abort dict
     endif
     return l:cache
 endfunction
+let s:MarkbarModel._getOrInitBufferCache = function('markbar#MarkbarModel#_getOrInitBufferCache')
 
 " RETURNS:  (markbar#BufferCache)   BufferCache for the requested buffer.
 " DETAILS:  Throws an exception if a matching BufferCache isn't found.
 " PARAM:    buffer_no   (v:t_number)    The bufnr() of the requested buffer.
-function! s:MarkbarModel.getBufferCache(buffer_no) abort dict
+function! markbar#MarkbarModel#getBufferCache(buffer_no) abort dict
     call markbar#ensure#IsNumber(a:buffer_no)
     let l:cache = get(l:self._buffer_caches, a:buffer_no, 0)
     if empty(l:cache)
@@ -213,20 +220,22 @@ function! s:MarkbarModel.getBufferCache(buffer_no) abort dict
     endif
     return l:cache
 endfunction
+let s:MarkbarModel.getBufferCache = function('markbar#MarkbarModel#getBufferCache')
 
 " RETURNS:  (v:t_bool)  `v:true` if a cache was removed, `v:false` otherwise.
-function! s:MarkbarModel.evictBufferCache(buffer_no) abort dict
+function! markbar#MarkbarModel#evictBufferCache(buffer_no) abort dict
     if !has_key(l:self._buffer_caches, a:buffer_no)
         return v:false
     endif
     call remove(l:self._buffer_caches, a:buffer_no)
     return v:true
 endfunction
+let s:MarkbarModel.evictBufferCache = function('markbar#MarkbarModel#evictBufferCache')
 
 " DETAILS:  Update BufferCaches for the current buffer and for global marks.
 "           Creates BufferCaches for the current buffer and global marks if
 "           they don't yet exist.
-function! s:MarkbarModel.updateCurrentAndGlobal() abort dict
+function! markbar#MarkbarModel#updateCurrentAndGlobal() abort dict
     let l:bufnr = bufnr('%')
     let l:cur_buffer_cache = l:self._getOrInitBufferCache(l:bufnr)
     "                                                     ^ This is bufnr('%')
@@ -259,3 +268,4 @@ function! s:MarkbarModel.updateCurrentAndGlobal() abort dict
     call l:cur_buffer_cache.updateContexts(l:max_num_context)
     call l:global_buffer_cache.updateContexts(l:max_num_context)
 endfunction
+let s:MarkbarModel.updateCurrentAndGlobal = function('markbar#MarkbarModel#updateCurrentAndGlobal')

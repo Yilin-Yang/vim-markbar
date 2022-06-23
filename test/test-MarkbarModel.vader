@@ -51,6 +51,7 @@ Execute (MarkbarModel: Add More Global Marks; Add Local Marks):
   execute '10mark c'
   execute '15mark b'
   execute '20mark a'
+  let g:filepath_30lines = expand('%:p')
 
   call g:markbar_model.updateCurrentAndGlobal()
 Then:

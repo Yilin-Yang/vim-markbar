@@ -146,10 +146,11 @@ function! markbar#KeyMapper#ParseModifiers(mods_as_str) abort
 endfunction
 
 " BRIEF:    Replace the callback function used as the RHS in mappings.
-function! s:KeyMapper.setCallback(NewCallback) abort dict
+function! markbar#KeyMapper#setCallback(NewCallback) abort dict
     call markbar#ensure#IsFuncref(a:NewCallback)
     let l:self._Callback = a:NewCallback
 endfunction
+let s:KeyMapper.setCallback = function('markbar#KeyMapper#setCallback')
 
 " BRIEF:    Set all keymappings.
 " PARAM:    mapcommand  (v:t_string)    The particular ':map' command to use
@@ -159,7 +160,7 @@ endfunction
 "                               <expr>`).
 " DETAILS:  See `:help :map-commands` and `:help :map-arguments` for details
 "           on how to format a:mapcommand.
-function! s:KeyMapper.setMappings(mapcommand) abort dict
+function! markbar#KeyMapper#setMappings(mapcommand) abort dict
     let l:keys_to_map_ref = l:self._keys_to_map
     for [l:map_cmd_lhs, l:lhs_pieces] in l:keys_to_map_ref
         let l:prefix = l:lhs_pieces[2]
@@ -199,3 +200,4 @@ function! s:KeyMapper.setMappings(mapcommand) abort dict
         execute l:command
     endfor
 endfunction
+let s:KeyMapper.setMappings = function('markbar#KeyMapper#setMappings')
