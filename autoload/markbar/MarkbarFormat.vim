@@ -53,7 +53,7 @@ function! markbar#MarkbarFormat#New(options) abort
 endfunction
 
 " BRIEF:    Throw an exception if a value has the wrong type for an option.
-function! s:MarkbarFormat.ensureCorrectTypeForOption(option, value) abort dict
+function! markbar#MarkbarFormat#ensureCorrectTypeForOption(option, value) abort dict
     call markbar#ensure#IsString(a:option)
     let l:correct_type = get(s:options_and_types, a:option, v:null)
     if l:correct_type is v:null
@@ -66,28 +66,31 @@ function! s:MarkbarFormat.ensureCorrectTypeForOption(option, value) abort dict
             \ markbar#helpers#VimLTypeToString(l:correct_type))
     endif
 endfunction
+let s:MarkbarFormat.ensureCorrectTypeForOption = function('markbar#MarkbarFormat#ensureCorrectTypeForOption')
 
 " EFFECTS:  Change an option's value. Throw exception on bad option name or if
 "           type doesn't match.
-function! s:MarkbarFormat.setOption(option, new_value) abort dict
+function! markbar#MarkbarFormat#setOption(option, new_value) abort dict
     call markbar#ensure#IsString(a:option)
     call l:self.ensureCorrectTypeForOption(a:option, a:new_value)
     let l:self._options[a:option] = a:new_value
 endfunction
+let s:MarkbarFormat.setOption = function('markbar#MarkbarFormat#setOption')
 
 " EFFECTS:  Change multiple options' values. Throw exception on a bad option
 "           name or if a given type doesn't match.
-function! s:MarkbarFormat.setOptions(options) abort dict
+function! markbar#MarkbarFormat#setOptions(options) abort dict
     call markbar#ensure#IsDictionary(a:options)
     for [l:option, l:new_value] in items(a:options)
         call l:self.setOption(l:option, l:new_value)
     endfor
 endfunction
+let s:MarkbarFormat.setOptions = function('markbar#MarkbarFormat#setOptions')
 
 " EFFECTS:  Flip a boolean option's value.
 "           Exists because `type(!v:true) == v:t_number`, so flipping a
 "           boolean option through setOption is needlessly convoluted.
-function! s:MarkbarFormat.flipOption(option) abort dict
+function! markbar#MarkbarFormat#flipOption(option) abort dict
     call markbar#ensure#IsString(a:option)
     let l:cur_val = l:self.getOption(a:option)
     if type(l:cur_val) !=# v:t_bool
@@ -95,9 +98,10 @@ function! s:MarkbarFormat.flipOption(option) abort dict
     endif
     call l:self.setOption(a:option, l:cur_val ? v:false : v:true)
 endfunction
+let s:MarkbarFormat.flipOption = function('markbar#MarkbarFormat#flipOption')
 
 " EFFECTS:  Get an option's value. Throw exception if option doesn't exist.
-function! s:MarkbarFormat.getOption(option) abort dict
+function! markbar#MarkbarFormat#getOption(option) abort dict
     call markbar#ensure#IsString(a:option)
     let l:value = get(l:self._options, a:option, v:null)
     if l:value is v:null
@@ -105,3 +109,4 @@ function! s:MarkbarFormat.getOption(option) abort dict
     endif
     return l:value
 endfunction
+let s:MarkbarFormat.getOption = function('markbar#MarkbarFormat#getOption')

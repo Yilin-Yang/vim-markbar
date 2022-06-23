@@ -54,7 +54,7 @@ function! markbar#MarkData#New(markstring, bufname, filepath) abort
 endfunction
 
 " RETURNS:  (v:t_string)    Default name for a mark, or an empty string.
-function! s:MarkData.getDefaultName() abort
+function! markbar#MarkData#getDefaultName() abort dict
     let l:mark = l:self.getMarkChar()
     if l:mark ==# "'"
         return 'Last Jump'
@@ -83,59 +83,69 @@ function! s:MarkData.getDefaultName() abort
     endif
     return ''
 endfunction
+let s:MarkData.getDefaultName = function('markbar#MarkData#getDefaultName')
 
-function! s:MarkData.getMarkChar() abort dict
+function! markbar#MarkData#getMarkChar() abort dict
     return l:self._mark_char
 endfunction
+let s:MarkData.getMarkChar = function('markbar#MarkData#getMarkChar')
 
-function! s:MarkData.getLineNo() abort dict
+function! markbar#MarkData#getLineNo() abort dict
     return l:self._line_no
 endfunction
+let s:MarkData.getLineNo = function('markbar#MarkData#getLineNo')
 
-function! s:MarkData.getColumnNo() abort dict
+function! markbar#MarkData#getColumnNo() abort dict
     return l:self._column_no
 endfunction
+let s:MarkData.getColumnNo = function('markbar#MarkData#getColumnNo')
 
 " RETURNS:  (v:t_string)    User-provided name for this mark, or ''.
-function! s:MarkData.getUserName() abort dict
+function! markbar#MarkData#getUserName() abort dict
     return l:self._name
 endfunction
+let s:MarkData.getUserName = function('markbar#MarkData#getUserName')
 
-function! s:MarkData.getContext() abort dict
+function! markbar#MarkData#getContext() abort dict
     return l:self._context
 endfunction
+let s:MarkData.getContext = function('markbar#MarkData#getContext')
 
-function! s:MarkData.isGlobal() abort dict
+function! markbar#MarkData#isGlobal() abort dict
     return markbar#helpers#IsGlobalMark(l:self.getMarkChar())
 endfunction
+let s:MarkData.isGlobal = function('markbar#MarkData#isGlobal')
 
 " EFFECTS:  Set user-given name for this mark.
-function! s:MarkData.setUserName(new_name) abort dict
+function! markbar#MarkData#setUserName(new_name) abort dict
     let l:self._name = a:new_name
 endfunction
+let s:MarkData.setUserName = function('markbar#MarkData#setUserName')
 
 " EFFECTS:  Update the context for a particular mark.
 " PARAM:    new_context (v:t_list)  List of strings, where each string is a
 "                                   line of context from around the mark.
-function! s:MarkData.setContext(new_context) abort dict
+function! markbar#MarkData#setContext(new_context) abort dict
     let l:self._context = a:new_context
 endfunction
+let s:MarkData.setContext = function('markbar#MarkData#setContext')
 
 " RETURNS:  (v:t_string)    |bufname()| of the buffer that contains this mark.
 "                           When MarkData represents a global mark, this comes
 "                           from a |bufname()| lookup.
-function! s:MarkData.getBufname() abort dict
+function! markbar#MarkData#getBufname() abort dict
     if l:self.isGlobal()
         return bufname(markbar#helpers#BufferNo(l:self.getMarkChar()))
     else
         return l:self._bufname
     endif
 endfunction
+let s:MarkData.getBufname = function('markbar#MarkData#getBufname')
 
 " RETURNS:  (v:t_string)    Full path to the file holding this mark.
 "                           When MarkData represents a global mark, this comes
 "                           from a lookup.
-function! s:MarkData.getFilename() abort dict
+function! markbar#MarkData#getFilename() abort dict
     if l:self.isGlobal()
         let l:bufnr = markbar#helpers#BufferNo(l:self.getMarkChar())
         return expand(printf('#%s:p', l:bufnr))
@@ -143,3 +153,4 @@ function! s:MarkData.getFilename() abort dict
         return l:self._filepath
     endif
 endfunction
+let s:MarkData.getFilename = function('markbar#MarkData#getFilename')

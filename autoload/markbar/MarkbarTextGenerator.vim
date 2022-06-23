@@ -19,7 +19,7 @@ endfunction
 " RETURNS:  (v:t_list)  Text content for the markbar as a list of strings.
 " PARAM:    locals      `marks_dict` for local marks from a markbar#BufferCache.
 " PARAM:    globals     Ditto, but for global marks.
-function! s:MarkbarTextGenerator.getText(local_marks, global_marks) abort dict
+function! markbar#MarkbarTextGenerator#getText(local_marks, global_marks) abort dict
     call markbar#ensure#IsDictionary(a:local_marks)
     call markbar#ensure#IsDictionary(a:global_marks)
 
@@ -94,9 +94,10 @@ function! s:MarkbarTextGenerator.getText(local_marks, global_marks) abort dict
 
     return l:lines
 endfunction
+let s:MarkbarTextGenerator.getText = function('markbar#MarkbarTextGenerator#getText')
 
 " RETURNS:  (v:t_string)    Section heading for the given mark.
-function! s:MarkbarTextGenerator.getMarkHeading(mark) abort dict
+function! markbar#MarkbarTextGenerator#getMarkHeading(mark) abort dict
     call markbar#ensure#IsClass(a:mark, 'MarkData')
     let l:suffix = ' '
 
@@ -155,3 +156,4 @@ function! s:MarkbarTextGenerator.getMarkHeading(mark) abort dict
 
     return printf("['%s]:%s", a:mark.getMarkChar(), l:suffix)
 endfunction
+let s:MarkbarTextGenerator.getMarkHeading = function('markbar#MarkbarTextGenerator#getMarkHeading')

@@ -33,7 +33,7 @@ endfunction
 " EFFECTS:  Push a new element onto the given ConditionalStack.
 " RETURNS:  (v:t_bool)  `v:true` if the push succeeded (i.e. if the new
 "                       element was valid, and was added to the stack.)
-function! s:ConditionalStack.push(element) abort dict
+function! markbar#ConditionalStack#push(element) abort dict
     if !l:self.IsValid(a:element)
         return v:false
     endif
@@ -44,10 +44,11 @@ function! s:ConditionalStack.push(element) abort dict
     endif
     return v:true
 endfunction
+let s:ConditionalStack.push = function('markbar#ConditionalStack#push')
 
 " EFFECTS:  - Return the topmost valid element in the ConditionalStack.
 "           - Throw an exception if none could be found.
-function! s:ConditionalStack.top() abort dict
+function! markbar#ConditionalStack#top() abort dict
     let l:stack = l:self._data
     let l:IsValid = l:self.IsValid
     while len(l:stack) && !l:IsValid(l:stack[-1])
@@ -58,15 +59,17 @@ function! s:ConditionalStack.top() abort dict
     endif
     return l:stack[-1]
 endfunction
+let s:ConditionalStack.top = function('markbar#ConditionalStack#top')
 
 " EFFECTS:  Return the total number of elements, valid and invalid, currently
 "           in the ConditionalStack.
-function! s:ConditionalStack.size() abort dict
+function! markbar#ConditionalStack#size() abort dict
     return len(l:self._data)
 endfunction
+let s:ConditionalStack.size = function('markbar#ConditionalStack#size')
 
 " EFFECTS:  Remove all invalid elements from the stack.
-function! s:ConditionalStack.clean() abort dict
+function! markbar#ConditionalStack#clean() abort dict
     let l:stack = l:self._data
     let l:IsValid = l:self.IsValid
     let l:i = len(l:stack)
@@ -78,13 +81,15 @@ function! s:ConditionalStack.clean() abort dict
         call remove(l:stack, l:i)
     endwhile
 endfunction
+let s:ConditionalStack.clean = function('markbar#ConditionalStack#clean')
 
 " EFFECTS:  Discard the first half of the ConditionalStack if it exceeds its
 "           maximum size threshold.
-function! s:ConditionalStack.shrink() abort dict
+function! markbar#ConditionalStack#shrink() abort dict
     let l:stack = l:self._data
     let l:size = len(l:stack)
     if l:size > l:self._max_size
         let l:self._data = l:stack[l:size/2:]
     endif
 endfunction
+let s:ConditionalStack.shrink = function('markbar#ConditionalStack#shrink')

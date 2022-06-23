@@ -31,17 +31,18 @@ endfunction
 
 " BRIEF:    Populate ShaDaRosters object with mark names from viminfo/ShaDa.
 " DETAILS:  Must be called after viminfo/ShaDa have been read.
-function! s:ShaDaRosters.populate(global_roster, local_rosters) abort dict
+function! markbar#ShaDaRosters#populate(global_roster, local_rosters) abort dict
     call markbar#ensure#IsDictionary(a:global_roster)
     call markbar#ensure#IsDictionary(a:local_rosters)
     call extend(l:self._global_marks_to_names, a:global_roster, 'force')
     call extend(l:self._filepaths_to_rosters, a:local_rosters, 'force')
 endfunction
+let s:ShaDaRosters.populate = function('markbar#ShaDaRosters#populate')
 
 " DETAILS:  Write global roster into {new_global_roster}. Write local rosters
 "           for files in {new_oldfiles_list} into {new_local_rosters}.
-function! s:ShaDaRosters.writeRosters(new_oldfiles, new_global_roster,
-                                    \ new_local_rosters) abort dict
+function! markbar#ShaDaRosters#writeRosters(new_oldfiles, new_global_roster,
+                                          \ new_local_rosters) abort dict
     call markbar#ensure#IsList(a:new_oldfiles)
     call markbar#ensure#IsDictionary(a:new_global_roster)
     call markbar#ensure#IsDictionary(a:new_local_rosters)
@@ -62,6 +63,7 @@ function! s:ShaDaRosters.writeRosters(new_oldfiles, new_global_roster,
         let a:new_local_rosters[l:filepath] = l:local_rosters
     endfor
 endfunction
+let s:ShaDaRosters.writeRosters = function('markbar#ShaDaRosters#writeRosters')
 
 " DETAILS:  - Type-check {mark_char} and {filepath}.
 "           - Throw an exception if {filepath} is 0 (denoting the global
@@ -88,7 +90,7 @@ endfunction
 
 " DETAILS:  Return a local roster for the {filepath}, or the global roster if
 "           {filepath} is 0. Default-initialize a roster if none exists.
-function! s:ShaDaRosters.rosterFor(filepath) abort dict
+function! markbar#ShaDaRosters#rosterFor(filepath) abort dict
     if a:filepath isnot 0
         call markbar#ensure#IsString(a:filepath)
     endif
@@ -102,12 +104,13 @@ function! s:ShaDaRosters.rosterFor(filepath) abort dict
     endif
     return l:roster
 endfunction
+let s:ShaDaRosters.rosterFor = function('markbar#ShaDaRosters#rosterFor')
 
 " DETAILS:  - Set {new_name} for {mark_char} in the file {filepath}.
 "           - A {filepath} of 0 corresponds to the global mark roster.
 "           - If {new_name} is the empty string, then {mark_char} is removed
 "           from the roster.
-function! s:ShaDaRosters.setName(filepath, mark_char, new_name) abort dict
+function! markbar#ShaDaRosters#setName(filepath, mark_char, new_name) abort dict
     call s:ValidateMarkCharForFilepath(a:mark_char, a:filepath)
     call markbar#ensure#IsString(a:new_name)
     let l:roster = l:self.rosterFor(a:filepath)
@@ -119,11 +122,12 @@ function! s:ShaDaRosters.setName(filepath, mark_char, new_name) abort dict
         endif
     endif
 endfunction
+let s:ShaDaRosters.setName = function('markbar#ShaDaRosters#setName')
 
 " DETAILS:  - Returns the name for {mark_char} in the file {filepath}.
 "           - A {filepath} of 0 corresponds to the global mark roster.
 "           - Returns an empty string if an entry isn't found.
-function! s:ShaDaRosters.getName(filepath, mark_char) abort dict
+function! markbar#ShaDaRosters#getName(filepath, mark_char) abort dict
     call s:ValidateMarkCharForFilepath(a:mark_char, a:filepath)
     let l:roster = l:self.rosterFor(a:filepath)
     if l:roster is v:null
@@ -131,15 +135,17 @@ function! s:ShaDaRosters.getName(filepath, mark_char) abort dict
     endif
     return get(l:roster, a:mark_char, '')
 endfunction
+let s:ShaDaRosters.getName = function('markbar#ShaDaRosters#getName')
 
 " DETAILS:  Change the filename for a given local roster.
 "           - The global roster cannot be modified in this way.
 "           - {old_filepath} and {new_filepath} must be strings.
-function! s:ShaDaRosters.changeRosterFilename(old_filepath,
-                                            \ new_filepath) abort dict
+function! markbar#ShaDaRosters#changeRosterFilename(old_filepath,
+                                                  \ new_filepath) abort dict
     call markbar#ensure#IsString(a:old_filepath)
     call markbar#ensure#IsString(a:new_filepath)
     let l:roster = l:self.rosterFor(a:old_filepath)
     call remove(l:self._filepaths_to_rosters, a:old_filepath)
     let l:self._filepaths_to_rosters[a:new_filepath] = l:roster
 endfunction
+let s:ShaDaRosters.changeRosterFilename = function('markbar#ShaDaRosters#changeRosterFilename')
