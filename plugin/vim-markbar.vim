@@ -407,7 +407,6 @@ endif
 
 augroup markbar_model_update
     au!
-    autocmd VimEnter * call g:markbar_model.pushNewBuffer(markbar#helpers#GetOpenBuffers())
     autocmd BufEnter * call g:markbar_model.pushNewBuffer(expand('<abuf>') + 0)
     autocmd BufDelete,BufWipeout *
         \ call g:markbar_model.evictBufferCache(expand('<abuf>') + 0)
