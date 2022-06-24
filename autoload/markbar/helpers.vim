@@ -1,12 +1,18 @@
+" We always redir => l:redir_output to prevent superfluous `E121: Undefined
+" variable` messages when (neo)vim tries to look up a local variable from a
+" previous stack frame's `redir =>` invocation.
+"
+" See: https://github.com/Yilin-Yang/vim-markbar/issues/33
+
+
 " RETURNS:  (v:t_list)      A list populated with the numbers of every
 "                           buffer, listed or unlisted.
 function! markbar#helpers#GetOpenBuffers() abort
-    let l:buffers_str = ''
-    redir => l:buffers_str
+    let l:redir_output = ''
+    redir => l:redir_output
     silent ls!
     redir end
-    " let l:buffers_str = markbar#textmanip#TrimMarksHeader(l:buffers_str)
-    let l:buffers_str_list = split(l:buffers_str, '\r\{0,1}\n')
+    let l:buffers_str_list = split(l:redir_output, '\r\{0,1}\n')
     let l:buffers_list = []
     for l:str in l:buffers_str_list
         call add(l:buffers_list, matchstr(l:str, '[0-9]\+') + 0)
@@ -49,35 +55,35 @@ endfunction
 " RETURNS:  (v:t_string)    All buffer-local marks active within the current
 "                           file as a 'raw' string.
 function! markbar#helpers#GetLocalMarks() abort
-    let l:to_return = ''
+    let l:redir_output = ''
     try
-        redir => l:to_return
+        redir => l:redir_output
         silent marks abcdefghijklmnopqrstuvwxyz[]<>'`\"^.(){}
         redir end
-        let l:to_return .= "\n"
+        let l:redir_output .= "\n"
     catch /E283/
-        let l:to_return = 'mark line  col file/text\n'
+        let l:redir_output = 'mark line  col file/text\n'
     endtry
     for l:mark in ['(',')','{','}']
         try
-            let l:to_return .= markbar#helpers#MakeMarkString(l:mark)."\n"
+            let l:redir_output .= markbar#helpers#MakeMarkString(l:mark)."\n"
         catch
         endtry
     endfor
-    return l:to_return
+    return l:redir_output
 endfunction
 
 " RETURNS:  (v:t_string)    All global marks as a 'raw' string.
 function! markbar#helpers#GetGlobalMarks() abort
-    let l:to_return = ''
+    let l:redir_output = ''
     try
-        redir => l:to_return
+        redir => l:redir_output
         silent marks ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
         redir end
     catch /E283/
-        let l:to_return = 'mark line  col file/text\n'
+        let l:redir_output = 'mark line  col file/text\n'
     endtry
-    return l:to_return
+    return l:redir_output
 endfunction
 
 " RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a 'global'
