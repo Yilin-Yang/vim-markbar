@@ -1,18 +1,30 @@
-" We always redir => l:redir_output to prevent superfluous `E121: Undefined
-" variable` messages when (neo)vim tries to look up a local variable from a
-" previous stack frame's `redir =>` invocation.
+" RETURNS:  (v:t_string)    Output of executing the given command.
+" DETAILS:  We wrap the redir in try-catch to catch erroneous `E121:
+"           Undefined variable` messages that appear when (neo)vim tries to
+"           look up a local variable from a previous stack frame's `redir =>`
+"           invocation.
 "
-" See: https://github.com/Yilin-Yang/vim-markbar/issues/33
+"           See: https://github.com/Yilin-Yang/vim-markbar/issues/33
+function! markbar#helpers#Redir(command) abort
+    let l:redir_output = ''
+    try
+        redir => l:redir_output
+        execute a:command
+        redir end
+    catch /E121/
+        redir => l:redir_output
+        execute a:command
+        redir end
+    endtry
+    return l:redir_output
+endfunction
 
 
 " RETURNS:  (v:t_list)      A list populated with the numbers of every
 "                           buffer, listed or unlisted.
 function! markbar#helpers#GetOpenBuffers() abort
-    let l:redir_output = ''
-    redir => l:redir_output
-    silent ls!
-    redir end
-    let l:buffers_str_list = split(l:redir_output, '\r\{0,1}\n')
+    let l:buffers_str = markbar#helpers#Redir('silent ls!')
+    let l:buffers_str_list = split(l:buffers_str, '\r\{0,1}\n')
     let l:buffers_list = []
     for l:str in l:buffers_str_list
         call add(l:buffers_list, matchstr(l:str, '[0-9]\+') + 0)
@@ -57,9 +69,8 @@ endfunction
 function! markbar#helpers#GetLocalMarks() abort
     let l:redir_output = ''
     try
-        redir => l:redir_output
-        silent marks abcdefghijklmnopqrstuvwxyz[]<>'`\"^.(){}
-        redir end
+        let l:redir_output = markbar#helpers#Redir(
+                \ "silent marks abcdefghijklmnopqrstuvwxyz[]<>'`\\\"^.(){}")
         let l:redir_output .= "\n"
     catch /E283/
         let l:redir_output = 'mark line  col file/text\n'
@@ -77,9 +88,8 @@ endfunction
 function! markbar#helpers#GetGlobalMarks() abort
     let l:redir_output = ''
     try
-        redir => l:redir_output
-        silent marks ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
-        redir end
+        let l:redir_output = markbar#helpers#Redir(
+                \ 'silent marks ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
     catch /E283/
         let l:redir_output = 'mark line  col file/text\n'
     endtry
