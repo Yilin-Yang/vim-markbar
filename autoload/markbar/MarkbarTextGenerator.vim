@@ -79,9 +79,9 @@ function! markbar#MarkbarTextGenerator#getText(local_marks, global_marks) abort 
             while l:j <# l:end
                 let l:line = l:full_context[l:j]
                 if l:j ==# l:mark_line_idx
-                    let l:colno = (l:jump_like_backtick) ?
-                        \ l:mark.getColumnNo() : matchstrpos(l:line, '\S')[1]
-                    let l:parts = markbar#helpers#SplitString(l:line, l:colno)
+                    let l:col_idx = (l:jump_like_backtick) ?
+                        \ l:mark.getColumnNo() - 1 : matchstrpos(l:line, '\S')[1]
+                    let l:parts = markbar#helpers#SplitString(l:line, l:col_idx)
                     let l:line = l:parts[0].l:marker.l:parts[1]
                 endif
                 call add(l:lines, l:indent_block . l:line)

@@ -179,7 +179,7 @@ function! markbar#MarkbarView#goToMark(mark, goto_exact) abort dict
                     \.getMark("'")
             \ )
             let l:mark_line = l:targ_mark.getLineNo()
-            let l:mark_col  = l:targ_mark.getColumnNo() + 1
+            let l:mark_col  = l:targ_mark.getColumnNo()
         catch /mark not found in cache/
             call markbar#MarkbarView#MarkNotSet(a:mark)
             return

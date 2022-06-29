@@ -12,37 +12,37 @@ let s:MarkData = {
 " EFFECTS:  Create a MarkData object from a one-line 'markstring'.
 " DETAILS:  MarkData holds information about a mark and the context where that
 "           mark appears.
-" PARAM:    markstring  (v:t_string)    The one-line markstring.
-"
-"           Shall be formatted as follows:
-"               A     10    0   foo.txt
-"               ^ mark
-"                     ^ line no
-"                           ^ col no
-"                               ^ file/text
-"
-"           This is how the `marks` command prints output for a mark. See `:h
-"           marks` for more details.
+" PARAM:    mark_char   (v:t_string)    One-character mark char.
+" PARAM:    getpos      (v:t_list)      Output of |getpos()| for the mark.
 " PARAM:    bufname     (v:t_string)    Bufname or the buffer holding the
 "                                       mark. Ignored when MarkData is a
 "                                       global mark.
 " PARAM:    filepath    (v:t_string)    Full filepath for the buffer holding
 "                                       the mark. Ignored when MarkData is a
 "                                       global mark.
-function! markbar#MarkData#New(markstring, bufname, filepath) abort
-    call markbar#ensure#IsString(a:markstring)
+function! markbar#MarkData#New(mark_char, getpos, bufname, filepath) abort
+    call markbar#ensure#IsMarkChar(a:mark_char)
+    call markbar#ensure#IsList(a:getpos)
+    if len(a:getpos) !=# 4
+        throw printf('Invalid getpos() output: %s', a:getpos)
+    endif
     call markbar#ensure#IsString(a:bufname)
     call markbar#ensure#IsString(a:filepath)
+
+    if a:getpos[1] <# 1
+        throw printf('Invalid line no. %s for mark %s, getpos: %s',
+                   \ a:getpos[1], a:mark_char, a:getpos)
+    elseif a:getpos[2] <# 1
+        throw printf('Invalid col no. %s for mark %s, getpos: %s',
+                   \ a:getpos[2], a:mark_char, a:getpos)
+    endif
+
     let l:new = deepcopy(s:MarkData)
 
-    let l:parsed_entries =
-            \ matchlist(a:markstring,
-                      \ '\(\S\+\)\s\+\(\S\+\)\s\+\(\S\+\)\s*\(.*\)')[1:3]
-    if empty(l:parsed_entries)
-        throw 'markstring parsing failed for: ' . a:markstring
-    endif
-    let [l:new._mark_char, l:new._line_no, l:new._column_no] =
-            \ l:parsed_entries
+    let l:new._mark_char = a:mark_char
+    let l:new._line_no   = a:getpos[1]
+    let l:new._column_no = a:getpos[2]
+
     if markbar#helpers#IsGlobalMark(l:new._mark_char)
         " filepath and bufname will be looked up on every getFilename,
         " getBufname call

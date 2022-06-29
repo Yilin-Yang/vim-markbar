@@ -32,27 +32,6 @@ function! markbar#helpers#GetOpenBuffers() abort
     return l:buffers_list
 endfunction
 
-" EFFECTS:  Strip leading whitespace and the columns header (i.e. the line
-"           that starts with 'mark line  col [...]') from the given string.
-" PARAM:    raw_marks   (v:t_string)    The raw `marks` command output to
-"                                       process.
-function! markbar#helpers#TrimMarksHeader(raw_marks) abort
-    call markbar#ensure#IsString(a:raw_marks)
-    let l:trimmed = substitute(
-        \ a:raw_marks,
-        \ markbar#constants#MARKS_COLUMNS_HEADER_SEARCH_PATTERN(),
-        \ '',
-        \ ''
-    \ )
-    " NOTE: this does not catch the edge case in which the column header
-    " string is, itself, contained in a valid 'file/text' cell.
-    if l:trimmed ==# a:raw_marks
-        throw 'Failed to trim leading whitespace and/or column header from '
-            \ . 'input string: ' . a:raw_marks
-    endif
-    return l:trimmed
-endfunction
-
 " RETURNS:  (v:t_string)    A 'synthetic' markstring, mimicking the output of
 "                           `:marks`, for the given mark (in the active buffer.)
 " PARAM:    mark    (v:t_string)    The mark to retrieve (single character.)
@@ -64,40 +43,43 @@ function! markbar#helpers#MakeMarkString(mark) abort
     return printf(l:fmt_str, a:mark, l:markpos[1], l:markpos[2], l:file_text)
 endfunction
 
-" RETURNS:  (v:t_string)    All buffer-local marks active within the current
-"                           file as a 'raw' string.
+" RETURNS:  (v:t_dict)  Keys are mark chars; values are |getpos()| output for
+"                       the given marks.
+function! markbar#helpers#GetRawMarkData(for_mark_chars) abort
+    call markbar#ensure#IsString(a:for_mark_chars)
+    let l:to_return = {}
+    " iterate by index for compatibility with v8.1.0039
+    let l:i = 0
+    while l:i <# len(a:for_mark_chars)
+        let l:mark_char = a:for_mark_chars[l:i]
+        let l:i += 1
+
+        let l:getpos = getpos("'".l:mark_char)
+        if l:getpos[1] ==# 0 && l:getpos[2] ==# 0
+            " Don't compare to [0, 0, 0, 0]; in vim v8.1.0039, getpos() might
+            " return e.g. [5, 0, 0, 0] for a file mark that was just deleted.
+            continue
+        endif
+        let l:to_return[l:mark_char] = l:getpos
+    endwhile
+    return l:to_return
+endfunction
+
+" RETURNS:  (v:t_dict)  Dict between mark chars and |getpos()| lists for all
+"                       buffer-local marks set in the current buffer.
 function! markbar#helpers#GetLocalMarks() abort
-    let l:redir_output = ''
-    try
-        let l:redir_output = markbar#helpers#Redir(
-                \ "silent marks abcdefghijklmnopqrstuvwxyz[]<>'`\\\"^.(){}")
-        let l:redir_output .= "\n"
-    catch /E283/
-        let l:redir_output = 'mark line  col file/text\n'
-    endtry
-    for l:mark in ['(',')','{','}']
-        try
-            let l:redir_output .= markbar#helpers#MakeMarkString(l:mark)."\n"
-        catch
-        endtry
-    endfor
-    return l:redir_output
+    return markbar#helpers#GetRawMarkData(
+            \ "abcdefghijklmnopqrstuvwxyz[]<>'`\"^.(){}")
 endfunction
 
-" RETURNS:  (v:t_string)    All global marks as a 'raw' string.
+" RETURNS:  (v:t_dict)  Dict between mark chars and |getpos()| lists for all
+"                       global marks.
 function! markbar#helpers#GetGlobalMarks() abort
-    let l:redir_output = ''
-    try
-        let l:redir_output = markbar#helpers#Redir(
-                \ 'silent marks ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
-    catch /E283/
-        let l:redir_output = 'mark line  col file/text\n'
-    endtry
-    return l:redir_output
+    return markbar#helpers#GetRawMarkData('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
 endfunction
 
-" RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a 'global'
-"                           mark, like `']`, `'(`, or `'^`.
+" RETURNS:  (v:t_bool)      `v:true` if the given mark corresponds to a
+"                           'special' mark, like `']`, `'(`, or `'^`.
 " PARAM:    mark    (v:t_string)    The single character identifying the mark,
 "                                   not including the leading single quote.
 function! markbar#helpers#IsSpecialMark(mark) abort
@@ -212,9 +194,8 @@ endfunction
 "                           the other, then that element will be the empty
 "                           string.
 function! markbar#helpers#SplitString(string, idx) abort
-    if type(a:string) != v:t_string
-        throw '(markbar#helpers#SplitString) Arg isn''t a string: '.a:string
-    endif
+    call markbar#ensure#IsString(a:string)
+    call markbar#ensure#IsNumber(a:idx)
     if a:idx <=# 0
         return [ '', a:string ]
     endif
@@ -325,11 +306,10 @@ endfunction
 "           `context_len` will produce `length` lines of context, with the
 "           mark's line being at the proper location in that printed context.
 function! markbar#helpers#TrimmedContextRange(context_len, length) abort
-    if type(a:context_len) !=# v:t_number
-        throw 'Expected context_len to be a number.'
-    elseif type(a:length) !=# v:t_number
-        throw 'Expected target length to be a number.'
-    elseif a:length <# 0
+    call markbar#ensure#IsNumber(a:context_len)
+    call markbar#ensure#IsNumber(a:length)
+
+    if a:length <# 0
         throw 'Cannot give negative target length for trimmed context.'
     endif
 

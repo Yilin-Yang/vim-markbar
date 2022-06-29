@@ -6,10 +6,10 @@ Do (Set mark a again in 10lines.txt and open markbar):
   Mo
 Expect (mark a does not inherit its name from before deletion):
   " Press ? for help
-  ['a]: (l: 1, c: 5)
-  ['b]: (l: 4, c: 10) 10lines.txt b
-  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
-  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]
+  ['a]: (l: 1, c: 6)
+  ['b]: (l: 4, c: 11) 10lines.txt b
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 6]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 6]
 
 Do (Set marks b, C again in 30lines.txt and open markbar):
   :edit! 30lines.txt\<cr>
@@ -18,12 +18,12 @@ Do (Set marks b, C again in 30lines.txt and open markbar):
   Mo
 Expect (marks b, C don't inherit their names from before deletion):
   " Press ? for help
-  ['a]: (l: 1, c: 5) 30lines.txt a
-  ['b]: (l: 30, c: 2)
-  ['c]: (l: 10, c: 5)
-  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
-  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]
-  ['C]: 30lines.txt [l: 25, c: 7]
+  ['a]: (l: 1, c: 6) 30lines.txt a
+  ['b]: (l: 30, c: 3)
+  ['c]: (l: 10, c: 6)
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 6]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 6]
+  ['C]: 30lines.txt [l: 25, c: 8]
 
 Execute (Save the file under a new name):
   edit 30lines.txt
@@ -32,12 +32,12 @@ Execute (Save the file under a new name):
   normal Mo
 Expect (Names from original file are preserved):
   " Press ? for help
-  ['a]: (l: 1, c: 5) 30lines.txt a
-  ['b]: (l: 30, c: 2)
-  ['c]: (l: 10, c: 5)
-  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
-  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 5]
-  ['C]: standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 25, c: 7]
+  ['a]: (l: 1, c: 6) 30lines.txt a
+  ['b]: (l: 30, c: 3)
+  ['c]: (l: 10, c: 6)
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 6]
+  ['B]: 10lines.txt-B 10lines.txt [l: 5, c: 6]
+  ['C]: standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 25, c: 8]
 
 Execute (Rename and move the mark in the new file):
   edit standalone-test-sequential-name-persistence.vader/thirtylines.temp
@@ -49,9 +49,9 @@ Execute (Rename and move the mark in the new file):
   normal Mo
 Expect (Names are changed):
   " Press ? for help
-  ['a]: (l: 10, c: 8) thirtylines a
-  ['b]: (l: 30, c: 2)
-  ['c]: (l: 10, c: 5) thirtylines c
-  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 5]
-  ['B]: thirtylines B standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 15, c: 4]
-  ['C]: standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 25, c: 7]
+  ['a]: (l: 10, c: 9) thirtylines a
+  ['b]: (l: 30, c: 3)
+  ['c]: (l: 10, c: 6) thirtylines c
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 6]
+  ['B]: thirtylines B standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 15, c: 5]
+  ['C]: standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 25, c: 8]
