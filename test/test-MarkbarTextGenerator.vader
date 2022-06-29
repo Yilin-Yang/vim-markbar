@@ -47,8 +47,7 @@ Execute (MarkbarTextGenerator prints no marks with empty 'marks_to_display'):
   function! SynthesizeMark(mark_char, line_no, col_no, bufname,
                          \ filename, context) abort
     let l:mark = markbar#MarkData#New(
-        \ printf('%s %d %d foo bar foo', a:mark_char, a:line_no, a:col_no),
-        \ a:bufname, a:filename)
+        \ a:mark_char, [0, a:line_no, a:col_no, 0], a:bufname, a:filename)
     call l:mark.setContext(a:context)
     let l:mark.getFilename = function({a -> a}, [a:filename])
     return l:mark

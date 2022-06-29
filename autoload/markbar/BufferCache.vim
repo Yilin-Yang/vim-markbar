@@ -34,32 +34,30 @@ function! markbar#BufferCache#getMark(mark) abort dict
 endfunction
 let s:BufferCache.getMark = function('markbar#BufferCache#getMark')
 
-" EFFECTS:  Repopulate BufferCache's `marks_dict` with the given marks output.
-" PARAM:    marks_output    (v:t_string)    Raw output of |:marks|.
-" PARAM:    bufname         (v:t_string)    Bufname of the buffer being
-"                                           queried by |:marks|. Ignored
-"                                           for global marks.
-" PARAM:    filepath        (v:t_string)    Full filepath for the buffer being
-"                                           queried by |:marks|. Ignored for
-"                                           global marks.
-function! markbar#BufferCache#updateCache(marks_output, bufname, filepath) abort dict
-    call markbar#ensure#IsString(a:marks_output)
+" EFFECTS:  Repopulate BufferCache's `marks_dict`. Will retrieve marks data
+"           for the currently active buffer.
+" PARAM:    marks_and_getpos    (v:t_dict)      Keys are mark chars; values
+"                                               are |getpos()| output for that
+"                                               mark.
+" PARAM:    bufname             (v:t_string)    Bufname of the buffer being
+"                                               queried by |:marks|. Ignored
+"                                               for global marks.
+" PARAM:    filepath            (v:t_string)    Full filepath for the buffer
+"                                               being queried by |:marks|.
+"                                               Ignored for global marks.
+function! markbar#BufferCache#updateCache(marks_and_getpos, bufname,
+                                        \ filepath) abort dict
+    call markbar#ensure#IsDictionary(a:marks_and_getpos)
     call markbar#ensure#IsString(a:bufname)
     call markbar#ensure#IsString(a:filepath)
     let l:roster_key = l:self.isGlobal() ? 0 : a:filepath
 
-    " strip leading whitespace and columns header ('mark line  col file/text')
-    let l:trimmed = markbar#helpers#TrimMarksHeader(a:marks_output)
-
-    let l:markstrings = split(l:trimmed, '\r\{0,1}\n')
     let l:new_marks_dict = {}
-    let l:i = len(l:markstrings)
-    while l:i
-        let l:i -= 1
-        let l:markdata = markbar#MarkData#New(l:markstrings[l:i], a:bufname,
+    for [l:mark_char, l:getpos] in items(a:marks_and_getpos)
+        let l:markdata = markbar#MarkData#New(l:mark_char, l:getpos, a:bufname,
                                             \ a:filepath)
-        let l:new_marks_dict[l:markdata.getMarkChar()] = l:markdata
-    endwhile
+        let l:new_marks_dict[l:mark_char] = l:markdata
+    endfor
 
     " copy over existing mark names
     let l:old_dict = l:self.marks_dict

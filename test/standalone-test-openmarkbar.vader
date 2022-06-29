@@ -50,17 +50,17 @@ Then:
 
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -86,17 +86,17 @@ Expect:
   " c: reset mark's name
   " d: delete mark
   " -----------------------
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -116,17 +116,17 @@ Expect:
   " c: reset mark's name
   " d: delete mark
   " -----------------------
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -169,17 +169,17 @@ Expect:
   " c: reset mark's name
   " d: delete mark
   " -----------------------
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -188,17 +188,17 @@ Do (? closes verbose help after opening):
   Mo?
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -216,17 +216,17 @@ Do (Re-Open Closed Markbar (E499 Check)):
   Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -239,17 +239,17 @@ Then:
   " AssertEqual num_windows, len(tabpagebuflist())
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -277,17 +277,17 @@ Execute (:bdelete Markbar):
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -301,17 +301,17 @@ Then:
   AssertEqual 'markbar', &filetype
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -325,17 +325,17 @@ Then:
   AssertEqual 'markbar', &filetype
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -460,17 +460,17 @@ Execute (Explicitly Rename Mark):
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: New Name 10lines.txt [l: 5, c: 5]
+  ['B]: New Name 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -482,17 +482,17 @@ Do (Reset Mark Name):
   Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -503,12 +503,12 @@ Do (Delete Mark):
   5Gd
 Expect:
   " Press ? for help
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -520,17 +520,17 @@ Do (Set Local Mark, Toggle Markbar Open):
   Mt
 Expect:
   " Press ? for help
-  ['a]: (l: 1, c: 5)
+  ['a]: (l: 1, c: 6)
       ~
       first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -542,12 +542,12 @@ Do (Delete Local Mark):
   d
 Expect:
   " Press ? for help
-  ['B]: 10lines.txt [l: 5, c: 5]
+  ['B]: 10lines.txt [l: 5, c: 6]
       fourth line
       fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 5]
+  ['C]: 10lines.txt [l: 10, c: 6]
       ninth line
       tenth line
       ~
@@ -574,17 +574,17 @@ Execute (Backtick-like mark location is highlighted when highlighting is turned 
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       first➜ line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 0]
+  ['B]: 10lines.txt [l: 5, c: 1]
       fourth line
       ➜fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 9]
+  ['C]: 10lines.txt [l: 10, c: 10]
       ninth line
       tenth lin➜e
       ~
@@ -594,17 +594,17 @@ Execute (Apostrophe-like mark location is highlighted when highlighting is turne
   normal Mo
 Expect:
   " Press ? for help
-  ['A]: 10lines.txt [l: 1, c: 5]
+  ['A]: 10lines.txt [l: 1, c: 6]
       ~
       ➜first line
       second line
 
-  ['B]: 10lines.txt [l: 5, c: 0]
+  ['B]: 10lines.txt [l: 5, c: 1]
       fourth line
       ➜fifth line
       sixth line
 
-  ['C]: 10lines.txt [l: 10, c: 9]
+  ['C]: 10lines.txt [l: 10, c: 10]
       ninth line
       ➜tenth line
       ~
@@ -622,27 +622,27 @@ Execute (Default mark names format can be customized):
   normal Mo
 Expect:
   " Press ? for help
-  ['a]: 10lines.txt {c: 0, l: 2}
+  ['a]: 10lines.txt {c: 1, l: 2}
       first line
       ➜second line
       third line
 
-  ['b]: 10lines.txt {c: 10, l: 4}
+  ['b]: 10lines.txt {c: 11, l: 4}
       third line
       ➜fourth line
       fifth line
 
-  ['A]: fname: 10lines.txt, col: 5, line: 1
+  ['A]: fname: 10lines.txt, col: 6, line: 1
       ~
       ➜first line
       second line
 
-  ['B]: fname: 10lines.txt, col: 0, line: 5
+  ['B]: fname: 10lines.txt, col: 1, line: 5
       fourth line
       ➜fifth line
       sixth line
 
-  ['C]: fname: 10lines.txt, col: 9, line: 10
+  ['C]: fname: 10lines.txt, col: 10, line: 10
       ninth line
       ➜tenth line
       ~
@@ -660,19 +660,19 @@ Execute (g:markbar_num_lines_context controls how many context lines are shown):
 
 Expect:
   " Press ? for help
-  ['a]: 10lines.txt {c: 0, l: 2}
+  ['a]: 10lines.txt {c: 1, l: 2}
       ➜second line
       third line
 
-  ['b]: 10lines.txt {c: 10, l: 4}
+  ['b]: 10lines.txt {c: 11, l: 4}
       fourth lin➜e
       fifth line
 
-  ['A]: fname: 10lines.txt, col: 5, line: 1
+  ['A]: fname: 10lines.txt, col: 6, line: 1
 
-  ['B]: fname: 10lines.txt, col: 0, line: 5
+  ['B]: fname: 10lines.txt, col: 1, line: 5
 
-  ['C]: fname: 10lines.txt, col: 9, line: 10
+  ['C]: fname: 10lines.txt, col: 10, line: 10
   
 Execute (Reconfigured context length displays properly with highlighting disabled):
   " test an alternate code path
@@ -682,19 +682,19 @@ Execute (Reconfigured context length displays properly with highlighting disable
 
 Expect:
   " Press ? for help
-  ['a]: 10lines.txt {c: 0, l: 2}
+  ['a]: 10lines.txt {c: 1, l: 2}
       second line
       third line
 
-  ['b]: 10lines.txt {c: 10, l: 4}
+  ['b]: 10lines.txt {c: 11, l: 4}
       fourth line
       fifth line
 
-  ['A]: fname: 10lines.txt, col: 5, line: 1
+  ['A]: fname: 10lines.txt, col: 6, line: 1
 
-  ['B]: fname: 10lines.txt, col: 0, line: 5
+  ['B]: fname: 10lines.txt, col: 1, line: 5
 
-  ['C]: fname: 10lines.txt, col: 9, line: 10
+  ['C]: fname: 10lines.txt, col: 10, line: 10
   
 
 Execute (Context displays properly when file marks show more context than local marks):
@@ -708,27 +708,27 @@ Execute (Context displays properly when file marks show more context than local 
   normal Mo
 Expect:
   " Press ? for help
-  ['a]: 10lines.txt {c: 0, l: 2}
+  ['a]: 10lines.txt {c: 1, l: 2}
       second line
       third line
 
-  ['b]: 10lines.txt {c: 10, l: 4}
+  ['b]: 10lines.txt {c: 11, l: 4}
       fourth line
       fifth line
 
-  ['A]: fname: 10lines.txt, col: 5, line: 1
+  ['A]: fname: 10lines.txt, col: 6, line: 1
       ~
       first line
       second line
       third line
 
-  ['B]: fname: 10lines.txt, col: 0, line: 5
+  ['B]: fname: 10lines.txt, col: 1, line: 5
       fourth line
       fifth line
       sixth line
       seventh line
 
-  ['C]: fname: 10lines.txt, col: 9, line: 10
+  ['C]: fname: 10lines.txt, col: 10, line: 10
       ninth line
       tenth line
       ~
