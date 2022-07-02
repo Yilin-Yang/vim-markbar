@@ -172,6 +172,14 @@ function! markbar#MarkbarModel#pushNewBuffer(buffer_no) abort dict
 endfunction
 let s:MarkbarModel.pushNewBuffer = function('markbar#MarkbarModel#pushNewBuffer')
 
+" DETAILS:  Update model state to reflect a file being renamed.
+function! markbar#MarkbarModel#changeFilename(old_filepath, new_filepath) abort dict
+    call markbar#ensure#IsString(a:old_filepath)
+    call markbar#ensure#IsString(a:new_filepath)
+    call l:self._rosters.cloneRosterToNewName(a:old_filepath, a:new_filepath)
+endfunction
+let s:MarkbarModel.changeFilename = function('markbar#MarkbarModel#changeFilename')
+
 " RETURNS:  (markbar#MarkData)  The MarkData object corresponding to the given
 "                               mark character.
 " DETAILS:  - If the requested mark is a local mark, then the MarkbarModel

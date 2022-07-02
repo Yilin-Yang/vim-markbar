@@ -10,3 +10,15 @@ Expect (Old mark names from before are preserved):
   ['A]: 10lines.txt A 10lines.txt [l: 1, c: 6]
   ['B]: thirtylines B standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 15, c: 5]
   ['C]: standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 25, c: 8]
+
+Execute (Reopen thirtylines.temp):
+  edit standalone-test-sequential-name-persistence.vader/thirtylines.temp
+  normal Mo
+Expect (Old mark names from before are preserved):
+  " Press ? for help
+  ['a]: (l: 10, c: 9) 30lines.txt a
+  ['b]: (l: 30, c: 3)
+  ['c]: (l: 10, c: 6) thirtylines c
+  ['A]: 10lines.txt A 10lines.txt [l: 1, c: 6]
+  ['B]: thirtylines B standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 15, c: 5]
+  ['C]: standalone-test-sequential-name-persistence.vader/thirtylines.temp [l: 25, c: 8]

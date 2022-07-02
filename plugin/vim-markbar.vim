@@ -410,4 +410,7 @@ augroup markbar_model_update
     autocmd BufEnter * call g:markbar_model.pushNewBuffer(expand('<abuf>') + 0)
     autocmd BufDelete,BufWipeout *
         \ call g:markbar_model.evictBufferCache(expand('<abuf>') + 0)
+    autocmd BufFilePre * let g:markbar_old_bufname = expand('%:p')
+    autocmd BufFilePost * call g:markbar_model.changeFilename(
+        \ g:markbar_old_bufname, expand('%:p'))
 augroup end

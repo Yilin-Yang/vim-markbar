@@ -137,15 +137,14 @@ function! markbar#ShaDaRosters#getName(filepath, mark_char) abort dict
 endfunction
 let s:ShaDaRosters.getName = function('markbar#ShaDaRosters#getName')
 
-" DETAILS:  Change the filename for a given local roster.
+" DETAILS:  Clone a given local roster to a new filename.
 "           - The global roster cannot be modified in this way.
 "           - {old_filepath} and {new_filepath} must be strings.
-function! markbar#ShaDaRosters#changeRosterFilename(old_filepath,
+function! markbar#ShaDaRosters#cloneRosterToNewName(old_filepath,
                                                   \ new_filepath) abort dict
     call markbar#ensure#IsString(a:old_filepath)
     call markbar#ensure#IsString(a:new_filepath)
-    let l:roster = l:self.rosterFor(a:old_filepath)
-    call remove(l:self._filepaths_to_rosters, a:old_filepath)
+    let l:roster = deepcopy(l:self.rosterFor(a:old_filepath))
     let l:self._filepaths_to_rosters[a:new_filepath] = l:roster
 endfunction
-let s:ShaDaRosters.changeRosterFilename = function('markbar#ShaDaRosters#changeRosterFilename')
+let s:ShaDaRosters.cloneRosterToNewName = function('markbar#ShaDaRosters#cloneRosterToNewName')
