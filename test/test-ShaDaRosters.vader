@@ -33,16 +33,28 @@ Then:
     endfor
   endfor
 
-Execute (ShaDaRosters changes roster filenames properly):
-  call g:rosters.changeRosterFilename('/foo/baz.txt', '/foo/quoz.txt')
+Execute (ShaDaRosters clones rosters properly):
+  call g:rosters.cloneRosterToNewName('/foo/baz.txt', '/foo/quoz.txt')
   let g:new_globals = {}
   let g:new_filepaths_to_local_rosters = {}
   call g:rosters.writeRosters(['/foo/baz.txt', '/foo/quoz.txt'],
       \ g:new_globals, g:new_filepaths_to_local_rosters)
 Then:
   AssertEqual g:global_roster, g:new_globals
-  AssertEqual 1, len(g:new_filepaths_to_local_rosters)
+  AssertEqual 2, len(g:new_filepaths_to_local_rosters)
   AssertEqual g:filepaths_to_local_rosters['/foo/baz.txt'],
+      \ g:new_filepaths_to_local_rosters['/foo/baz.txt']
+  AssertEqual g:filepaths_to_local_rosters['/foo/baz.txt'],
+      \ g:new_filepaths_to_local_rosters['/foo/quoz.txt']
+
+Execute (Cloned rosters are not references to the old roster):
+  call g:rosters.setName('/foo/quoz.txt', 'd', 'd')
+  call g:rosters.writeRosters(['/foo/baz.txt', '/foo/quoz.txt'],
+      \ g:new_globals, g:new_filepaths_to_local_rosters)
+Then:
+  AssertEqual g:filepaths_to_local_rosters['/foo/baz.txt'],
+      \ g:new_filepaths_to_local_rosters['/foo/baz.txt']
+  AssertEqual {'d': 'd', 'e': 'mark e', 'f': 'mark f'},
       \ g:new_filepaths_to_local_rosters['/foo/quoz.txt']
 
 Execute (ShaDaRosters throws when given global marks and a filepath):

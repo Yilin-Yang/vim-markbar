@@ -41,7 +41,6 @@ Expect (Names from original file are preserved):
 
 Execute (Rename and move the mark in the new file):
   edit standalone-test-sequential-name-persistence.vader/thirtylines.temp
-  call g:markbar_model.renameMark('a', 'thirtylines a')
   call g:markbar_model.renameMark('c', 'thirtylines c')
   call g:markbar_model.renameMark('B', 'thirtylines B')
   normal! 10G08lma
@@ -49,7 +48,7 @@ Execute (Rename and move the mark in the new file):
   normal Mo
 Expect (Names are changed):
   " Press ? for help
-  ['a]: (l: 10, c: 9) thirtylines a
+  ['a]: (l: 10, c: 9) 30lines.txt a
   ['b]: (l: 30, c: 3)
   ['c]: (l: 10, c: 6) thirtylines c
   ['A]: 10lines.txt A 10lines.txt [l: 1, c: 6]
