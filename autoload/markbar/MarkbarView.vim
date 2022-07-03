@@ -161,27 +161,26 @@ let s:MarkbarView.goToSelectedMark = function('markbar#MarkbarView#goToSelectedM
 " BRIEF:    Jump to the the mark given.
 " DETAILS:  Requires that the window containing the most recent active buffer
 "           still be open in the current tab.
-" PARAM:    mark    (v:t_string)    The mark to jump to.
+" PARAM:    mark_char   (v:t_string)    The mark to jump to.
 " PARAM:    goto_exact  (v:t_bool)  Whether to go to the line *and column* of
 "                                   the selected mark (`v:true`) or just the
 "                                   line (`v:false`).
-function! markbar#MarkbarView#goToMark(mark, goto_exact) abort dict
+function! markbar#MarkbarView#goToMark(mark_char, goto_exact) abort dict
+    call markbar#ensure#IsMarkChar(a:mark_char)
     let l:active_buffer = l:self._markbar_model.getActiveBuffer()
-    let l:mark_is_quote = a:mark ==# "'" || a:mark ==# '`'
+    let l:mark_is_quote = a:mark_char ==# "'" || a:mark_char ==# '`'
 
     " save the 'correct' position of the [''] mark
     if l:mark_is_quote
         " note that ['`] isn't actually stored as a distinct mark
         try
             let l:targ_mark = deepcopy(
-                \ l:self._markbar_model
-                    \.getBufferCache(l:active_buffer)
-                    \.getMark("'")
+                \ l:self._markbar_model.getMarkData("'")
             \ )
             let l:mark_line = l:targ_mark.getLineNo()
             let l:mark_col  = l:targ_mark.getColumnNo()
         catch /mark not found in cache/
-            call markbar#MarkbarView#MarkNotSet(a:mark)
+            call markbar#MarkbarView#MarkNotSet(a:mark_char)
             return
         endtry
     endif
@@ -199,14 +198,14 @@ function! markbar#MarkbarView#goToMark(mark, goto_exact) abort dict
             " set by the jump from the markbar
             call setpos( "''", [l:active_buffer, l:mark_line, l:mark_col, 0 ])
         endif
-        execute l:jump_command . a:mark
-        if a:mark ==# "'"
+        execute l:jump_command . a:mark_char
+        if a:mark_char ==# "'"
             normal! ^
         endif
     catch /E20/
         " Mark not set
         execute bufwinnr(l:self._markbar_buffer) . 'wincmd w'
-        call markbar#MarkbarView#MarkNotSet(a:mark)
+        call markbar#MarkbarView#MarkNotSet(a:mark_char)
         return
     endtry
 
