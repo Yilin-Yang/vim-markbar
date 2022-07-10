@@ -384,32 +384,18 @@ Contribution
 --------------------------------------------------------------------------------
 If you encounter bugs while using vim-markbar, or if you think of features that
 you would like to see in later versions, please feel free to report them on the
-repository's [issues page.](https://github.com/Yilin-Yang/vim-markbar/issues)
+repository's [issues page](https://github.com/Yilin-Yang/vim-markbar/issues).
 
 If you'd like to try your hand at patching bugs or writing features yourself,
 you're also free to fork the repository and to submit pull requests. If you do,
 make sure that your code passes the existing [vader.vim](https://github.com/junegunn/vader.vim)
 test suite, and make sure to write new tests as is appropriate.
 
-To run test cases:
-
-```bash
-# from project root,
-cd test
-./run_tests.sh           # to run test cases in vim
-./run_tests.sh --neovim  # to run test cases in neovim
-
-# to run test cases in a visible, non-headless neovim instance,
-# using /usr/local/bin/nvim as the neovim executable
-./run_tests.sh --neovim -v -e /usr/local/bin/nvim
-```
-
-See `./run_tests --help` for more options.
+See the [test README](test/README.md).
 
 If you're fixing a bug, try to replicate the bug (using the old, "broken" code)
 in a test case. If you're adding a new feature, try to write unit tests for the
-new feature. This will make it much easier for me to maintain the code that you
-submit, and it should make your life much easier as well.
+new feature.
 
 License
 --------------------------------------------------------------------------------
