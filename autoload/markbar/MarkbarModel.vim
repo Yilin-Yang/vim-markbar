@@ -259,13 +259,7 @@ function! markbar#MarkbarModel#updateCurrentAndGlobal() abort dict
 
     " retrieve the greatest number of lines of context that we may need
     " for all marks, for simplicity
-    let l:max_num_context = 0
-    let l:num_lines_config = markbar#settings#NumLinesContext()
-    for l:num_lines in values(l:num_lines_config)
-        if l:num_lines ># l:max_num_context
-            let l:max_num_context = l:num_lines
-        endif
-    endfor
+    let l:max_num_context = max(markbar#settings#NumLinesContext())
 
     let l:bufname = bufname(l:bufnr)
     let l:filename = expand('%:p')
