@@ -1,12 +1,17 @@
 #!/bin/bash
 
-# EFFECTS:  Runs all test cases in this folder, using this directory's
-#           localvimrc as well as neovim.
-# DETAILS:  Taken, in part, from:
-#               https://github.com/junegunn/vader.vim
-#               https://github.com/neovim/neovim/issues/4842
-# PARAM:    TEST_INTERNATIONAL  If set to '-i' or '--international', re-run
-#                               tests in non-English locales.
+SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+if [ "$(pwd)" != "$SCRIPT_DIR" ]; then
+  printf "Must run this script from test subdirectory!\n"
+  exit 1
+fi
+
+# Runs all test cases in this folder, using this directory's localvimrc.
+#
+# Taken, in part, from:
+#     https://github.com/junegunn/vader.vim
+#     https://github.com/neovim/neovim/issues/4842
+
 printUsage() {
   echo "USAGE: ./run_tests.sh [--vim | --neovim] [-v|--visible] [-h|--help] [-i|--international] [-f <FILE_PAT> | --file=<FILE_PAT>] [-e <VIM_PATH> | --vim_exe=<VIM_PATH>]"
   echo ""
