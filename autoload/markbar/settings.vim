@@ -28,7 +28,7 @@ function! markbar#settings#PersistMarkNames() abort
     if !exists('g:markbar_persist_mark_names')
         let g:markbar_persist_mark_names = v:true
     endif
-    if (has('nvim') && &shadafile ==# 'NONE') ||
+    if (has('nvim-0.4') && &shadafile ==# 'NONE') ||
             \ (!has('nvim') && &viminfofile ==# 'NONE')
         let g:markbar_persist_mark_names = v:false
     endif
