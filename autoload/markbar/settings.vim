@@ -30,6 +30,9 @@ function! markbar#settings#PersistMarkNames() abort
     endif
     if (has('nvim-0.4') && &shadafile ==# 'NONE') ||
             \ (!has('nvim') && &viminfofile ==# 'NONE')
+        " if user has recent nvim and writeback to shadafile is disabled,
+        " or if user has (old nvim || vim) and writeback to viminfofile is
+        " disabled -- then default to not persisting mark names
         let g:markbar_persist_mark_names = v:false
     endif
     if g:markbar_persist_mark_names
