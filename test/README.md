@@ -5,6 +5,13 @@ Tests are written using [vader.vim](https://github.com/junegunn/vader.vim) and
 are run with the [`run_tests.sh`](./run_tests.sh) script. This script can only
 be run from this `test` directory.
 
+**To run, vader.vim needs to be in the test environment's `runtimepath`.**
+You can achieve this by cloning vader.vim into the test directory.
+```bash
+# from project root,
+git clone https://github.com/junegunn/vader.vim test/vader.vim
+```
+
 See `./run_tests --help` for options.
 
 Some common test workflows are given below:
@@ -69,6 +76,92 @@ Standalone sequential tests are kept in subdirectories named like
 a subdirectory are each run in separate (n)vim instances, one after the other in
 ascending numerical order, and share the same initially empty viminfo/shada file
 with each other.
+
+Dockerfile
+--------------------------------------------------------------------------------
+This directory includes a Dockerfile to build a Docker image that will compile
+and include the oldest officially supported versions of vim and neovim.
+
+### Pulling Docker image from DockerHub repository
+
+After installing Docker, you can pull the prebuilt test image by running:
+
+```bash
+# this may be necessary for docker to find the yiliny/vim-markbar-tester image
+docker login
+
+docker pull yiliny/vim-markbar-tester
+```
+
+Whereupon you should be able to spool up a container instance with:
+
+```bash
+yiliny@computer:~/plugins/vim-markbar$ docker run -it -v /path/to/vim-markbar:/root/vim-markbar yiliny/vim-markbar-tester
+```
+
+### Building Docker image from scratch
+You can build the container image by running these commands:
+
+```bash
+# from project root,
+docker buildx build --tag yiliny/vim-markbar-tester test
+```
+
+This should create a Docker image with the DockerHub repository-name
+`yiliny/vim-markbar-tester`.
+
+To spool up a container instance, run the following:
+```bash
+
+# this may be necessary for docker to find the yiliny/vim-markbar-tester image
+docker login
+
+docker run -it -v /path/to/vim-markbar:/root/vim-markbar yiliny/vim-markbar-tester
+```
+
+If that doesn't work then you can just use the newly built image's Image ID directly:
+```bash
+yiliny@computer:~/plugins/vim-markbar$$ docker images
+REPOSITORY                  TAG       IMAGE ID       CREATED              SIZE
+yiliny/vim-markbar-tester   latest    xxxxxxxxxxxx   About a minute ago   843MB
+ubuntu                      jammy     5a81c4b8502e   2 weeks ago          77.8MB
+ubuntu                      kinetic   692eb4a905c0   2 weeks ago          70.3MB
+hello-world                 latest    9c7a54a9a43c   2 months ago         13.3kB
+
+yiliny@computer:~/plugins/vim-markbar$ docker run -it -v /path/to/vim-markbar:/root/vim-markbar xxxxxxxxxxxx
+```
+
+### Running tests with Docker
+
+You should be attached to the new container instance running as the root user.
+The `vim` 8.1.0039 and `nvim` v0.3.4 binaries will be in `/root/out/bin`.
+
+```bash
+# from inside /path/to/vim-markbar/test,
+./run_tests.sh --vim_exe=~/out/vim8.1.0039/bin/vim
+./run_tests.sh --neovim --vim_exe=~/out/nvim0.3.4/bin/nvim
+```
+
+Note that if you see messages like `Press ENTER or type command to continue`
+when running headless nvim v0.3.4 tests, that suggests that you're receiving
+error message prompts "inside" of the running neovim instances, which indicates
+test failure.
+
+Detach from the running Docker container with `Ctrl-P` and then `Ctrl-Q`.
+Reattach to the container with `docker container ls` and then `docker attach
+<NAME>` with the appropriate `NAME` from the list you were given. Deactivate
+the container with `docker kill <NAME>`.
+
+```bash
+yiliny@computer:~/plugins/vim-markbar$ docker container list
+CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS          PORTS     NAMES
+xxxxxxxxxxxx   yyyyyyy   "/bin/bash"   27 minutes ago   Up 27 minutes             elated_mccarthy
+yiliny@computer:~/plugins/vim-markbar$ docker kill xxxxxxxxxxxx
+xxxxxxxxxxxx
+yiliny@computer:~/plugins/vim-markbar$ docker container list
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+yiliny@computer:~/plugins/vim-markbar$
+```
 
 Other Notes
 --------------------------------------------------------------------------------

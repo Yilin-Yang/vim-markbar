@@ -26,9 +26,9 @@ Requirements
 --------------------------------------------------------------------------------
 vim-markbar requires either:
 - **vim 8.1**, at least up through [patch 8.1.0039.](https://github.com/vim/vim/commit/d79a26219d7161e9211fd144f0e874aa5f6d251e)
-- **neovim 0.1.6** or newer.
+- **neovim 0.3.4** or newer.
 
-neovim 0.1.6 was released in November of 2016, so if you use neovim at all,
+neovim 0.3.4 was released in November of 2016, so if you use neovim at all,
 you're almost certainly fine. The vim packages included in the apt repositories
 for [Ubuntu 20.04](https://packages.ubuntu.com/focal/vim) and [22.04](https://packages.ubuntu.com/jammy/vim)
 are compatible.
