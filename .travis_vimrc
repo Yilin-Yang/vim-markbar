@@ -12,6 +12,7 @@ filetype off
 set runtimepath+=.
 set runtimepath+=..
 set runtimepath+=vader.vim
+set runtimepath+=vim-scriptease
 set runtimepath+=~/.vim/bundle/vader.vim
 set runtimepath+=~/.vim/bundle/vim-scriptease
 filetype plugin indent on
