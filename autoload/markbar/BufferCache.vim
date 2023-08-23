@@ -15,6 +15,7 @@ let s:BufferCache = {
 " PARAM:    rosters     (ShaDaRosters)  Mark names from/for the ShaDa file.
 function! markbar#BufferCache#New(buffer_no, rosters) abort
     call markbar#ensure#IsNumber(a:buffer_no)
+    call markbar#ensure#IsClass(a:rosters, 'ShaDaRosters')
     let l:new = deepcopy(s:BufferCache)
     let l:new._buffer_no = a:buffer_no
     let l:new._rosters = a:rosters
@@ -55,7 +56,7 @@ function! markbar#BufferCache#updateCache(marks_and_getpos, bufname,
     let l:new_marks_dict = {}
     for [l:mark_char, l:getpos] in items(a:marks_and_getpos)
         let l:markdata = markbar#MarkData#New(l:mark_char, l:getpos, a:bufname,
-                                            \ a:filepath)
+                                            \ a:filepath, l:self._rosters)
         let l:new_marks_dict[l:mark_char] = l:markdata
     endfor
 
@@ -76,14 +77,6 @@ function! markbar#BufferCache#updateCache(marks_and_getpos, bufname,
     " We assert that the names in l:self._rosters at this point are not
     " 'stale': they've either been cleared while iterating over l:old_dict,
     " or cleared/renamed by a call to g:markbar_model.delete/reset/renameMark()
-
-    " iterate over current marks, set names from rosters
-    for [l:mark, l:mark_data] in items(l:new_marks_dict)
-        if empty(l:mark_data.getUserName())
-            let l:old_name = l:self._rosters.getName(l:roster_key, l:mark)
-            call l:mark_data.setUserName(l:old_name)
-        endif
-    endfor
 
     let l:self.marks_dict = l:new_marks_dict
 endfunction
