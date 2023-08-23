@@ -6,7 +6,7 @@ let s:MarkData = {
     \ '_filepath': '',
     \ '_bufname': '',
     \ '_context': [],
-    \ '_name': ''
+    \ '_rosters': v:null,
 \ }
 
 " EFFECTS:  Create a MarkData object from a one-line 'markstring'.
@@ -20,7 +20,10 @@ let s:MarkData = {
 " PARAM:    filepath    (v:t_string)    Full filepath for the buffer holding
 "                                       the mark. Ignored when MarkData is a
 "                                       global mark.
-function! markbar#MarkData#New(mark_char, getpos, bufname, filepath) abort
+" PARAM:    rosters     (ShaDaRosters)  Global store of mark names. User-set
+"                                       mark names are retrieved and set
+"                                       from here.
+function! markbar#MarkData#New(mark_char, getpos, bufname, filepath, rosters) abort
     call markbar#ensure#IsMarkChar(a:mark_char)
     call markbar#ensure#IsList(a:getpos)
     if len(a:getpos) !=# 4
@@ -28,6 +31,7 @@ function! markbar#MarkData#New(mark_char, getpos, bufname, filepath) abort
     endif
     call markbar#ensure#IsString(a:bufname)
     call markbar#ensure#IsString(a:filepath)
+    call markbar#ensure#IsClass(a:rosters, 'ShaDaRosters')
 
     if a:getpos[1] <# 1
         throw printf('Invalid line no. %s for mark %s, getpos: %s',
@@ -50,6 +54,8 @@ function! markbar#MarkData#New(mark_char, getpos, bufname, filepath) abort
         let l:new._filepath = a:filepath
         let l:new._bufname = a:bufname
     endif
+    let l:new._rosters = a:rosters
+
     return l:new
 endfunction
 
@@ -100,9 +106,27 @@ function! markbar#MarkData#getColumnNo() abort dict
 endfunction
 let s:MarkData.getColumnNo = function('markbar#MarkData#getColumnNo')
 
+function! markbar#MarkData#_getMarkCharForRoster() abort dict
+    let l:mark_char = l:self.getMarkChar()
+    if l:mark_char ==# '`'
+        let l:mark_char = "'"
+    endif
+    return l:mark_char
+endfunction
+let s:MarkData._getMarkCharForRoster = function('markbar#MarkData#_getMarkCharForRoster')
+
+function! markbar#MarkData#_getRoster() abort dict
+    let l:mark_char = l:self._getMarkCharForRoster()
+    let l:filename = l:self.isGlobal() ? 0 : l:self.getFilename()
+    return l:self._rosters.rosterFor(l:filename)
+endfunction
+let s:MarkData._getRoster = function('markbar#MarkData#_getRoster')
+
 " RETURNS:  (v:t_string)    User-provided name for this mark, or ''.
 function! markbar#MarkData#getUserName() abort dict
-    return l:self._name
+    let l:roster = l:self._getRoster()
+    let l:mark_char = l:self._getMarkCharForRoster()
+    return get(l:roster, l:mark_char, '')
 endfunction
 let s:MarkData.getUserName = function('markbar#MarkData#getUserName')
 
@@ -118,7 +142,10 @@ let s:MarkData.isGlobal = function('markbar#MarkData#isGlobal')
 
 " EFFECTS:  Set user-given name for this mark.
 function! markbar#MarkData#setUserName(new_name) abort dict
-    let l:self._name = a:new_name
+    call markbar#ensure#IsString(a:new_name)
+    let l:roster = l:self._getRoster()
+    let l:mark_char = l:self._getMarkCharForRoster()
+    let l:roster[l:mark_char] = a:new_name
 endfunction
 let s:MarkData.setUserName = function('markbar#MarkData#setUserName')
 

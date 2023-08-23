@@ -1,6 +1,6 @@
 Execute (MarkData constructs local alphabetic marks properly):
   let g:result = markbar#MarkData#New('a', [0, 97, 1, 0], 'foobar.txt',
-                                    \ '/foo/bar/foobar.txt')
+                                    \ '/foo/bar/foobar.txt', g:markbar_rosters)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual 'a',  g:result.getMarkChar()
@@ -10,7 +10,7 @@ Then:
 
 Execute (MarkData constructs non-alphabetic marks properly):
   let g:result = markbar#MarkData#New('[', [0, 1, 1, 0], 'foobar.txt',
-                                    \ '/foo/bar/foobar.txt')
+                                    \ '/foo/bar/foobar.txt', g:markbar_rosters)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual '[', g:result.getMarkChar()
@@ -21,10 +21,10 @@ Then:
 Execute (MarkData constructs [, ] marks properly):
   let left_bracket =
     \ markbar#MarkData#New('[', [0, 1, 1, 0], 'foobar.txt',
-                         \ '/foo/bar/foobar.txt')
+                         \ '/foo/bar/foobar.txt', g:markbar_rosters)
   let right_bracket =
     \ markbar#MarkData#New(']', [0, 1, 5, 0], 'foobar.txt',
-                         \ '/foo/bar/foobar.txt')
+                         \ '/foo/bar/foobar.txt', g:markbar_rosters)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual '[', left_bracket.getMarkChar()
@@ -40,7 +40,7 @@ Then:
 
 Execute (MarkData constructs global file marks properly):
   let g:result = markbar#MarkData#New('D', [0, 64, 31, 0], 'foobar.txt',
-                                    \ '/foo/bar/foobar.txt')
+                                    \ '/foo/bar/foobar.txt', g:markbar_rosters)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual 'D',  g:result.getMarkChar()
@@ -50,7 +50,7 @@ Then:
 
 Execute (MarkData constructs numeric marks properly):
   let g:result = markbar#MarkData#New('8', [0, 19, 5, 0], 'foobar.txt',
-                                    \ '/foo/bar/foobar.txt')
+                                    \ '/foo/bar/foobar.txt', g:markbar_rosters)
 Then:
   AssertEqual 'MarkData', g:result['TYPE']
   AssertEqual '8',  g:result.getMarkChar()
@@ -60,13 +60,13 @@ Then:
 
 Execute (MarkData throws when constructed with non-positive line or column number):
   AssertThrows markbar#MarkData#New('D', [0, 0, 1, 0], 'foobar.txt',
-                                  \ '/foo/bar/foobar.txt')
+                                  \ '/foo/bar/foobar.txt', g:markbar_rosters)
   AssertThrows markbar#MarkData#New('D', [0, 1, 0, 0], 'foobar.txt',
-                                  \ '/foo/bar/foobar.txt')
+                                  \ '/foo/bar/foobar.txt', g:markbar_rosters)
 
 Execute (MarkData throws when given badly formatted getpos output):
   AssertThrows markbar#MarkData#New('D', [0, 1, 0], 'foobar.txt',
-                                  \ '/foo/bar/foobar.txt')
+                                  \ '/foo/bar/foobar.txt', g:markbar_rosters)
 
 Execute (MarkData gives proper names to "punctuation marks"):
   let g:marks_and_names = [
@@ -85,6 +85,6 @@ Execute (MarkData gives proper names to "punctuation marks"):
   \ ]
   for [g:mark, g:name] in g:marks_and_names
     let g:markdata = markbar#MarkData#New(g:mark, [0, 1, 2, 0],
-        \ 'foobar.txt', '/foo/bar/foobar.txt')
+        \ 'foobar.txt', '/foo/bar/foobar.txt', g:markbar_rosters)
     AssertEqual g:name, g:markdata.getDefaultName()
   endfor
