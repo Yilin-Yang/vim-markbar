@@ -86,6 +86,10 @@ function! g:MarkbarPopulateRosters(...) abort
     let l:global_roster = json_decode(g:MARKBAR_GLOBAL_ROSTER)
     let l:local_rosters = json_decode(g:MARKBAR_LOCAL_ROSTERS)
     call g:markbar_rosters.populate(l:global_roster, l:local_rosters)
+
+    " TODO: setting for whether to print this.
+    echomsg printf('vim-markbar read and populated mark rosters at %s.',
+                 \ strftime('%c'))
 endfunction
 
 function! g:MarkbarSerializeRosters() abort
@@ -112,6 +116,10 @@ function! g:MarkbarSerializeRosters() abort
     else
         wviminfo
     endif
+
+    " TODO: setting for whether to print this.
+    echomsg printf('vim-markbar serialized and wrote mark rosters at %s.',
+                 \ strftime('%c'))
 endfunction
 
 ""
