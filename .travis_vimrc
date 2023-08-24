@@ -30,6 +30,9 @@ endif
 
 map <Leader>m <Plug>ToggleMarkbar
 
+map <Leader>rrr <Plug>ReadMarkbarRosters
+map <Leader>www <Plug>WriteMarkbarRosters
+
 map Mo <Plug>OpenMarkbar
 map Mc <Plug>CloseMarkbar
 map Mt <Plug>ToggleMarkbar
