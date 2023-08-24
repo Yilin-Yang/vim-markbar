@@ -65,7 +65,7 @@ endfunction
 
 function! markbar#settings#PrintTimeOnShaDaIO() abort
     if !exists('g:markbar_print_time_on_shada_io')
-        let g:markbar_print_time_on_shada_io = v:true
+        let g:markbar_print_time_on_shada_io = v:false
     endif
     call s:AssertType(
         \ g:markbar_print_time_on_shada_io,

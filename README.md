@@ -102,6 +102,9 @@ nmap <Leader>www <Plug>WriteMarkbarRosters
 " trigger this mapping in other vim instances to update the mark names in
 " their markbars
 nmap <Leader>rrr <Plug>ReadMarkbarRosters
+
+" when set to true, this echomsg's when rosters are read or written
+let g:markbar_print_time_on_shada_io = v:true
 ```
 
 These examples use the [leader key,](https://stackoverflow.com/questions/1764263/what-is-the-leader-in-a-vimrc-file)

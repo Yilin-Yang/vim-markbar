@@ -129,7 +129,7 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     See |vim-markbar-rename-mark|.
 
 *g:markbar_print_time_on_shada_io*                       |(v:t_bool)|
-    `Default Value: v:true`
+    `Default Value: v:false`
 
     Whether to |echomsg| things like "vim-markbar serialized and wrote mark
     rosters at Wed Aug 23rd..." when vim-markbar reads or writes from |shada|
