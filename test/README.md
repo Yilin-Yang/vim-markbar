@@ -70,7 +70,7 @@ a subdirectory are each run in separate (n)vim instances, one after the other in
 ascending numerical order, and share the same initially empty viminfo/shada file
 with each other.
 
-Other Notes
+Other Notes and Known Issues
 --------------------------------------------------------------------------------
 vader.vim is sensitive to trailing whitespace in its `Expect:` blocks, where
 they denote an empty line in the buffer. Some tests (particularly
@@ -79,3 +79,7 @@ and [standalone-test-peekaboo.vader](./standalone-test-peekaboo.vader)) rely on
 this behavior. If you use vim autocommands to automatically delete trailing
 whitespace on buffer write, then you should disable those autocommands when
 editing vader files.
+
+Test output from running `run_tests.sh` with a vim executable is significantly
+slower than with neovim and is badly mangled because the running vim instance
+doesn't respect the actual size of the terminal window. See [Issue #53](https://github.com/Yilin-Yang/vim-markbar/issues/53).
