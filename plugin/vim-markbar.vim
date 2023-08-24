@@ -55,12 +55,27 @@ let g:markbar_standard_controller =
         \ markbar#MarkbarController#New(g:markbar_model, g:markbar_view,
                                       \ g:markbar_standard_format)
 
-function! g:MarkbarPopulateRosters() abort
-    if has('nvim')
-        rshada
-    else
-        rviminfo
+function! g:MarkbarPopulateRosters(...) abort
+    let l:is_startup = v:false
+    if a:0
+        call markbar#ensure#IsBoolean(l:is_startup)
+        let l:is_startup = a:1
     endif
+
+    " This rshada/rviminfo breaks tests.
+    "     Vim(rshada):E886: System error while opening ShaDa file
+    "     standalone-test-sequential-name-persistence.vader/viminfo_or_shada for
+    "     reading: no such file or directory
+    " Kludge: don't run this block when called from g:MarkbarVimEnter()
+    " {
+    if !l:is_startup
+        if has('nvim')
+            rshada
+        else
+            rviminfo
+        endif
+    endif
+    " } end
 
     if !exists('g:MARKBAR_GLOBAL_ROSTER')
         let g:MARKBAR_GLOBAL_ROSTER = '{}'
@@ -118,7 +133,7 @@ function! g:MarkbarVimEnter() abort
         return
     endif
     if markbar#settings#PersistMarkNames()
-        call g:MarkbarPopulateRosters()
+        call g:MarkbarPopulateRosters(v:true)
     endif
 
     " catching /Buffer not cached/ in MarkbarController.refreshContents()
