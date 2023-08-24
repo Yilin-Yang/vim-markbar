@@ -55,7 +55,13 @@ let g:markbar_standard_controller =
         \ markbar#MarkbarController#New(g:markbar_model, g:markbar_view,
                                       \ g:markbar_standard_format)
 
-function! s:PopulateRosters() abort
+function! g:MarkbarPopulateRosters() abort
+    if has('nvim')
+        rshada
+    else
+        rviminfo
+    endif
+
     if !exists('g:MARKBAR_GLOBAL_ROSTER')
         let g:MARKBAR_GLOBAL_ROSTER = '{}'
     endif
@@ -67,7 +73,7 @@ function! s:PopulateRosters() abort
     call g:markbar_rosters.populate(l:global_roster, l:local_rosters)
 endfunction
 
-function! s:SerializeRosters() abort
+function! g:MarkbarSerializeRosters() abort
     " update v:oldfiles with the files whose marks will be recorded in
     " shada or viminfo
     if has('nvim')
@@ -112,7 +118,7 @@ function! g:MarkbarVimEnter() abort
         return
     endif
     if markbar#settings#PersistMarkNames()
-        call s:PopulateRosters()
+        call g:MarkbarPopulateRosters()
     endif
 
     " catching /Buffer not cached/ in MarkbarController.refreshContents()
@@ -132,7 +138,7 @@ function! s:MarkbarVimLeave() abort
         let l:persist_mark_names = v:false
     endtry
     if l:persist_mark_names
-        call s:SerializeRosters()
+        call g:MarkbarSerializeRosters()
     endif
 endfunction
 
@@ -169,6 +175,9 @@ endfunction
 noremap <silent> <Plug>OpenMarkbar      :call <SID>OpenMarkbar()<cr>
 noremap <silent> <Plug>CloseMarkbar     :call <SID>CloseMarkbar()<cr>
 noremap <silent> <Plug>ToggleMarkbar    :call <SID>ToggleMarkbar()<cr>
+
+nnoremap <silent> <Plug>ReadMarkbarRosters  :call g:MarkbarPopulateRosters()<cr>
+nnoremap <silent> <Plug>WriteMarkbarRosters :call g:MarkbarSerializeRosters()<cr>
 
 function! s:SetMarkbarMappings() abort
     mapclear <buffer>
