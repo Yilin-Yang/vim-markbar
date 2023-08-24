@@ -63,6 +63,18 @@ function! markbar#settings#PersistMarkNames() abort
     return g:markbar_persist_mark_names
 endfunction
 
+function! markbar#settings#PrintTimeOnShaDaIO() abort
+    if !exists('g:markbar_print_time_on_shada_io')
+        let g:markbar_print_time_on_shada_io = v:true
+    endif
+    call s:AssertType(
+        \ g:markbar_print_time_on_shada_io,
+        \ v:t_bool,
+        \ 'g:markbar_print_time_on_shada_io'
+    \ )
+    return g:markbar_print_time_on_shada_io
+endfunction
+
 " RETURNS:  (v:t_bool)      Whether to open the fold(s) in which a mark is
 "                           located, if any.
 function! markbar#settings#foldopen() abort

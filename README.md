@@ -20,6 +20,7 @@ Features
 - **Jump to marks** directly from the markbar.
 - **Open automatically on `` ` `` or `'`,** _à la_ [vim-peekaboo!](https://github.com/junegunn/vim-peekaboo)
 - **Assign names** to your marks that persist between vim sessions!
+- **(WIP) Synchronize those names** between concurrent vim instances!
 - **Heavily customizable!** See below for details.
 
 Requirements
@@ -87,6 +88,20 @@ if has('nvim')
 else
     set viminfo+=!
 endif
+" let g:markbar_persist_mark_names = v:true
+
+
+" this lets you write your custom mark names to ShaDa/viminfo on demand,
+" rather than waiting until you :q to exit. That lets you sync mark names
+" between (neo)vim editor instances without closing and reopening vim.
+"
+" this and the mapping below will trigger wshada[!]/wviminfo[!] and
+" rshada[!]/rviminfo[!]. trigger this after setting custom mark names
+nmap <Leader>www <Plug>WriteMarkbarRosters
+
+" trigger this mapping in other vim instances to update the mark names in
+" their markbars
+nmap <Leader>rrr <Plug>ReadMarkbarRosters
 ```
 
 These examples use the [leader key,](https://stackoverflow.com/questions/1764263/what-is-the-leader-in-a-vimrc-file)
