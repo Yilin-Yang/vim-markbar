@@ -224,16 +224,36 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
     let l:lines = getbufline(bufnr(a:buffer_expr), a:start, a:end)
     if len(l:lines) | return l:lines | endif
 
-    " buffer isn't loaded, and/or file doesn't exist.
     let l:filename = bufname(a:buffer_expr)
-    if empty(l:filename) | return [] | endif
+    if a:buffer_expr =~# '^\d\+$' && empty(l:filename)
+        " gave only a buffer number, so there's nothing to return
+        return l:lines
+    endif
 
-    " readfile is several times faster than `sed`, at least on WSL
-    try
-        let l:lines = readfile(l:filename)[a:start - 1 : a:end - 1]
-    catch
-        let l:lines = ['[buffer line read failed]']
-    endtry
+    " if we're here, then buffer_expr is a file pattern
+    if empty(l:filename)
+        let l:filename = glob(a:buffer_expr, v:false, v:true)
+        if empty(l:filename)  " still empty, pattern matched no files
+            return l:lines
+        endif
+        let l:filename = l:filename[0]
+    endif
+
+    " load file into a hidden buffer, effectively caching file contents
+    " between calls to this function
+    let l:bufexists = bufexists(l:filename)
+    let l:bufloaded = bufloaded(l:filename)
+    if l:bufexists && !l:bufloaded
+        " buffer may have been :bdelete'd or :bunload'd; respect user's wishes
+        " and don't load the file again
+        try
+            let l:lines = readfile(l:filename, '',
+                    \ markbar#settings#ReadfileMax())[a:start-1 : a:end-1]
+        endtry
+    else
+        silent execute 'tabnew ' . l:filename . ' | hide'
+        let l:lines = getbufline(l:filename, a:start, a:end)
+    endif
 
     return l:lines
 endfunction

@@ -319,6 +319,22 @@ function! markbar#settings#MaximumActiveBufferHistory() abort
     return g:markbar_maximum_active_buffer_history
 endfunction
 
+" RETURNS:  (v:t_number)    {max} parameter used in calls to |readfile()|.
+function! markbar#settings#ReadfileMax() abort
+    if !exists('g:markbar_readfile_max')
+        let g:markbar_readfile_max = 1000000
+    endif
+    call s:AssertType(
+        \ g:markbar_readfile_max,
+        \ v:t_number,
+        \ 'g:markbar_readfile_max'
+    \ )
+    if g:markbar_readfile_max <# 1
+        throw 'g:markbar_readfile_max must be at least 1.'
+    endif
+    return g:markbar_readfile_max
+endfunction
+
 " RETURNS:  (v:t_dict)  Dict holding the number of lines of context to be
 "                       retrieved around different kinds of marks, including
 "                       the line that holds the mark.
