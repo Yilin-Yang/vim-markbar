@@ -126,6 +126,11 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
     Requires |viminfo-!| (in vim) or |shada-!| (in neovim) to work properly.
 
+    A known issue (Issue #56 on GitHub) is that setting this to `v:true` may
+    reorder your command history after closing and reopening vim. (This only
+    affects vim, not neovim.) Unfortunately, the only way to fix this (without
+    switching to neovim) is to set this option to `v:false`.
+
     See |vim-markbar-rename-mark|.
 
 *g:markbar_print_time_on_shada_io*                       |(v:t_bool)|
