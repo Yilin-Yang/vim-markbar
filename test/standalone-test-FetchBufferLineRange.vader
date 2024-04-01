@@ -1,3 +1,6 @@
+Execute (Setup):
+  let g:markbar_cache_with_hidden_buffers = v:false
+
 Execute (FetchBufferLineRange works with bufhidden = unload):
   tabnew 50lines.txt
   set bufhidden=unload
@@ -51,6 +54,17 @@ Execute (FetchBufferLineRange works with bufhidden = hide):
   tabnew 50lines.txt
   set bufhidden=hide
   hide
+  let g:result = markbar#helpers#FetchBufferLineRange('*50lines.txt', 50, 50)
+Then:
+  let g:expected = ['fiftieth line']
+  AssertEqual g:expected, g:result
+
+Execute (FetchBufferLineRange respects g:markbar_cache_with_hidden_buffers):
+  let g:markbar_cache_with_hidden_buffers = v:true
+  tabnew 50lines.txt
+  set bufhidden=delete
+  hide
+  let g:markbar_readfile_max = 49
   let g:result = markbar#helpers#FetchBufferLineRange('*50lines.txt', 50, 50)
 Then:
   let g:expected = ['fiftieth line']

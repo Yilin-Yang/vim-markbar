@@ -65,10 +65,10 @@ Do (Set Marks, Peekaboo Markbar Open):
   1G05lmA5G0mB10G0mC
   '
 Then:
-  AssertEqual 0, &buflisted
+  AssertEqual 0, &buflisted, '&buflisted was not 0'
   AssertEqual 'nofile', &buftype
   AssertEqual 'hide', &bufhidden
-  AssertEqual 0, &swapfile
+  AssertEqual 0, &swapfile, '&swapfile was not 0'
   AssertEqual 'markbar', &filetype
   AssertEqual 'markbar', &syntax
   AssertEqual 1, b:is_markbar
