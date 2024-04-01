@@ -245,6 +245,10 @@ let s:MarkbarModel.evictBufferCache = function('markbar#MarkbarModel#evictBuffer
 "           they don't yet exist.
 function! markbar#MarkbarModel#updateCurrentAndGlobal() abort dict
     let l:bufnr = bufnr('%')
+    if getbufvar(l:bufnr, 'is_markbar')
+        " don't trigger model updates in the markbar itself
+        return
+    endif
     let l:cur_buffer_cache = l:self._getOrInitBufferCache(l:bufnr)
     "                                                     ^ This is bufnr('%')
     " and not getActiveBuffer() because helpers#GetLocalMarks() pulls |:marks|

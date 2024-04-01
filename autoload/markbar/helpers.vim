@@ -243,12 +243,14 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
     " between calls to this function
     let l:bufexists = bufexists(l:filename)
     let l:bufloaded = bufloaded(l:filename)
-    if l:bufexists && !l:bufloaded
+    let l:load_hidden_buffers = markbar#settings#CacheWithHiddenBuffers()
+    if !l:load_hidden_buffers && l:bufexists && !l:bufloaded
         " buffer may have been :bdelete'd or :bunload'd; respect user's wishes
         " and don't load the file again
         try
             let l:lines = readfile(l:filename, '',
                     \ markbar#settings#ReadfileMax())[a:start-1 : a:end-1]
+        catch
         endtry
     else
         silent execute 'tabnew ' . l:filename . ' | hide'

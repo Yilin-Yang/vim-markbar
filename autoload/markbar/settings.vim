@@ -24,6 +24,8 @@ function! markbar#settings#MarksToDisplay() abort
     return g:markbar_marks_to_display
 endfunction
 
+" RETURNS:  (v:t_bool)      Whether to preserve mark names between editor
+"                           sessions.
 function! markbar#settings#PersistMarkNames() abort
     if !exists('g:markbar_persist_mark_names')
         let g:markbar_persist_mark_names = v:true
@@ -63,6 +65,22 @@ function! markbar#settings#PersistMarkNames() abort
     return g:markbar_persist_mark_names
 endfunction
 
+" RETURNS:  (v:t_bool)      Whether to load unopened files containing marks
+"                           in hidden buffers to speed up context retrieval.
+function! markbar#settings#CacheWithHiddenBuffers() abort
+    if !exists('g:markbar_cache_with_hidden_buffers')
+        let g:markbar_cache_with_hidden_buffers = v:true
+    endif
+    call s:AssertType(
+        \ g:markbar_cache_with_hidden_buffers,
+        \ v:t_bool,
+        \ 'g:markbar_cache_with_hidden_buffers'
+    \ )
+    return g:markbar_cache_with_hidden_buffers
+endfunction
+
+" RETURNS:  (v:t_bool)      Whether to print messages when vim-markbar
+"                           serializes or deserializes mark rosters.
 function! markbar#settings#PrintTimeOnShaDaIO() abort
     if !exists('g:markbar_print_time_on_shada_io')
         let g:markbar_print_time_on_shada_io = v:false

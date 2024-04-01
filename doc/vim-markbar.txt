@@ -133,6 +133,15 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
 
     See |vim-markbar-rename-mark|.
 
+*g:markbar_cache_with_hidden_buffers*                    |(v:t_bool)|
+    `Default Value:` `v:true`
+
+    Whether to speed up context retrieval by loading unopened marked files in
+    hidden buffers. This effectively caches the file's contents between context
+    retrievals, making context retrieval faster. If this is turned off,
+    vim-markbar will retrieve context from unopened files by making calls to
+    |readfile()|, which can be much slower with very large files.
+
 *g:markbar_print_time_on_shada_io*                       |(v:t_bool)|
     `Default Value: v:false`
 
@@ -272,14 +281,15 @@ For options unique to the "peekaboo" markbar, see |vim-markbar-peekaboo-options|
     To retrieve context lines from files that the user hasn't explicitly opened,
     vim-markbar will load those files in hidden buffers in order to cache file
     contents between context retrievals. When a file has been opened and then
-    deleted or unloaded, vim-markbar will try to "respect" the |:bdelete| or
-    |:bunload| and will call |readfile()| instead of opening the file again
-    in a buffer. This can be very slow if the files being read are large. This
-    setting is the '{max}' parameter that vim-markbar will pass to |readfile()|
-    to limit the total number of lines retrieved.
+    deleted or unloaded while |g:markbar_cache_with_hidden_buffers| is
+    `v:false`, vim-markbar will try to "respect" the |:bdelete| or |:bunload|
+    and will call |readfile()| instead of opening the file again in a buffer.
+    This can be very slow if the files being read are large. This setting is the
+    '{max}' parameter that vim-markbar will pass to |readfile()| to limit the
+    total number of lines retrieved.
 
     Note that vim-markbar won't know if a buffer was destroyed by |:bwipeout|
-    and may try to open it in a hidden buffer.
+    and may try to open it again in a hidden buffer.
 
 *g:markbar_num_lines_context*                            |(varies)|
     `Default Value:` `5`
