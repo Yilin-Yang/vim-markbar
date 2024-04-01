@@ -325,6 +325,15 @@ which mark to jump to.
 If you want to disable the peekaboo markbar entirely, you can set
 `g:markbar_enable_peekaboo` to `v:false`.
 
+When using vim (not neovim) with `g:markbar_persist_mark_names` set to `v:true`,
+vim-markbar will reorder and clobber the timestamps of your command, search
+string, expression, etc. history in your `.viminfo` file. (See [Issue #56](https://github.com/Yilin-Yang/vim-markbar/issues/56).)
+This may change the order of the command history that you see after typing `:`
+and using the Up and Down arrow keys. Unfortunately, the only way to fix this
+(while still using vim) is to set `g:markbar_persist_mark_names` to `v:false`,
+which will prevent you from setting mark names that persist between editor
+sessions. neovim users won't experience this issue.
+
 ### Mark Header Customization
 vim-markbar shows a header for each mark. In addition to a name set by the
 user, the default header consists of basic information about the mark,
