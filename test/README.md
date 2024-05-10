@@ -70,6 +70,26 @@ a subdirectory are each run in separate (n)vim instances, one after the other in
 ascending numerical order, and share the same initially empty viminfo/shada file
 with each other.
 
+A standalone sequential test need not exclusively consist of `*.vader` files.
+One can have a standalone sequential test with the folder structure:
+
+```
+standalone-test-sequential-something.vader/01-standalone-test-sequential-something.vader
+standalone-test-sequential-something.vader/02-standalone-test-sequential-something.sh
+standalone-test-sequential-something.vader/03-standalone-test-sequential-something.vader
+```
+
+In this folder, the `01-standalone-test-sequential-something.vader` test suite
+will run first, and then the `02-standalone-test-sequential-something.sh` bash
+script will run, followed by the `03-standalone-test-sequential-something.vader`
+test suite.
+
+Bash scripts in a standalone sequential test must take, as their first argument,
+the filepath of the vim executable being used to run the test; and as their
+second argument, "vim arguments" such as `-Nnu .test_vimrc`. See
+`standalone-test-sequential-filetype.vader` for an example. If the bash script
+returns a nonzero exit code, the test will fail.
+
 Other Notes and Known Issues
 --------------------------------------------------------------------------------
 vader.vim is sensitive to trailing whitespace in its `Expect:` blocks, where

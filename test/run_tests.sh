@@ -1,16 +1,16 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-if [ "$(pwd)" != "$SCRIPT_DIR" ]; then
-  printf "Must run this script from test subdirectory!\n"
-  exit 1
-fi
-
 # Runs all test cases in this folder, using this directory's localvimrc.
 #
 # Taken, in part, from:
 #     https://github.com/junegunn/vader.vim
 #     https://github.com/neovim/neovim/issues/4842
+
+SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+if [ "$(pwd)" != "$SCRIPT_DIR" ]; then
+  printf "Must run this script from test subdirectory!\n"
+  exit 1
+fi
 
 printUsage() {
   echo "USAGE: ./run_tests.sh [--vim | --neovim] [-v|--visible] [-h|--help] [-i|--international] [-f <FILE_PAT> | --file=<FILE_PAT>] [-e <VIM_PATH> | --vim_exe=<VIM_PATH>]"
@@ -42,16 +42,17 @@ runAndExitOnFail() {
 # directory, then run that subdirectory's test suite in ascending numerical
 # order with a subdirectory-local viminfo/shada file.
 runIndividually() {
-  local BASE_CMD=$1
-  local VADER_CMD=$2
-  local TEST=$3
+  local VIM_EXE=$1  # vim executable with which to run test, e.g. `vim`
+  local VIM_ARGS=$2  # args passed to vim executable, e.g. `-Nnu .test_vimrc`
+  local VADER_CMD=$3  # e.g. `-c 'Vader test-*.vader`
+  local TEST=$4  # e.g. `'standalone-test-*.vader'`
   local FILES
   FILES=$(find . -maxdepth 1 -name "$TEST" | sed "s|^\./||")
   for FILE in $FILES; do
     if [ -d "$FILE" ]; then
-      runSequentialTests "$BASE_CMD" "$VADER_CMD" "$FILE"
+      runSequentialTests "$VIM_EXE" "$VIM_ARGS" "$VADER_CMD" "$FILE"
     else
-      local SINGLE_CMD="$BASE_CMD -i NONE ${VADER_CMD//\*/$FILE}"
+      local SINGLE_CMD="$VIM_EXE $VIM_ARGS -i NONE ${VADER_CMD//\*/$FILE}"
       runAndExitOnFail "$SINGLE_CMD"
     fi
   done
@@ -59,18 +60,21 @@ runIndividually() {
 
 # Runs each test in the given ${SUBDIR} in ascending numerical order.
 runSequentialTests() {
-  local BASE_CMD="$1"
-  local VADER_CMD=$2
-  local SUBDIR=$3
+  local VIM_EXE=$1  # vim executable with which to run test, e.g. `vim`
+  local VIM_ARGS=$2  # args passed to vim executable, e.g. `-Nnu .test_vimrc`
+  local VADER_CMD=$3  # e.g. `-c 'Vader test-*.vader`
+  local SUBDIR=$4  # e.g. `standalone-test-sequential-marks-deleted-file.vader`
   local SHARED_DATA="$SUBDIR/viminfo_or_shada"
 
-  echo "rm -f \"$SHARED_DATA\""
   rm -f "$SHARED_DATA"
 
-  local TESTFILES
-  TESTFILES=$(ls $SUBDIR/*$SUBDIR)
+  local TESTFILES=$(ls $SUBDIR/*.{vader,sh})
   for TESTFILE in $TESTFILES; do
-    runAndExitOnFail "$BASE_CMD -i $SHARED_DATA ${VADER_CMD//\*/$TESTFILE}"
+    if [[ "$TESTFILE" =~ \.sh$ ]]; then
+      runAndExitOnFail "$TESTFILE '$VIM_EXE' '$VIM_ARGS'"
+    else
+      runAndExitOnFail "$VIM_EXE $VIM_ARGS -i $SHARED_DATA ${VADER_CMD//\*/$TESTFILE}"
+    fi
   done
 }
 
@@ -81,25 +85,27 @@ runSequentialTests() {
 #
 # ref: https://tldp.org/LDP/abs/html/string-manipulation.html
 runTests() {
-  local BASE_CMD=$1
-  local VADER_CMD=$2
-  local GLOB=$3
-  local STANDALONE_GLOB=$4
+  local VIM_EXE=$1  # vim executable with which to run test, e.g. `vim`
+  local VIM_ARGS=$2  # args passed to vim executable, e.g. `-Nnu .test_vimrc`
+  local VADER_CMD=$3  # e.g. `-c 'Vader test-*.vader`
+  local GLOB=$4  # e.g. `test-*.vader`
+  local STANDALONE_GLOB=$5  # e.g. `standalone-test-*.vader`
 
   if [ "$GLOB" ]; then
-    runAndExitOnFail "$BASE_CMD -i NONE ${VADER_CMD//\*/$GLOB}"
+    runAndExitOnFail "$VIM_EXE $VIM_ARGS -i NONE ${VADER_CMD//\*/$GLOB}"
   fi
   if [ "$STANDALONE_GLOB" ]; then
-    runIndividually "$BASE_CMD" "$VADER_CMD" "$STANDALONE_GLOB"
+    runIndividually "$VIM_EXE" "$VIM_ARGS" "$VADER_CMD" "$STANDALONE_GLOB"
   fi
 }
 
-NVIM_PATH_DEFAULT='nvim '
-VIM_PATH_DEFAULT='vim '
-BASE_CMD_NVIM="--headless -Nnu .test_vimrc"
-BASE_CMD_VIM="-Nnu .test_vimrc"
+NVIM_PATH_DEFAULT='nvim'
+VIM_PATH_DEFAULT='vim'
+DEFAULT_NVIM_ARGS="--headless -Nnu .test_vimrc"
+DEFAULT_VIM_ARGS="-Nnu .test_vimrc"
 RUN_VIM=1
 RUN_GIVEN=0
+TEST_INTERNATIONAL=0
 GAVE_PATH=0
 export NOT_VISIBLE=1
 VADER_CMD="-c 'Vader! *'"
@@ -113,8 +119,8 @@ while [[ $# -gt 0 ]]; do
       ;;
     '-v' | '--visible')
       export NOT_VISIBLE=0
-      BASE_CMD_NVIM="-Nnu .test_vimrc"
-      BASE_CMD_VIM="-Nnu .test_vimrc"
+      DEFAULT_NVIM_ARGS="-Nnu .test_vimrc"
+      DEFAULT_VIM_ARGS="-Nnu .test_vimrc"
       VADER_CMD="-c 'Vader *'"
       ;;
     '--vim')
@@ -159,34 +165,37 @@ done
 set -p
 export VADER_OUTPUT_FILE=/dev/stderr
 if [ $RUN_VIM -ne 0 ]; then
-  BASE_CMD=$BASE_CMD_VIM
   if [ $GAVE_PATH -ne 0 ]; then
-    BASE_CMD="${EXE_PATH} ${BASE_CMD_VIM}"
+    VIM_EXE="${EXE_PATH}"
+    VIM_ARGS="${DEFAULT_VIM_ARGS}"
   else
-    BASE_CMD="${VIM_PATH_DEFAULT} ${BASE_CMD_VIM}"
+    VIM_EXE="${VIM_PATH_DEFAULT}"
+    VIM_ARGS="${DEFAULT_VIM_ARGS}"
   fi
   if [ $NOT_VISIBLE -eq 1 ]; then
     VADER_CMD="$VADER_CMD > /dev/null"
   fi
 else
   if [ $GAVE_PATH -ne 0 ]; then
-    BASE_CMD="${EXE_PATH} ${BASE_CMD_NVIM}"
+    VIM_EXE="${EXE_PATH}"
+    VIM_ARGS="${DEFAULT_NVIM_ARGS}"
   else
-    BASE_CMD="${NVIM_PATH_DEFAULT} ${BASE_CMD_NVIM}"
+    VIM_EXE="${NVIM_PATH_DEFAULT}"
+    VIM_ARGS="${DEFAULT_NVIM_ARGS}"
   fi
 fi
 
 if [ $RUN_GIVEN -eq 1 ]; then
-  runTests "${BASE_CMD}" "${VADER_CMD}" "" "${GLOB_USER}"
-  if [ $TEST_INTERNATIONAL ]; then
+  runTests "${VIM_EXE}" "${VIM_ARGS}" "${VADER_CMD}" "" "${GLOB_USER}"
+  if [ $TEST_INTERNATIONAL -ne 0 ]; then
     # test non-English locale
-    runTests "${BASE_CMD} -c 'language de_DE.utf8'" "${VADER_CMD}" "" "${GLOB_USER}"
+    runTests "${VIM_EXE}" "${VIM_ARGS} -c 'language de_DE.utf8'" "${VADER_CMD}" "" "${GLOB_USER}"
   fi
 else
-  runTests "${BASE_CMD}" "${VADER_CMD}" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
-  if [ $TEST_INTERNATIONAL ]; then
+  runTests "${VIM_EXE}" "${VIM_ARGS}" "${VADER_CMD}" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
+  if [ $TEST_INTERNATIONAL -ne 0 ]; then
     # test non-English locale
-    runTests "${BASE_CMD} -c 'language de_DE.utf8'" "${VADER_CMD}" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
+    runTests "${VIM_EXE}" "${VIM_ARGS} -c 'language de_DE.utf8'" "${VADER_CMD}" "${GLOB_ORDINARY}" "${GLOB_STANDALONE}"
   fi
 fi
 unset NOT_VISIBLE
