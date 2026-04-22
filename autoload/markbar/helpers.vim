@@ -256,7 +256,10 @@ function! markbar#helpers#FetchBufferLineRange(buffer_expr, start, end) abort
         " NOTE: without the `filetype detect`, filetype detection may not run
         " in the opened buffer, and the lack of syntax highlighting might
         " persist if the file is :edit'd by the user (ref: #59)
-        silent execute 'tabnew ' . l:filename . ' | filetype detect | hide'
+        try
+            silent execute 'tabnew ' . l:filename . ' | filetype detect | hide'
+        catch /E824/ " incompatible undo file
+        endtry
         let l:lines = getbufline(l:filename, a:start, a:end)
     endif
 
